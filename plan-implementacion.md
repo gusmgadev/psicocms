@@ -16,16 +16,16 @@
 ---
 
 ## FASE 0A: Proyecto Next.js
-- [ ] Crear proyecto (App Router, TypeScript, ESLint, `src/`, alias `@/*`, sin Tailwind)
-- [ ] Instalar dependencias iniciales (supabase-js, @supabase/ssr, isomorphic-dompurify, server-only)
-- [ ] Comprobar que `.agents/skills/` está en la raíz y que la herramienta la detecta (pedirle que liste las skills disponibles)
-- [ ] Comprobar que `.opencode/commands/` está en la raíz y que los comandos aparecen al escribir `/` en OpenCode
-- [ ] Estructura de rutas y carpetas (public, instalacion, acceso-psicologa, panel-psicologa, lib, services, actions, themes, components/ui)
-- [ ] Clientes de Supabase (navegador, servidor, admin server-only)
-- [ ] Middleware (o proxy.ts) que protege `/panel-psicologa/*`
-- [ ] `.env.local` y `.env.example` (incluye `INSTALL_TOKEN`), `.gitignore` correcto
-- [ ] Páginas mínimas de prueba, `npm run build`, `git init` y primer commit
-- [ ] Actualizar MAP.md
+- [x] Crear proyecto (App Router, TypeScript, ESLint, `src/`, alias `@/*`, sin Tailwind)
+- [x] Instalar dependencias iniciales (supabase-js, @supabase/ssr, isomorphic-dompurify, server-only)
+- [x] Comprobar que `.agents/skills/` está en la raíz y que la herramienta la detecta (pedirle que liste las skills disponibles)
+- [x] Comprobar que `.opencode/commands/` está en la raíz y que los comandos aparecen al escribir `/` en OpenCode
+- [x] Estructura de rutas y carpetas (public, instalacion, acceso-psicologa, panel-psicologa, lib, services, actions, themes, components/ui)
+- [x] Clientes de Supabase (navegador, servidor, admin server-only)
+- [x] Middleware (o proxy.ts) que protege `/panel-psicologa/*`
+- [x] `.env.local` y `.env.example` (incluye `INSTALL_TOKEN`), `.gitignore` correcto
+- [x] Páginas mínimas de prueba, `npm run build`, `git init` y primer commit
+- [x] Actualizar MAP.md
 
 ## FASE 0B: Supabase y base de datos
 - [ ] Guía para crear el proyecto Supabase, desactivar registros públicos y obtener URL, anon key y service_role key

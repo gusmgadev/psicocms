@@ -1,5 +1,5 @@
 # Prompt 00b: Preparar Supabase y la base de datos (FASE 0B)
-Modelo recomendado: Opus
+Modelo recomendado: nemotron-3-ultra-free
 Antes de lanzarlo: crea una cuenta en supabase.com y ten terminada la FASE 0A.
 
 Lee @AGENTS.md, @plan-implementacion.md y @MAP.md.
