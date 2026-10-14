@@ -34,11 +34,12 @@ EXECUTE FUNCTION generate_patient_number();
 
 -- Restricción de exclusión para evitar solapamiento de citas activas
 -- Requiere extensión btree_gist (ya creada en migración 001)
+-- Usamos tstzrange para timestamp WITH time zone
 ALTER TABLE appointments
 ADD CONSTRAINT appointments_no_overlap
 EXCLUDE USING gist (
     modality WITH =,
-    tsrange(starts_at, ends_at) WITH &&
+    tstzrange(starts_at, ends_at) WITH &&
 ) WHERE (status IN ('scheduled', 'completed'));
 
 -- Trigger para updated_at en tablas principales

@@ -1,0 +1,149 @@
+/* ============================================================
+   TEMA BASE - Variables CSS Semánticas
+   Mapeo desde variables genéricas (--color-gray, --color-gray2, etc.)
+   a variables con significado semántico.
+   La apariencia visual debe ser IDÉNTICA al tema original.
+   ============================================================ */
+
+:root {
+  /* --- Colores de marca (Brand) --- */
+  --color-primario: #976147;        /* Principal: botones, enlaces, iconos activos */
+  --color-primario-oscuro: #66493d;  /* Hover, iconos, elementos secundarios de marca */
+  --color-primario-claro: #c0a090;   /* Subtítulos de bienvenida, elementos sutiles */
+  --color-primario-muy-claro: #ffe4d7; /* Fondos sutiles, badges */
+  --color-primario-fuerte: #5b4034;  /* Botón play, elementos de énfasis fuerte */
+  --color-primario-muy-fuerte: #7e533f; /* Fondo icono logo footer */
+
+  /* --- Fondos (Backgrounds) --- */
+  --color-fondo: #eee8e5;           /* Fondo principal (off-white cálido) */
+  --color-fondo-blanco: #ffffff;    /* Blanco puro (tarjetas, modales) */
+  --color-fondo-alt: #f1ece9;       /* Fondo alternativo (sección servicios) */
+  --color-fondo-suave: #f2edea;     /* Fondos sutiles (tabs precios) */
+  --color-fondo-muy-suave: #ebe6e3; /* Bordes claros, separadores */
+  --color-fondo-oscuro: #120e0e;    /* Footer superior (casi negro cálido) */
+  --color-fondo-muy-oscuro: #1a1414; /* Footer principal */
+
+  /* --- Textos (Typography) --- */
+  --color-texto: #1a1414;           /* Texto principal (títulos, cuerpo) */
+  --color-texto-suave: #736b6b;     /* Texto secundario (nav, subtítulos) */
+  --color-texto-muy-suave: #9f9999; /* Texto terciario (descripciones, meta) */
+  --color-texto-claro: #ffffff;     /* Texto sobre fondos oscuros */
+  --color-texto-sobre-primario: #ffffff; /* Texto sobre botones primarios */
+
+  /* --- Bordes y divisores --- */
+  --color-borde: #dfdfdf;           /* Bordes principales */
+  --color-borde-suave: #e4e2e2;     /* Bordes muy sutiles */
+  --color-borde-medio: #c7c3c3;     /* Bordes medios */
+  --color-borde-oscuro: #838181;    /* Bordes en áreas oscuras */
+
+  /* --- Estados e interactivos --- */
+  --color-hover-primario: #66493d;  /* Hover botones primarios */
+  --color-hover-negro: #000000;     /* Hover botones con animación negra */
+  --color-focus: #976147;           /* Focus visible */
+  --color-sombra: rgba(0, 0, 0, 0.03); /* Sombras sutiles */
+  --color-sombra-fuerte: rgba(151, 97, 71, 0.6); /* Sombra botón play (wave) */
+
+  /* --- Tipografía --- */
+  --font-sans: 'lexend', system-ui, sans-serif;      /* UI, navegación, cuerpo */
+  --font-display: 'castoro', Georgia, serif;         /* Títulos grandes, display */
+  --font-mono: 'montserrat', system-ui, sans-serif;  /* Precios, datos numéricos */
+
+  /* --- Pesos de fuente (solo los usados) --- */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* --- Espaciado (basado en 1rem = 10px) --- */
+  --space-xs: 0.4rem;   /* 4px */
+  --space-sm: 0.8rem;   /* 8px */
+  --space-md: 1.6rem;   /* 16px */
+  --space-lg: 2.4rem;   /* 24px */
+  --space-xl: 3.2rem;   /* 32px */
+  --space-2xl: 4.8rem;  /* 48px */
+  --space-3xl: 7.2rem;  /* 72px */
+  --space-4xl: 10rem;   /* 100px */
+
+  /* --- Radios --- */
+  --radius-sm: 0.4rem;   /* 4px */
+  --radius-md: 0.8rem;   /* 8px */
+  --radius-lg: 1.2rem;   /* 12px */
+  --radius-xl: 2rem;     /* 20px */
+  --radius-full: 9999px; /* Totalmente redondo */
+
+  /* --- Sombras --- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-wave: 0 0 0 0 rgba(151, 97, 71, 0.6); /* Para animación wave */
+
+  /* --- Transiciones --- */
+  --transition-fast: 150ms ease;
+  --transition-normal: 300ms linear;
+  --transition-slow: 600ms ease;
+
+  /* --- Contenedor principal --- */
+  --container-max: 120rem;   /* 1200px */
+  --container-wide: 180rem;  /* 1800px (casos) */
+
+  /* --- Z-index --- */
+  --z-nav: 99;
+  --z-modal-bg: 9999;
+  --z-modal: 99999;
+  --z-toast: 999999;
+}
+
+/* ============================================================
+   MAPEO DE COMPATIBILIDAD (para referencia, no usar en código nuevo)
+   ============================================================
+   --color-primary        → --color-primario
+   --color-orange         → --color-primario-oscuro
+   --color-orange2        → --color-primario-claro
+   --color-orange4        → --color-primario-muy-claro
+   --color-brown          → --color-primario-fuerte
+   --color-brown3         → --color-primario-muy-fuerte
+   --color-orange3        → --color-primario-claro (alias)
+   --color-orange5        → --color-primario-claro (alias, stats)
+   --color-orange6        → --color-primario-claro (alias, años)
+   --color-orange7        → --color-primario-oscuro (alias, blog)
+
+   --color-white          → --color-fondo
+   --color-white2         → --color-fondo-blanco
+   --color-white3         → --color-fondo-alt
+   --color-white4         → --color-fondo-suave
+   --color-white5         → --color-fondo-muy-suave
+   --color-white6         → --color-borde (sombra cases)
+   --color-white7         → --color-borde-suave
+   --color-white8         → --color-borde-suave
+   --color-white9         → --color-texto-muy-suave (promos)
+   --color-white10        → --color-fondo-alt (experience)
+   --color-white11        → --color-fondo-suave
+   --color-white12        → --color-borde-suave
+   --color-white13        → --color-texto-muy-suave
+
+   --color-gray           → --color-borde
+   --color-gray2          → --color-texto-suave
+   --color-gray3          → --color-texto-muy-suave
+   --color-gray4          → --color-fondo-suave
+   --color-gray5          → --color-texto-muy-suave
+   --color-gray6          → --color-borde
+   --color-gray7          → --color-texto-muy-suave
+   --color-gray8          → --color-texto-suave
+   --color-gray9          → --color-texto-muy-suave
+   --color-gray10         → --color-texto-muy-suave
+   --color-gray11         → --color-texto-muy-suave
+   --color-gray12         → --color-texto-muy-suave
+   --color-gray13         → --color-borde-medio
+   --color-gray14         → --color-texto-muy-suave
+   --color-gray15         → --color-texto-muy-suave (copyright)
+
+   --color-black          → --color-texto
+   --color-black2         → --color-texto-suave
+   --color-black3         → --color-texto-suave
+   --color-black4         → --color-fondo-oscuro
+   --color-black5         → --color-fondo-oscuro (social bg)
+   --color-black6         → --color-fondo-oscuro (contact icon)
+   --color-black7         → --color-texto-suave (border bottom)
+
+   --color-brown2         → --color-primario-oscuro (footer clock)
+*/

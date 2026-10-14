@@ -1,0 +1,9 @@
+/* ============================================================
+   TEMA BASE - Archivo principal
+   Importa: variables, reset, styles, responsive
+   ============================================================ */
+
+@import './variables.css';
+@import './reset.css';
+@import './styles.css';
+@import './responsive.css';

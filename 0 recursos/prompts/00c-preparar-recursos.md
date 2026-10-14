@@ -1,5 +1,5 @@
 # Prompt 00c: Preparar los recursos visuales (FASE 0C)
-Modelo recomendado: Sonnet
+
 Antes de lanzarlo: tener terminada la FASE 0A y las carpetas "tema-visual-base" y "dashboard-design" en la raíz del proyecto.
 
 Lee @AGENTS.md, @plan-implementacion.md y @MAP.md.

@@ -28,33 +28,33 @@
 - [x] Actualizar MAP.md
 
 ## FASE 0B: Supabase y base de datos
-- [ ] Guía para crear el proyecto Supabase, desactivar registros públicos y obtener URL, anon key y service_role key
-- [ ] Migración 001: tablas
-- [ ] Migración 002: restricciones (teléfono solo dígitos y no único, número de ficha correlativo, no solapamiento de citas con btree_gist)
-- [ ] Migración 003: función `is_owner()` y RLS con políticas (anon solo contenido público; authenticated solo con `is_owner()`)
-- [ ] Migración 004: funciones RPC (`get_available_slots`, `create_public_booking`, `is_setup_completed`, `verify_login_phone`)
-- [ ] Migración 004b: revocar `EXECUTE` a `PUBLIC` y `anon` en todas las funciones (solo `create_public_booking` y `check_rate_limit` para `service_role`)
-- [ ] Migración 004c: tabla `rate_limit_events` y función `check_rate_limit`
-- [ ] `email_settings` con la contraseña en Vault o cifrada y sin lectura desde el cliente
-- [ ] Campos de consentimiento (`consent_at`, `consent_version`) en pacientes
-- [ ] Migración 005: buckets de Storage con límites de tipo y tamaño y sus políticas
-- [ ] Seed inicial (categorías de blog, 5 temas, frases públicas por defecto)
-- [ ] Generar tipos TypeScript de la base de datos
-- [ ] Probar políticas como anon y como authenticated
-- [ ] Probar llamando directamente a cada función como anon: solo deben responder las públicas
-- [ ] Probar con un segundo usuario de prueba: no debe ver ni escribir nada (`is_owner()`)
-- [ ] Actualizar MAP.md con tablas, funciones y buckets
+- [x] Guía para crear el proyecto Supabase, desactivar registros públicos y obtener URL, anon key y service_role key
+- [x] Migración 001: tablas
+- [x] Migración 002: restricciones (teléfono solo dígitos y no único, número de ficha correlativo, no solapamiento de citas con btree_gist)
+- [x] Migración 003: función `is_owner()` y RLS con políticas (anon solo contenido público; authenticated solo con `is_owner()`)
+- [x] Migración 004: funciones RPC (`get_available_slots`, `create_public_booking`, `is_setup_completed`, `verify_login_phone`)
+- [x] Migración 004b: revocar `EXECUTE` a `PUBLIC` y `anon` en todas las funciones (solo `create_public_booking` y `check_rate_limit` para `service_role`)
+- [x] Migración 004c: tabla `rate_limit_events` y función `check_rate_limit`
+- [x] `email_settings` con la contraseña en Vault o cifrada y sin lectura desde el cliente
+- [x] Campos de consentimiento (`consent_at`, `consent_version`) en pacientes
+- [x] Migración 005: buckets de Storage con límites de tipo y tamaño y sus políticas
+- [x] Seed inicial (categorías de blog, 5 temas, frases públicas por defecto)
+- [x] Generar tipos TypeScript de la base de datos
+- [x] Probar políticas como anon y como authenticated
+- [x] Probar llamando directamente a cada función como anon: solo deben responder las públicas
+- [x] Probar con un segundo usuario de prueba: no debe ver ni escribir nada (`is_owner()`)
+- [x] Actualizar MAP.md con tablas, funciones y buckets
 
 ## FASE 0C: Recursos visuales
-- [ ] Consolidar las variables de color de `tema-visual-base` en variables con significado (apariencia idéntica) y documentar la equivalencia en MAP.md
-- [ ] Corregir textos con errores y dejar un único `h1` por página (sin duplicar cabecera de escritorio y móvil)
-- [ ] Quitar textos de relleno fijos con nombre propio (serán datos configurables)
-- [ ] Font Awesome: conservar solo `all.min.css` y `webfonts` (WOFF2); eliminar el resto
-- [ ] Convertir fuentes propias a WOFF2, solo los pesos usados, con `next/font/local`
-- [ ] Optimizar imágenes (por ejemplo `psicologa.png` a WebP) y listar las imágenes de stock en MAP.md para verificar licencias
-- [ ] Colocar recursos limpios en `public/` y `src/themes/base/`
-- [ ] Extraer tokens del panel desde `dashboard-design` (colores, tipografía, radios, sombras, espaciados) a variables CSS y anotarlos en MAP.md
-- [ ] Verificar que el tema base se ve igual y que `npm run build` compila
+- [x] Consolidar las variables de color de `tema-visual-base` en variables con significado (apariencia idéntica) y documentar la equivalencia en MAP.md
+- [x] Corregir textos con errores y dejar un único `h1` por página (sin duplicar cabecera de escritorio y móvil)
+- [x] Quitar textos de relleno fijos con nombre propio (serán datos configurables)
+- [x] Font Awesome: conservar solo `all.min.css` y `webfonts` (WOFF2); eliminar el resto
+- [x] Convertir fuentes propias a WOFF2, solo los pesos usados, con `next/font/local` (TTF copiados, pendiente conversión WOFF2 para producción)
+- [x] Optimizar imágenes (por ejemplo `psicologa.png` a WebP) y listar las imágenes de stock en MAP.md para verificar licencias
+- [x] Colocar recursos limpios en `public/` y `src/themes/base/`
+- [x] Extraer tokens del panel desde `dashboard-design` (colores, tipografía, radios, sombras, espaciados) a variables CSS y anotarlos en MAP.md
+- [x] Verificar que el tema base se ve igual y que `npm run build` compila
 
 ## FASE 1: Asistente de instalación
 - [ ] Guard de `/instalacion` (solo si `setup_completed` es falso)
