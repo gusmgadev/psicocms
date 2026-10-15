@@ -4,8 +4,8 @@
 > Estado inicial: proyecto sin iniciar. Todo lo marcado como (planificado) aún no existe.
 
 ## Estado actual
-- Fase en curso: FASE 2 (siguiente: FASE 2)
-- Última fase completada: FASE 1
+- Fase en curso: FASE 3 (siguiente: FASE 3)
+- Última fase completada: FASE 2
 
 ## Stack
 - Next.js (App Router) + React + TypeScript estricto
@@ -202,8 +202,20 @@
 - `POST /api/instalacion/ejecutar` — Ejecuta instalación completa (Server Action)
 - `GET /api/instalacion/verificar-instalacion` — Verifica si `setup_completed` es true
 
+## Rutas API (implementadas en FASE 2)
+- `POST /api/auth/recover` — Recuperación de contraseña (respuesta idéntica exista o no la cuenta)
+- `POST /api/auth/logout` — Cierre de sesión
+- `GET /api/auth/session` — Obtiene usuario actual para header del panel
+
+## Server Actions de autenticación (FASE 2)
+- `loginAction` — Login con email+password, verifica teléfono via RPC `verify_login_phone`, rate limiting por IP/email, cookies persistentes opcionales
+- `logoutAction` — Cierre de sesión
+- `recoverPasswordAction` — Recuperación de contraseña
+- `updatePasswordAction` — Cambio de contraseña con verificación de contraseña actual
+
 ## Historial de cambios
 - 2026-10-14: FASE 0A completada - Proyecto Next.js inicializado, estructura de rutas, clientes Supabase, middleware, variables de entorno, build exitoso, primer commit.
 - 2026-10-14: FASE 0B completada - Base de datos creada con 22 tablas, RLS, 6 funciones RPC, 3 buckets Storage, tipos TypeScript generados, seed data aplicado.
 - 2026-10-14: FASE 0C completada - Recursos visuales preparados: variables semánticas, Font Awesome ligero, fuentes copiadas (pendiente WOFF2), imágenes de stock listadas para verificación de licencias, tokens de panel extraídos, build verificado.
 - 2026-10-15: FASE 1 completada - Asistente de instalación en `/instalacion` con 5 pasos: conexión, datos de acceso, información profesional, foto, tema. Server Action `instalar` con cliente admin, validación de `INSTALL_TOKEN`, creación de usuario en Auth, perfil profesional, site_settings, servicios, especialidades, planes, disponibilidad. Barra de progreso, modo landing/multipágina, 5 temas disponibles. `npm run build` exitoso.
+- 2026-10-15: FASE 2 completada - Login seguro en `/acceso-psicologa` con email, teléfono y contraseña (mín. 12 chars). Server Action `loginAction` con `@supabase/ssr`, verificación de teléfono via RPC `verify_login_phone`, rate limiting por IP y email, mensaje de error genérico. Opción "Mantener sesión iniciada" con cookies persistentes. Recuperación de contraseña con respuesta idéntica. Logout vía API. Header del panel muestra usuario y botón "Cerrar sesión". `npm run build` exitoso.

@@ -64,14 +64,14 @@
 - [x] Marcar `setup_completed` y redirigir al dashboard
 
 ## FASE 2: Login seguro
-- [ ] Página `/acceso-psicologa` (email + teléfono + contraseña, los 3 obligatorios)
-- [ ] Server Action de login + RPC `verify_login_phone` + mensaje de error genérico
-- [ ] "Mantener sesión iniciada" (cookie persistente vs de sesión)
-- [ ] Verificación con `getUser` en el servidor y cierre de sesión
-- [ ] Contraseña fuerte (mínimo 12 caracteres) en formulario y en Supabase Auth
-- [ ] Límite de intentos de login por IP y email, con mensaje genérico
-- [ ] Recuperación de contraseña con respuesta idéntica exista o no la cuenta
-- [ ] Cookies de sesión seguras y reautenticación para cambios sensibles
+- [x] Página `/acceso-psicologa` (email + teléfono + contraseña, los 3 obligatorios)
+- [x] Server Action de login + RPC `verify_login_phone` + mensaje de error genérico
+- [x] "Mantener sesión iniciada" (cookie persistente vs de sesión)
+- [x] Verificación con `getUser` en el servidor y cierre de sesión
+- [x] Contraseña fuerte (mínimo 12 caracteres) en formulario y en Supabase Auth
+- [x] Límite de intentos de login por IP y email, con mensaje genérico
+- [x] Recuperación de contraseña con respuesta idéntica exista o no la cuenta
+- [x] Cookies de sesión seguras y reautenticación para cambios sensibles
 
 ## FASE 3: Layout y menú del dashboard
 - [ ] Layout compartido de `/panel-psicologa` con menú lateral izquierdo y desplegables

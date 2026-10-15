@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 type MenuItem = 
   | { label: string; href: string; icon: string; external?: boolean }
@@ -66,13 +66,35 @@ function isSimple(item: MenuItem): item is { label: string; href: string; icon: 
 
 export default function PanelLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [openMenus, setOpenMenus] = useState<string[]>([]);
+  const [user, setUser] = useState<{ name?: string; email?: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Cargar datos del usuario
+    fetch('/api/auth/session')
+      .then(res => res.json())
+      .then(data => {
+        if (data.user) {
+          setUser({ name: data.user.user_metadata?.full_name, email: data.user.email });
+        }
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, []);
 
   const toggleMenu = (label: string) => {
     setOpenMenus((prev) => (prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label]));
   };
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/acceso-psicologa');
+    router.refresh();
+  };
 
   return (
     <div className="flex h-screen bg-[var(--color-fondo-alt)]">
@@ -159,8 +181,12 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
               <i className="fa fa-user text-[var(--color-primario)]" aria-hidden="true"></i>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-[var(--color-texto)] truncate">Psicóloga</p>
-              <p className="text-xs text-[var(--color-texto-suave)] truncate">psicologa@ejemplo.com</p>
+              <p className="text-sm font-medium text-[var(--color-texto)] truncate">
+                {user?.name || (loading ? 'Cargando...' : 'Psicóloga')}
+              </p>
+              <p className="text-xs text-[var(--color-texto-suave)] truncate">
+                {user?.email || 'psicologa@ejemplo.com'}
+              </p>
             </div>
           </div>
         </div>
@@ -177,6 +203,14 @@ export default function PanelLayout({ children }: { children: React.ReactNode })
             </button>
             <button className="p-2 text-[var(--color-texto-suave)] hover:text-[var(--color-texto)] hover:bg-[var(--color-fondo-alt)] rounded-[var(--radius-md)] transition-colors" title="Ayuda">
               <i className="fa fa-circle-question" aria-hidden="true"></i>
+            </button>
+            <button
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-[var(--color-texto-suave)] hover:text-[var(--color-texto)] hover:bg-[var(--color-fondo-alt)] rounded-[var(--radius-md)] transition-colors"
+              title="Cerrar sesión"
+            >
+              <i className="fa fa-right-from-bracket" aria-hidden="true"></i>
+              <span className="hidden sm:inline">Cerrar sesión</span>
             </button>
           </div>
         </header>
