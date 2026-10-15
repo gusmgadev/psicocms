@@ -57,11 +57,11 @@
 - [x] Verificar que el tema base se ve igual y que `npm run build` compila
 
 ## FASE 1: Asistente de instalación
-- [ ] Guard de `/instalacion` (solo si `setup_completed` es falso)
-- [ ] Server Action `instalar` (crea el usuario único con el cliente admin; se niega si ya existe y exige `INSTALL_TOKEN`)
-- [ ] Pasos del asistente: conexión, datos de acceso, información pública, foto (Storage), tema
-- [ ] Sistema de temas + tema base funcionando
-- [ ] Marcar `setup_completed` y redirigir al dashboard
+- [x] Guard de `/instalacion` (solo si `setup_completed` es falso)
+- [x] Server Action `instalar` (crea el usuario único con el cliente admin; se niega si ya existe y exige `INSTALL_TOKEN`)
+- [x] Pasos del asistente: conexión, datos de acceso, información pública, foto (Storage), tema
+- [x] Sistema de temas + tema base funcionando
+- [x] Marcar `setup_completed` y redirigir al dashboard
 
 ## FASE 2: Login seguro
 - [ ] Página `/acceso-psicologa` (email + teléfono + contraseña, los 3 obligatorios)

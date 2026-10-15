@@ -4,8 +4,8 @@
 > Estado inicial: proyecto sin iniciar. Todo lo marcado como (planificado) aún no existe.
 
 ## Estado actual
-- Fase en curso: FASE 1 (siguiente: FASE 1)
-- Última fase completada: FASE 0C
+- Fase en curso: FASE 2 (siguiente: FASE 2)
+- Última fase completada: FASE 1
 
 ## Stack
 - Next.js (App Router) + React + TypeScript estricto
@@ -196,7 +196,14 @@
 - CSS base: font-size 10px (1rem = 10px), variables de color con significado, rem para medidas.
 - Región Supabase: **eu-west-1** (anotar la tuya si es diferente)
 
+## Rutas API (implementadas en FASE 1)
+- `POST /api/instalacion/verificar-conexion` — Verifica conectividad con Supabase
+- `POST /api/instalacion/subir-foto` — Sube foto de la psicóloga a Storage `public-images`
+- `POST /api/instalacion/ejecutar` — Ejecuta instalación completa (Server Action)
+- `GET /api/instalacion/verificar-instalacion` — Verifica si `setup_completed` es true
+
 ## Historial de cambios
 - 2026-10-14: FASE 0A completada - Proyecto Next.js inicializado, estructura de rutas, clientes Supabase, middleware, variables de entorno, build exitoso, primer commit.
 - 2026-10-14: FASE 0B completada - Base de datos creada con 22 tablas, RLS, 6 funciones RPC, 3 buckets Storage, tipos TypeScript generados, seed data aplicado.
 - 2026-10-14: FASE 0C completada - Recursos visuales preparados: variables semánticas, Font Awesome ligero, fuentes copiadas (pendiente WOFF2), imágenes de stock listadas para verificación de licencias, tokens de panel extraídos, build verificado.
+- 2026-10-15: FASE 1 completada - Asistente de instalación en `/instalacion` con 5 pasos: conexión, datos de acceso, información profesional, foto, tema. Server Action `instalar` con cliente admin, validación de `INSTALL_TOKEN`, creación de usuario en Auth, perfil profesional, site_settings, servicios, especialidades, planes, disponibilidad. Barra de progreso, modo landing/multipágina, 5 temas disponibles. `npm run build` exitoso.

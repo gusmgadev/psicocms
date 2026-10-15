@@ -1,5 +1,5 @@
 ---
-description: Ejecuta una fase del plan de PsicoCMS (uso: /fase 7)
+fase 7)description: Ejecuta una fase del plan de PsicoCMS (uso: /
 ---
 Lee @AGENTS.md, @plan-implementacion.md y @MAP.md.
 Ejecuta únicamente la FASE $ARGUMENTS del plan. Si la fase anterior no está marcada como completada en @plan-implementacion.md, avísame antes de empezar.
