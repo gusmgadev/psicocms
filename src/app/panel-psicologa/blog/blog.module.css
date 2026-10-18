@@ -1,0 +1,215 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+.cabeceraAcciones {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 2.6rem;
+  line-height: 1.2;
+}
+
+.subtitulo {
+  margin: 0.6rem 0 0;
+  color: var(--color-texto-suave);
+}
+
+/* Filtros */
+.filtros {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 1.2rem 1.6rem;
+  align-items: end;
+}
+
+.filtrosAcciones {
+  display: flex;
+  gap: 0.8rem;
+  padding-bottom: 0.2rem;
+}
+
+/* Tabla */
+.celdaDoble {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.celdaDoble small {
+  color: var(--color-texto-suave);
+  font-size: 1.3rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1rem;
+  border-radius: 99.9rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  background: var(--color-fondo-alt);
+  border: 1px solid var(--color-borde);
+  color: var(--color-texto-suave);
+  white-space: nowrap;
+}
+
+.badgePublicado {
+  background: var(--color-exito-fondo);
+  border-color: transparent;
+  color: var(--color-exito);
+}
+
+.badgeBorrador {
+  background: var(--color-fondo-alt);
+  border-color: var(--color-borde);
+  color: var(--color-texto-suave);
+}
+
+.acciones {
+  display: inline-flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.accionBoton {
+  width: 3.2rem;
+  height: 3.2rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.accionBoton:hover {
+  color: var(--color-primario);
+  background: var(--color-primario-claro);
+}
+
+.accionPeligro:hover {
+  color: var(--color-peligro);
+  background: var(--color-peligro-fondo);
+}
+
+/* Modal de categorías */
+.categoriaForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding-bottom: 1.6rem;
+  border-bottom: 1px solid var(--color-borde);
+  margin-bottom: 1.6rem;
+}
+
+.categoriaFormCampos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem 1.6rem;
+  align-items: end;
+}
+
+.campoNombre {
+  grid-column: 1 / -1;
+}
+
+.campoDescripcion {
+  grid-column: 1 / 2;
+}
+
+.campoOrden {
+  max-width: 10rem;
+}
+
+.categoriaFormAcciones {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.categoriaLista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.categoriaItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.categoriaItem:last-child {
+  border-bottom: none;
+}
+
+.categoriaInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.categoriaNombre {
+  font-weight: 600;
+}
+
+.categoriaInactiva {
+  color: var(--color-texto-suave);
+  font-weight: 400;
+}
+
+.categoriaInfo small {
+  color: var(--color-texto-suave);
+  font-size: 1.3rem;
+}
+
+.categoriaAcciones {
+  display: inline-flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+@media (max-width: 900px) {
+  .filtros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filtrosAcciones {
+    grid-column: 1 / -1;
+  }
+
+  .categoriaFormCampos {
+    grid-template-columns: 1fr;
+  }
+
+  .campoDescripcion {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .filtros {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,205 @@
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.dosColumnas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.4rem;
+}
+
+.modalidadGrupo {
+  display: flex;
+  gap: 1rem;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.modalidadGrupo legend {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-texto);
+  margin-bottom: 0.8rem;
+  padding: 0;
+}
+
+.modalidadOpcion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.8rem 1.4rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-size: 1.5rem;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.modalidadOpcion:hover {
+  border-color: var(--color-primario);
+}
+
+.modalidadOpcion input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+}
+
+.modalidadOpcion:has(input:checked) {
+  border-color: var(--color-primario);
+  background: var(--color-primario-claro);
+  color: var(--color-primario-oscuro);
+  font-weight: 600;
+}
+
+.modalidadOpcion:has(input:focus-visible) {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .dosColumnas {
+    grid-template-columns: 1fr;
+  }
+
+  .modalidadGrupo {
+    flex-wrap: wrap;
+  }
+}
+
+/* Enlace a la nota de sesión de la historia */
+.notaCita {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.8rem 1.2rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-sm);
+  background: var(--color-fondo-alt);
+  font-size: 1.4rem;
+}
+
+.notaCita i {
+  color: var(--color-primario);
+}
+
+.notaCita a {
+  color: var(--color-primario);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.notaCita a:hover {
+  text-decoration: underline;
+}
+
+/* Buscador de pacientes */
+
+.buscador {
+  position: relative;
+}
+
+.listaResultados {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 0.4rem);
+  left: 0;
+  right: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0.4rem;
+  background: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  max-height: 28rem;
+  overflow-y: auto;
+}
+
+.resultado {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  font-family: inherit;
+  font-size: 1.4rem;
+  text-align: left;
+  color: var(--color-texto);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.resultado:hover {
+  background: var(--color-primario-claro);
+  color: var(--color-primario-oscuro);
+}
+
+.resultadoPrincipal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.resultadoPrincipal small {
+  color: var(--color-texto-suave);
+  font-size: 1.3rem;
+}
+
+.resultadoNuevo {
+  color: var(--color-primario);
+  font-weight: 600;
+  border-top: 1px solid var(--color-borde);
+  border-radius: 0;
+}
+
+.pacienteSeleccionado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.9rem 1.2rem;
+  border: 1px solid var(--color-primario);
+  background: var(--color-primario-claro);
+  border-radius: var(--radius-md);
+  font-size: 1.4rem;
+  color: var(--color-primario-oscuro);
+}
+
+.pacienteSeleccionadoTexto {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pacienteQuitar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.6rem;
+  flex-shrink: 0;
+  font-size: 1.4rem;
+  color: var(--color-primario-oscuro);
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.pacienteQuitar:hover {
+  background: var(--color-fondo);
+}
+
+.cancelarNuevo {
+  grid-column: 1 / -1;
+  justify-self: start;
+}

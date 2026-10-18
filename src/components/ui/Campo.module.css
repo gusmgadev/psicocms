@@ -1,0 +1,9 @@
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.requerido {
+  color: var(--color-peligro);
+}

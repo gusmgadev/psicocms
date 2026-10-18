@@ -1,0 +1,17 @@
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.dosColumnas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.6rem;
+}
+
+@media (min-width: 640px) {
+  .dosColumnas {
+    grid-template-columns: 1fr 1fr;
+  }
+}

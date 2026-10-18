@@ -1,0 +1,306 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--color-texto-suave);
+  margin-bottom: 0.4rem;
+}
+
+.volver:hover {
+  color: var(--color-primario);
+}
+
+.cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 2.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.badgeTitulo {
+  display: inline-block;
+  margin-left: 1.2rem;
+  padding: 0.3rem 1rem;
+  border-radius: 99.9rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  vertical-align: middle;
+  background: var(--color-primario-claro);
+  color: var(--color-primario-oscuro);
+}
+
+.subtitulo {
+  margin: 0.6rem 0 0;
+  color: var(--color-texto-suave);
+  font-size: 1.5rem;
+  max-width: 72rem;
+}
+
+.cabeceraAcciones {
+  display: flex;
+  gap: 0.8rem;
+  flex-wrap: wrap;
+}
+
+/* Línea de tiempo de sesiones */
+
+.lineaTiempo {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.tarjetaSesion {
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  background: var(--color-fondo);
+  padding: 1.6rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.sesionCabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.sesionFecha {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+.sesionFecha i {
+  color: var(--color-primario);
+}
+
+.sesionCita {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 1rem;
+  border-radius: 99.9rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  background: var(--color-primario-claro);
+  color: var(--color-primario-oscuro);
+  white-space: nowrap;
+}
+
+.sesionAcciones {
+  display: inline-flex;
+  gap: 0.4rem;
+}
+
+.accionBoton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.accionBoton:hover {
+  color: var(--color-primario);
+  background: var(--color-primario-claro);
+}
+
+.accionPeligro:hover {
+  color: var(--color-peligro);
+  background: var(--color-peligro-fondo);
+}
+
+.adjuntarBoton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.adjuntarBoton:hover {
+  color: var(--color-primario);
+  background: var(--color-primario-claro);
+}
+
+.inputOculto {
+  display: none;
+}
+
+.contenidoHtml {
+  font-size: 1.5rem;
+  color: var(--color-texto);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.contenidoHtml :global(h2) {
+  font-size: 1.9rem;
+  margin: 1.2rem 0 0.6rem;
+}
+
+.contenidoHtml :global(h3) {
+  font-size: 1.6rem;
+  margin: 1rem 0 0.4rem;
+}
+
+.contenidoHtml :global(p) {
+  margin: 0 0 0.8rem;
+}
+
+.contenidoHtml :global(ul),
+.contenidoHtml :global(ol) {
+  margin: 0 0 0.8rem;
+  padding-left: 2.2rem;
+}
+
+/* Archivos adjuntos */
+
+.listaArchivos {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  border-top: 1px solid var(--color-borde);
+  padding-top: 1.2rem;
+}
+
+.itemArchivo {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-sm);
+  background: var(--color-fondo-alt);
+}
+
+.itemArchivoIcono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-primario-claro);
+  color: var(--color-primario-oscuro);
+  font-size: 1.6rem;
+  flex-shrink: 0;
+}
+
+.itemArchivoInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.itemArchivoNombre {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--color-texto);
+  overflow-wrap: anywhere;
+}
+
+.itemArchivoMeta {
+  font-size: 1.2rem;
+  color: var(--color-texto-suave);
+}
+
+.itemArchivoAcciones {
+  display: inline-flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+/* Modal de sesión */
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.listaSeleccion {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.itemSeleccion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-sm);
+  background: var(--color-fondo-alt);
+  font-size: 1.3rem;
+}
+
+.itemNombre {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.itemQuitar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+}
+
+.itemQuitar:hover {
+  color: var(--color-peligro);
+  background: var(--color-peligro-fondo);
+}

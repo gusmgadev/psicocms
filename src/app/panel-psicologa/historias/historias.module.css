@@ -1,0 +1,105 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 2.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.subtitulo {
+  margin: 0.6rem 0 0;
+  color: var(--color-texto-suave);
+  font-size: 1.5rem;
+  max-width: 72rem;
+}
+
+.filtros {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.2rem 1.6rem;
+  align-items: end;
+  max-width: 64rem;
+}
+
+.filtrosAcciones {
+  display: flex;
+  gap: 0.8rem;
+  padding-bottom: 0.2rem;
+}
+
+@media (max-width: 800px) {
+  .filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .filtrosAcciones {
+    grid-column: 1 / -1;
+  }
+}
+
+.enlaceFicha {
+  font-weight: 600;
+  color: var(--color-texto);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.enlaceFicha:hover,
+.enlaceNombre:hover {
+  color: var(--color-primario);
+}
+
+.enlaceNombre {
+  color: var(--color-texto);
+  font-weight: 500;
+}
+
+.badgeSesiones {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.3rem 1rem;
+  border-radius: 99.9rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  background: var(--color-primario-claro);
+  color: var(--color-primario-oscuro);
+}
+
+.accionBoton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.accionBoton:hover {
+  color: var(--color-primario);
+  background: var(--color-primario-claro);
+}
+
+.vacio {
+  font-size: 1.4rem;
+  color: var(--color-texto-suave);
+  margin: 0;
+}

@@ -74,41 +74,51 @@
 - [x] Cookies de sesión seguras y reautenticación para cambios sensibles
 
 ## FASE 3: Layout y menú del dashboard
-- [ ] Layout compartido de `/panel-psicologa` con menú lateral izquierdo y desplegables
-- [ ] Componentes reutilizables (modal, toast, empty state, tabla paginada, formularios)
-- [ ] Capa de servicios y patrón de Server Actions con comprobación de sesión
-- [ ] Diseño basado en `dashboard-design`, responsive
+- [x] Layout compartido de `/panel-psicologa` con menú lateral izquierdo y desplegables
+- [x] Componentes reutilizables (modal, toast, empty state, tabla paginada, formularios)
+- [x] Capa de servicios y patrón de Server Actions con comprobación de sesión
+- [x] Diseño basado en `dashboard-design`, responsive
 
 ## FASE 4: Inicio, disponibilidad y citas
-- [ ] Página de inicio con resumen y estadísticas (datos de prueba)
-- [ ] Duración de sesión online/presencial y descanso entre sesiones
-- [ ] Selector de horas y semana de 7 días con huecos marcables; guardar
-- [ ] Modo vacaciones (interruptor) y periodos de vacaciones (añadir/borrar)
-- [ ] Aviso al cambiar duración o descanso (reconfigurar huecos)
-- [ ] CRUD de citas: listado paginado con filtros, añadir, editar, eliminar
-- [ ] Validación de solapamientos (frontend + base de datos)
+- [x] Página de inicio con resumen y estadísticas (datos de prueba)
+- [x] Duración de sesión online/presencial y descanso entre sesiones
+- [x] Selector de horas y semana de 7 días con huecos marcables; guardar
+- [x] Modo vacaciones (interruptor) y periodos de vacaciones (añadir/borrar)
+- [x] Aviso al cambiar duración o descanso (reconfigurar huecos)
+- [x] CRUD de citas: listado paginado con filtros, añadir, editar, eliminar
+- [x] Validación de solapamientos (frontend + base de datos)
+- [x] Solapes bloqueados también entre modalidades online y presencial, en las 4 capas (migración 009 + `hayConflicto`)
 
 ## FASE 5: Calendario de citas
-- [ ] Verificar compatibilidad de CalendarJS con React/Next (o proponer alternativa)
-- [ ] Ver, añadir, editar y mover citas desde el calendario
+- [x] Verificar compatibilidad de CalendarJS con React/Next (o proponer alternativa)
+- [x] Ver, añadir, editar y mover citas desde el calendario
 
 ## FASE 6: Blog y editor wysiwyg
-- [ ] Integrar `jodit-react` (solo cliente) con su CSS
-- [ ] CRUD de artículos con imagen (Storage) y categoría
-- [ ] CRUD de categorías
-- [ ] Sanear con DOMPurify al mostrar contenido
+- [x] Integrar `jodit-react` (solo cliente) con su CSS
+- [x] CRUD de artículos con imagen (Storage) y categoría
+- [x] CRUD de categorías
+- [x] Sanear con DOMPurify al mostrar contenido
 
 ## FASE 7: Pacientes
-- [ ] CRUD de pacientes con id interno (UUID) y número de ficha correlativo; el teléfono es un dato de contacto normalizado, no único
-- [ ] Aviso (sin bloquear) si se crea un paciente con un teléfono que ya existe, y marca/revisión de posibles duplicados
-- [ ] Urls del panel con el id interno, nunca con el teléfono
-- [ ] Exportar datos del paciente y eliminarlos/anonimizarlos con confirmación explícita
-- [ ] Buscador de pacientes (por nombre, teléfono o número de ficha) al crear una cita; crear paciente + cita a la vez si no existe
+- [x] CRUD de pacientes con id interno (UUID) y número de ficha correlativo; el teléfono es un dato de contacto normalizado, no único
+- [x] Aviso (sin bloquear) si se crea un paciente con un teléfono que ya existe, y marca/revisión de posibles duplicados
+- [x] Urls del panel con el id interno, nunca con el teléfono
+- [x] Exportar datos del paciente y eliminarlos/anonimizarlos con confirmación explícita
+- [x] Buscador de pacientes (por nombre, teléfono o número de ficha) al crear una cita; crear paciente + cita a la vez si no existe
 
 ## FASE 8: Historias clínicas
-- [ ] Historia por paciente (notas por sesión)
-- [ ] Subida de fotos y PDFs al bucket privado con validación de tipo y tamaño en servidor, nombres UUID y vista con URLs firmadas de corta duración
-- [ ] Sanear con DOMPurify el contenido de las historias al mostrarlo
+- [x] Historia por paciente (notas por sesión)
+- [x] Subida de fotos y PDFs al bucket privado con validación de tipo y tamaño en servidor, nombres UUID y vista con URLs firmadas de corta duración
+- [x] Sanear con DOMPurify el contenido de las historias al mostrarlo
+
+## FASE 8B: Enlace citas ↔ historias clínicas
+- [x] Migración nueva: columna `clinical_records.appointment_id` (opcional, FK a `appointments` con `ON DELETE SET NULL`, índice)
+- [x] Servicios/actions de historias: aceptar `appointmentId` opcional al crear/editar nota; validar en servidor que la cita pertenece al mismo paciente y que no tenga ya otra nota enlazada
+- [x] En el listado/calendario de citas: en una cita completada, botón "Escribir nota de sesión" que abra la historia del paciente con la cita pre-enlazada
+- [x] En la historia del paciente: "Nueva nota" permite elegir una cita pasada sin nota (o sin cita) y prellena `session_date` con la fecha de la cita; si luego se mueve/edita la cita, la fecha de la nota no cambia
+- [x] Cada nota muestra su fecha y, si la tiene, la cita de origen (fecha, hora, modalidad)
+- [x] Al borrar o cancelar una cita la nota sobrevive (el enlace queda vacío)
+- [x] El calendario y el listado de citas no muestran contenido clínico (solo enlace a la nota si existe)
 
 ## FASE 9: Protección de datos
 - [ ] Configuración de la plantilla con editor wysiwyg

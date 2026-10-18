@@ -1,49 +1,126 @@
-export default function PanelHome() {
+import Link from "next/link";
+import { getResumenInicio } from "@/services/dashboard";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { obtenerTimezone } from "@/services/disponibilidad";
+import { formatearFecha, formatearHora } from "@/lib/fechas";
+import styles from "./panel.module.css";
+
+export default async function PanelHome() {
+  const [resumen, timezone] = await Promise.all([getResumenInicio(), obtenerTimezone()]);
+
   return (
-    <div className="space-y-8">
+    <div className={styles.paginaInicio}>
       <div>
-        <h1 className="text-3xl font-bold text-[var(--color-texto)]">Dashboard</h1>
-        <p className="text-[var(--color-texto-suave)] mt-1">Resumen de tu actividad</p>
+        <h1 className={styles.paginaTitulo}>Inicio</h1>
+        <p className={styles.paginaSubtitulo}>Aquí tienes un resumen de tu actividad</p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard label="Citas esta semana" value="12" icon="fa-calendar-check" />
-        <StatCard label="Pacientes activos" value="45" icon="fa-users" />
-        <StatCard label="Próximas citas" value="3" icon="fa-clock" iconColor="text-amber-600" />
-        <StatCard label="Nuevos pacientes" value="2" icon="fa-user-plus" iconColor="text-green-600" />
+
+      <div className={styles.statsRejilla}>
+        <StatCard label="Citas esta semana" value={String(resumen.citasSemana)} icon="fa-calendar-check" />
+        <StatCard label="Pacientes" value={String(resumen.pacientesActivos)} icon="fa-users" />
+        <StatCard label="Próximas citas" value={String(resumen.proximasCitas)} icon="fa-clock" tone="aviso" />
+        <StatCard
+          label="Nuevos pacientes este mes"
+          value={String(resumen.nuevosPacientes)}
+          icon="fa-user-plus"
+          tone="exito"
+        />
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card title="Próximas citas">
-          <p className="text-[var(--color-texto-suave)]">Aquí se mostrarán las próximas citas.</p>
-        </Card>
-        <Card title="Pacientes recientes">
-          <p className="text-[var(--color-texto-suave)]">Aquí se mostrarán los pacientes recientes.</p>
-        </Card>
+
+      <div className={styles.contenidoRejilla}>
+        <section className="tarjeta">
+          <div className={styles.panelCabecera}>
+            <h2 className={styles.panelTitulo}>Próximas citas</h2>
+            <Link href="/panel-psicologa/citas" className={styles.panelEnlace}>
+              Ver todas
+            </Link>
+          </div>
+          {resumen.proximasCitasLista.length === 0 ? (
+            <EmptyState
+              icono="fa-calendar-check"
+              titulo="Todavía no hay citas programadas"
+              descripcion="Cuando tengas citas programadas, aparecerán aquí."
+            />
+          ) : (
+            <ul className={styles.lista}>
+              {resumen.proximasCitasLista.map((cita) => (
+                <li key={cita.id} className={styles.listaItem}>
+                  <span className={styles.listaIcono}>
+                    <i className={`fa ${cita.modality === "online" ? "fa-video" : "fa-location-dot"}`} aria-hidden="true"></i>
+                  </span>
+                  <span className={styles.listaPrincipal}>
+                    <span>{cita.pacienteNombre}</span>
+                    <small>
+                      {formatearFecha(cita.startsAt, timezone)} · {formatearHora(cita.startsAt, timezone)}
+                    </small>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
+
+        <section className="tarjeta">
+          <div className={styles.panelCabecera}>
+            <h2 className={styles.panelTitulo}>Pacientes recientes</h2>
+            <Link href="/panel-psicologa/pacientes" className={styles.panelEnlace}>
+              Ver todos
+            </Link>
+          </div>
+          {resumen.pacientesRecientes.length === 0 ? (
+            <EmptyState
+              icono="fa-users"
+              titulo="Todavía no hay pacientes"
+              descripcion="Los pacientes que crees o que reserven cita aparecerán aquí."
+            />
+          ) : (
+            <ul className={styles.lista}>
+              {resumen.pacientesRecientes.map((paciente) => (
+                <li key={paciente.id} className={styles.listaItem}>
+                  <span className={styles.listaIcono}>
+                    <i className="fa fa-user" aria-hidden="true"></i>
+                  </span>
+                  <span className={styles.listaPrincipal}>
+                    <span>{paciente.nombre}</span>
+                    <small>
+                      {paciente.numero} · alta {formatearFecha(paciente.createdAt, timezone)}
+                    </small>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
     </div>
   );
 }
 
-function StatCard({ label, value, icon, iconColor = "text-[var(--color-primario)]" }: { label: string; value: string; icon: string; iconColor?: string }) {
-  return (
-    <div className="bg-[var(--color-fondo)] rounded-[var(--radius-lg)] border border-[var(--color-borde)] p-6 shadow-[var(--shadow-sm)]">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-[var(--color-texto-suave)]">{label}</p>
-          <p className="text-3xl font-bold text-[var(--color-texto)] mt-1">{value}</p>
-        </div>
-        <div className={`p-3 rounded-[var(--radius-md)] bg-[var(--color-primario)]/10 ${iconColor}`}>
-          <i className={`fa ${icon} text-2xl`} aria-hidden="true"></i>
-        </div>
-      </div>
-    </div>
-  );
-}
+function StatCard({
+  label,
+  value,
+  icon,
+  tone = "primario",
+}: {
+  label: string;
+  value: string;
+  icon: string;
+  tone?: "primario" | "aviso" | "exito";
+}) {
+  const iconClass =
+    tone === "aviso" ? `${styles.statIcono} ${styles.statIconoAviso}` :
+    tone === "exito" ? `${styles.statIcono} ${styles.statIconoExito}` :
+    styles.statIcono;
 
-function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-[var(--color-fondo)] rounded-[var(--radius-lg)] border border-[var(--color-borde)] p-6 shadow-[var(--shadow-sm)]">
-      <h2 className="text-lg font-semibold text-[var(--color-texto)] mb-4">{title}</h2>
-      {children}
+    <div className={styles.statTarjeta}>
+      <div>
+        <p className={styles.statEtiqueta}>{label}</p>
+        <p className={styles.statValor}>{value}</p>
+      </div>
+      <div className={iconClass}>
+        <i className={`fa ${icon}`} aria-hidden="true"></i>
+      </div>
     </div>
   );
 }

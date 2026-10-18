@@ -1,0 +1,91 @@
+.header {
+  border-bottom: 1px solid var(--color-borde);
+  background-color: var(--color-fondo);
+}
+
+.headerContenedor {
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 0 2.4rem;
+  height: 6.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2.4rem;
+}
+
+.logo {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-primario);
+  margin: 0;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  font-size: 1.4rem;
+  color: var(--color-texto-suave);
+  flex-wrap: wrap;
+}
+
+.navEnlace:hover {
+  color: var(--color-texto);
+}
+
+.main {
+  flex: 1;
+}
+
+.pagina {
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 8rem 2.4rem;
+}
+
+.paginaTitulo {
+  font-size: 3.6rem;
+  font-weight: 700;
+  color: var(--color-texto);
+  margin: 0 0 2.4rem;
+}
+
+.paginaTexto {
+  font-size: 1.7rem;
+  color: var(--color-texto-suave);
+  margin: 0;
+}
+
+.footer {
+  border-top: 1px solid var(--color-borde);
+  background-color: var(--color-fondo-alt);
+  padding: 3.2rem 0;
+}
+
+.footerContenedor {
+  max-width: 120rem;
+  margin: 0 auto;
+  padding: 0 2.4rem;
+  text-align: center;
+  font-size: 1.4rem;
+  color: var(--color-texto-suave);
+}
+
+.footerContenedor p {
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .headerContenedor {
+    flex-direction: column;
+    height: auto;
+    padding: 1.6rem 2.4rem;
+    gap: 1.2rem;
+  }
+
+  .nav {
+    justify-content: center;
+    gap: 1.2rem;
+  }
+}

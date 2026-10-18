@@ -1,0 +1,379 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.6rem;
+  background-color: var(--color-fondo-alt);
+}
+
+.card {
+  width: 100%;
+  max-width: 72rem;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 3.2rem;
+}
+
+.titulo {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--color-texto);
+  text-align: center;
+  margin: 0 0 2.4rem;
+}
+
+/* Progreso */
+.progresoEtiquetas {
+  display: flex;
+  justify-content: space-between;
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  margin-bottom: 0.8rem;
+}
+
+.progresoEtiquetaActivo {
+  font-weight: 600;
+  color: var(--color-primario);
+}
+
+.progresoBarra {
+  height: 0.8rem;
+  background-color: var(--color-borde);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 2.4rem;
+}
+
+.progresoRelleno {
+  height: 100%;
+  background-color: var(--color-primario);
+  border-radius: 999px;
+  transition: width var(--transition-normal);
+}
+
+/* Contenido de cada paso */
+.pasoTitulo {
+  font-size: 1.9rem;
+  font-weight: 600;
+  color: var(--color-texto);
+  margin: 0 0 0.8rem;
+}
+
+.pasoDescripcion {
+  font-size: 1.4rem;
+  color: var(--color-texto-suave);
+  margin: 0 0 2rem;
+}
+
+.pasoGrupo {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  margin-bottom: 2rem;
+}
+
+.pasoGrupoScroll {
+  max-height: 52vh;
+  overflow-y: auto;
+  padding-right: 0.8rem;
+}
+
+.seccion {
+  border-top: 1px solid var(--color-borde);
+  padding-top: 2rem;
+  margin-top: 0.4rem;
+}
+
+.seccionTitulo {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-texto);
+  margin: 0 0 1.6rem;
+}
+
+/* Paso 1: variables de entorno */
+.envLista {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  background-color: var(--color-fondo-alt);
+  border-radius: var(--radius-md);
+  padding: 1.6rem;
+  margin-bottom: 2rem;
+}
+
+.envFila {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  flex-wrap: wrap;
+}
+
+.envCode {
+  padding: 0.3rem 0.8rem;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-sm);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.2rem;
+  color: var(--color-texto);
+}
+
+/* Resultado de comprobación */
+.resultado {
+  padding: 1.4rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.6rem;
+  font-size: 1.4rem;
+}
+
+.resultadoOk {
+  background-color: var(--color-exito-fondo);
+  border: 1px solid #bbf7d0;
+  color: #047857;
+}
+
+.resultadoError {
+  background-color: var(--color-peligro-fondo);
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+}
+
+.resultadoAyuda {
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  margin: 0.8rem 0 0;
+}
+
+/* Rejillas */
+.rejilla2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.6rem;
+}
+
+.rejilla3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.6rem;
+}
+
+@media (min-width: 640px) {
+  .rejilla2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .rejilla3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.anchoCompleto {
+  grid-column: 1 / -1;
+}
+
+/* Chips de servicios y especialidades */
+.chipsEntrada {
+  display: flex;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
+}
+
+.chipsEntrada .campoControlFlex {
+  flex: 1;
+}
+
+.chipsLista {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1.2rem;
+  font-size: 1.3rem;
+  background-color: var(--color-primario-claro);
+  color: var(--color-primario);
+  border-radius: 999px;
+}
+
+.chipQuitar {
+  background: none;
+  border: none;
+  color: var(--color-primario);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+}
+
+.chipQuitar:hover {
+  color: var(--color-peligro);
+}
+
+.chipsVacio {
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  margin: 0;
+}
+
+/* Paso 4: foto */
+.zonaDrop {
+  border: 2px dashed var(--color-borde);
+  border-radius: var(--radius-lg);
+  padding: 3.2rem 2rem;
+  text-align: center;
+  margin-bottom: 1.6rem;
+}
+
+.dropIcono {
+  width: 6.4rem;
+  height: 6.4rem;
+  margin: 0 auto 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-primario-claro);
+  color: var(--color-primario);
+  border-radius: 999px;
+  font-size: 2.6rem;
+}
+
+.dropTexto {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--color-texto);
+  margin: 0;
+  cursor: pointer;
+}
+
+.dropAyuda {
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  margin: 0.6rem 0 0;
+}
+
+.fotoPreview {
+  max-width: 100%;
+  max-height: 24rem;
+  margin: 0 auto 1.6rem;
+  border-radius: var(--radius-md);
+}
+
+.fotoAcciones {
+  display: flex;
+  gap: 1.2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Paso 5: layout y temas */
+.opcionRadio {
+  position: relative;
+  cursor: pointer;
+  display: block;
+}
+
+.opcionRadio input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.opcionCuerpo {
+  padding: 1.6rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
+  height: 100%;
+}
+
+.opcionRadio:hover .opcionCuerpo {
+  background-color: var(--color-fondo-alt);
+}
+
+.opcionRadio input:checked + .opcionCuerpo {
+  border-color: var(--color-primario);
+  background-color: var(--color-primario-claro);
+  box-shadow: 0 0 0 1px var(--color-primario);
+}
+
+.opcionIcono {
+  font-size: 2.8rem;
+  color: var(--color-primario);
+  margin-bottom: 0.8rem;
+}
+
+.opcionTitulo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-texto);
+  margin: 0;
+}
+
+.opcionTexto {
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  margin: 0.4rem 0 0;
+}
+
+.temaMiniatura {
+  aspect-ratio: 16 / 10;
+  background-color: var(--color-fondo-alt);
+  border-radius: var(--radius-md);
+  margin-bottom: 1rem;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+}
+
+.temaMiniatura img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.3;
+}
+
+.temaMiniaturaNombre {
+  position: relative;
+  padding: 0.8rem 1.2rem;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #ffffff;
+  background: linear-gradient(transparent, rgb(0 0 0 / 0.65));
+  width: 100%;
+}
+
+.avisosCaja {
+  background-color: var(--color-primario-claro);
+  border: 1px solid #bfdbfe;
+  border-radius: var(--radius-md);
+  padding: 1.4rem;
+  font-size: 1.4rem;
+  color: var(--color-primario);
+}
+
+.avisosCaja a {
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.avisosCaja a:hover {
+  color: var(--color-primario-oscuro);
+}
+
+.botonFinal {
+  margin-top: 2rem;
+}

@@ -1,0 +1,287 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 2.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.subtitulo {
+  margin: 0.6rem 0 0;
+  color: var(--color-texto-suave);
+  font-size: 1.5rem;
+  max-width: 72rem;
+}
+
+/* Filtros */
+
+.filtros {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 1.2rem 1.6rem;
+  align-items: end;
+}
+
+.filtroCheck {
+  padding-bottom: 1rem;
+  white-space: nowrap;
+}
+
+.filtrosAcciones {
+  display: flex;
+  gap: 0.8rem;
+  padding-bottom: 0.2rem;
+}
+
+@media (max-width: 800px) {
+  .filtros {
+    grid-template-columns: 1fr;
+  }
+
+  .filtrosAcciones {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Tabla */
+
+.celdaFicha {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.enlaceFicha {
+  font-weight: 600;
+  color: var(--color-texto);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.enlaceFicha:hover,
+.enlaceNombre:hover {
+  color: var(--color-primario);
+}
+
+.enlaceNombre {
+  color: var(--color-texto);
+  font-weight: 500;
+}
+
+.badgeDuplicado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.8rem;
+  border-radius: 99.9rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  background: var(--color-aviso-fondo);
+  color: var(--color-aviso);
+  white-space: nowrap;
+}
+
+.acciones {
+  display: inline-flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.accionBoton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.accionBoton:hover {
+  color: var(--color-primario);
+  background: var(--color-primario-claro);
+}
+
+.accionPeligro:hover {
+  color: var(--color-peligro);
+  background: var(--color-peligro-fondo);
+}
+
+/* Ficha del paciente */
+
+.fichaRejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 960px) {
+  .fichaRejilla {
+    grid-template-columns: 2fr 1fr;
+    align-items: start;
+  }
+}
+
+.datosRejilla {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.6rem 2.4rem;
+}
+
+@media (min-width: 640px) {
+  .datosRejilla {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.datoEtiqueta {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+  margin: 0 0 0.3rem;
+}
+
+.datoValor {
+  margin: 0;
+  font-size: 1.5rem;
+  color: var(--color-texto);
+  overflow-wrap: anywhere;
+}
+
+.datoValorNotas {
+  white-space: pre-wrap;
+}
+
+.accionesLado {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.accionesLado .boton {
+  width: 100%;
+}
+
+.listaCitas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.itemCita {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  background: var(--color-fondo);
+}
+
+.itemCitaPrincipal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.itemCitaPrincipal small {
+  color: var(--color-texto-suave);
+  font-size: 1.3rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1rem;
+  border-radius: 99.9rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  background: var(--color-fondo-alt);
+  border: 1px solid var(--color-borde);
+  color: var(--color-texto-suave);
+  white-space: nowrap;
+}
+
+.badgeProgramada {
+  background: var(--color-primario-claro);
+  border-color: transparent;
+  color: var(--color-primario-oscuro);
+}
+
+.badgeCompletada {
+  background: var(--color-exito-fondo);
+  border-color: transparent;
+  color: var(--color-exito);
+}
+
+.badgeCancelada {
+  background: var(--color-fondo-alt);
+  border-color: var(--color-borde);
+  color: var(--color-texto-suave);
+}
+
+.badgeNoPresento {
+  background: var(--color-peligro-fondo);
+  border-color: transparent;
+  color: var(--color-peligro);
+}
+
+.volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--color-texto-suave);
+  margin-bottom: 0.4rem;
+}
+
+.volver:hover {
+  color: var(--color-primario);
+}
+
+.seccionTitulo {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-texto);
+  margin: 0 0 1.2rem;
+}
+
+.badgeTitulo {
+  margin-left: 1.2rem;
+  vertical-align: middle;
+}
+
+.avisoDuplicado {
+  margin-top: 1.2rem;
+}
+
+.vacio {
+  font-size: 1.4rem;
+  color: var(--color-texto-suave);
+  margin: 0;
+}

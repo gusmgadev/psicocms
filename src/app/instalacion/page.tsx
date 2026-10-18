@@ -7,10 +7,26 @@ import PasoAcceso from "@/components/instalacion/PasoAcceso";
 import PasoInfoProfesional from "@/components/instalacion/PasoInfoProfesional";
 import PasoFoto from "@/components/instalacion/PasoFoto";
 import PasoTema from "@/components/instalacion/PasoTema";
+import styles from "./instalacion.module.css";
 
 type Paso = "conexion" | "acceso" | "info" | "foto" | "tema";
 
-interface FormData {
+interface PlanInstalacion {
+  name: string;
+  description: string;
+  priceOnline: number;
+  priceInperson: number;
+  features: string[];
+}
+
+interface DisponibilidadInstalacion {
+  modality: "online" | "inperson";
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+}
+
+interface FormDataInstalacion {
   email: string;
   phone: string;
   password: string;
@@ -30,15 +46,15 @@ interface FormData {
   breakEnabledInperson: boolean;
   services: string[];
   specialties: string[];
-  plans: any[];
-  availability: any[];
+  plans: PlanInstalacion[];
+  availability: DisponibilidadInstalacion[];
   photoPath?: string;
   theme: string;
   layoutMode: "landing" | "multipage";
   installToken: string;
 }
 
-const initialFormData: FormData = {
+const initialFormData: FormDataInstalacion = {
   email: "",
   phone: "",
   password: "",
@@ -76,7 +92,7 @@ const pasos: { id: Paso; label: string }[] = [
 export default function InstalacionPage() {
   const router = useRouter();
   const [pasoActual, setPasoActual] = useState<Paso>("conexion");
-  const [formData, setFormData] = useState<FormData>(initialFormData);
+  const [formData, setFormData] = useState<FormDataInstalacion>(initialFormData);
   const [installing, setInstalling] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [setupCompleted, setSetupCompleted] = useState(false);
@@ -98,7 +114,7 @@ export default function InstalacionPage() {
     }
   };
 
-  const handlePasoComplete = (data: Partial<FormData>) => {
+  const handlePasoComplete = (data: Partial<FormDataInstalacion>) => {
     setFormData(prev => ({ ...prev, ...data }));
     const currentIndex = pasos.findIndex(p => p.id === pasoActual);
     if (currentIndex < pasos.length - 1) {
@@ -152,79 +168,67 @@ export default function InstalacionPage() {
   };
 
   if (setupCompleted) {
-    return null; // Se redirige en el useEffect
+    return null;
   }
 
   const currentIndex = pasos.findIndex(p => p.id === pasoActual);
   const progress = ((currentIndex + 1) / pasos.length) * 100;
 
   return (
-    <div className="min-h-screen bg-[var(--color-fondo-alt)] py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Progress bar */}
-        <div className="mb-8">
-          <div className="flex justify-between text-sm text-[var(--color-texto-suave)] mb-2">
-            {pasos.map((p, i) => (
-              <span key={p.id} className={i === currentIndex ? "font-medium text-[var(--color-primario)]" : ""}>
-                {p.label}
-              </span>
-            ))}
-          </div>
-          <div className="h-2 bg-[var(--color-borde)] rounded-full overflow-hidden">
-            <div
-              className="h-full bg-[var(--color-primario)] transition-all duration-300"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-        </div>
+    <div className={styles.card}>
+      <h1 className={styles.titulo}>Instalación de PsicoCMS</h1>
 
-        {/* Error message */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-[var(--radius-md)] text-red-700" role="alert">
-            {error}
-          </div>
-        )}
-
-        {/* Steps */}
-        <div className="bg-[var(--color-fondo)] rounded-[var(--radius-lg)] shadow-[var(--shadow-md)] p-8">
-          <h1 className="text-2xl font-bold text-[var(--color-texto)] mb-6 text-center">
-            Instalación de PsicoCMS
-          </h1>
-
-          {pasoActual === "conexion" && (
-            <PasoConexion onComplete={(installToken) => handlePasoComplete({ installToken })} />
-          )}
-
-          {pasoActual === "acceso" && (
-            <PasoAcceso onComplete={(data) => handlePasoComplete(data)} />
-          )}
-
-          {pasoActual === "info" && (
-            <PasoInfoProfesional onComplete={(data) => handlePasoComplete(data)} />
-          )}
-
-          {pasoActual === "foto" && (
-            <PasoFoto
-              onComplete={(photoPath) => handlePasoComplete({ photoPath })}
-              onSkip={handleSkipFoto}
-            />
-          )}
-
-          {pasoActual === "tema" && (
-            <PasoTema onComplete={(data) => handlePasoComplete(data)} />
-          )}
-        </div>
-
-        {/* Final submit button (only shown on last step) */}
-        {pasoActual === "tema" && !installing && !error && (
-          <button
-            onClick={handleFinalSubmit}
-            className="w-full mt-6 py-3 px-4 bg-[var(--color-primario)] text-white rounded-[var(--radius-md)] hover:bg-[var(--color-primario-oscuro)] transition-colors font-medium"
-          >
-            Finalizar instalación
-          </button>
-        )}
+      <div className={styles.progresoEtiquetas}>
+        {pasos.map((p, i) => (
+          <span key={p.id} className={i === currentIndex ? styles.progresoEtiquetaActivo : undefined}>
+            {p.label}
+          </span>
+        ))}
       </div>
+      <div className={styles.progresoBarra}>
+        <div className={styles.progresoRelleno} style={{ width: `${progress}%` }} />
+      </div>
+
+      {error && (
+        <div className={`${styles.resultado} ${styles.resultadoError}`} role="alert">
+          {error}
+        </div>
+      )}
+
+      {pasoActual === "conexion" && (
+        <PasoConexion
+          onVerified={(installToken) => handlePasoComplete({ installToken })}
+        />
+      )}
+
+      {pasoActual === "acceso" && (
+        <PasoAcceso onComplete={(data) => handlePasoComplete(data)} />
+      )}
+
+      {pasoActual === "info" && (
+        <PasoInfoProfesional onComplete={(data) => handlePasoComplete(data)} />
+      )}
+
+      {pasoActual === "foto" && (
+        <PasoFoto
+          onComplete={(photoPath) => handlePasoComplete({ photoPath })}
+          onSkip={handleSkipFoto}
+        />
+      )}
+
+      {pasoActual === "tema" && (
+        <>
+          <PasoTema onData={(data) => setFormData(prev => ({ ...prev, ...data }))} />
+          <button
+            type="button"
+            onClick={handleFinalSubmit}
+            disabled={installing}
+            className={`boton boton--primario boton--bloque ${styles.botonFinal}`}
+          >
+            {installing ? "Instalando..." : "Finalizar instalación"}
+          </button>
+        </>
+      )}
     </div>
   );
 }

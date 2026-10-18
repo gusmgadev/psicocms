@@ -1,0 +1,103 @@
+.envoltorio {
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.scroll {
+  overflow-x: auto;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.4rem;
+}
+
+.th {
+  padding: 1.2rem 1.6rem;
+  text-align: left;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-texto-suave);
+  background-color: var(--color-fondo);
+  border-bottom: 1px solid var(--color-borde);
+  white-space: nowrap;
+}
+
+.td {
+  padding: 1.4rem 1.6rem;
+  color: var(--color-texto);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.fila:last-child .td {
+  border-bottom: none;
+}
+
+.fila:hover .td {
+  background-color: var(--color-fondo-alt);
+}
+
+.derecha {
+  text-align: right;
+}
+
+.centro {
+  text-align: center;
+}
+
+.pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+  padding: 1.2rem 1.6rem;
+  border-top: 1px solid var(--color-borde);
+  flex-wrap: wrap;
+}
+
+.resumen {
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  margin: 0;
+}
+
+.paginacion {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.paginaBoton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  font-size: 1.2rem;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.paginaBoton:hover:not(:disabled) {
+  background-color: var(--color-fondo-alt);
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.paginaBoton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.paginaTexto {
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  padding: 0 0.6rem;
+}

@@ -1,0 +1,148 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 2.4rem;
+}
+
+.cabecera {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 2.6rem;
+  line-height: 1.2;
+}
+
+.subtitulo {
+  margin: 0.6rem 0 0;
+  color: var(--color-texto-suave);
+}
+
+/* Filtros */
+.filtros {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) auto;
+  gap: 1.2rem 1.6rem;
+  align-items: end;
+}
+
+.filtrosAcciones {
+  display: flex;
+  gap: 0.8rem;
+  padding-bottom: 0.2rem;
+}
+
+/* Tabla */
+.celdaDoble {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.celdaDoble small {
+  color: var(--color-texto-suave);
+  font-size: 1.3rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 1rem;
+  border-radius: 99.9rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  background: var(--color-fondo-alt);
+  border: 1px solid var(--color-borde);
+  color: var(--color-texto-suave);
+  white-space: nowrap;
+}
+
+.badgeProgramada {
+  background: var(--color-primario-claro);
+  border-color: transparent;
+  color: var(--color-primario-oscuro);
+}
+
+.badgeCompletada {
+  background: var(--color-exito-fondo);
+  border-color: transparent;
+  color: var(--color-exito);
+}
+
+.badgeCancelada {
+  background: var(--color-fondo-alt);
+  border-color: var(--color-borde);
+  color: var(--color-texto-suave);
+}
+
+.badgeNoPresento {
+  background: var(--color-peligro-fondo);
+  border-color: transparent;
+  color: var(--color-peligro);
+}
+
+.origen {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--color-texto-suave);
+  font-size: 1.4rem;
+}
+
+.acciones {
+  display: inline-flex;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.accionBoton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.accionBoton:hover {
+  color: var(--color-primario);
+  background: var(--color-primario-claro);
+}
+
+.accionPeligro:hover {
+  color: var(--color-peligro);
+  background: var(--color-peligro-fondo);
+}
+
+@media (max-width: 1100px) {
+  .filtros {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .filtros {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .filtrosAcciones {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 560px) {
+  .filtros {
+    grid-template-columns: 1fr;
+  }
+}

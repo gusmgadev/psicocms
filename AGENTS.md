@@ -276,7 +276,7 @@ Estas reglas son obligatorias en todas las fases y se comprueban en la auditorí
             - El panel de "Modo vacaciones" y el .panel de "Periodos de vacaciones" estarán uno al lado del otro. 
 
     - Gestionar todas las citas, podiendo añadir nuevas, editar y eliminarlas. Se podrán visualizar en una seccion con un listado paginado con diferentes filtros y tambien en el calendario.
-    - Validación de solapamientos: además del frontend, la base de datos debe impedir que dos citas activas se pisen (restricción de exclusión sobre el rango de fechas).
+    - Validación de solapamientos: además del frontend, la base de datos debe impedir que dos citas activas se pisen, **incluidas las de modalidades distintas** (restricción de exclusión sobre el rango de fechas, sin distinguir modalidad: online y presencial comparten agenda). El descanso entre sesiones solo aplica dentro de la misma modalidad; entre modalidades basta con que los rangos no se pisen (las citas contiguas se permiten).
 
 
 ### FASE 5:

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import styles from "@/app/instalacion/instalacion.module.css";
 
 interface PasoAccesoProps {
   onComplete: (data: { email: string; phone: string; password: string }) => void;
@@ -33,35 +34,29 @@ export default function PasoAcceso({ onComplete }: PasoAccesoProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div>
-        <h2 className="text-xl font-semibold text-[var(--color-texto)] mb-2">Paso 2: Datos de acceso</h2>
-        <p className="text-[var(--color-texto-suave)]">
-          Estos datos se usarán para crear tu usuario único en Supabase Auth.
-          El teléfono actúa como tercer factor de verificación al iniciar sesión.
-        </p>
-      </div>
+    <form onSubmit={handleSubmit}>
+      <h2 className={styles.pasoTitulo}>Paso 2: Datos de acceso</h2>
+      <p className={styles.pasoDescripcion}>
+        Estos datos se usarán para crear tu usuario único en Supabase Auth.
+        El teléfono actúa como tercer dato de verificación al iniciar sesión.
+      </p>
 
-      <div className="space-y-4">
+      <div className={styles.pasoGrupo}>
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-[var(--color-texto)] mb-1">
-            Email
-          </label>
+          <label htmlFor="email" className="campo-label">Email</label>
           <input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className={`w-full px-4 py-3 border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primario)] focus:border-transparent ${errors.email ? "border-red-500" : "border-[var(--color-borde)]"}`}
+            className={`campo-control ${errors.email ? "campo-control--error" : ""}`}
           />
-          {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
+          {errors.email && <span className="campo-error">{errors.email}</span>}
         </div>
 
         <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-[var(--color-texto)] mb-1">
-            Teléfono
-          </label>
+          <label htmlFor="phone" className="campo-label">Teléfono</label>
           <input
             id="phone"
             type="tel"
@@ -69,16 +64,14 @@ export default function PasoAcceso({ onComplete }: PasoAccesoProps) {
             onChange={(e) => setPhone(e.target.value)}
             required
             placeholder="600000000"
-            className={`w-full px-4 py-3 border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primario)] focus:border-transparent ${errors.phone ? "border-red-500" : "border-[var(--color-borde)]"}`}
+            className={`campo-control ${errors.phone ? "campo-control--error" : ""}`}
           />
-          {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
+          {errors.phone && <span className="campo-error">{errors.phone}</span>}
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-[var(--color-texto)] mb-1">
-            Contraseña
-          </label>
-          <div className="relative">
+          <label htmlFor="password" className="campo-label">Contraseña</label>
+          <div style={{ position: "relative" }}>
             <input
               id="password"
               type={showPassword ? "text" : "password"}
@@ -86,41 +79,48 @@ export default function PasoAcceso({ onComplete }: PasoAccesoProps) {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={12}
-              className={`w-full px-4 py-3 border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primario)] focus:border-transparent pr-12 ${errors.password ? "border-red-500" : "border-[var(--color-borde)]"}`}
+              className={`campo-control ${errors.password ? "campo-control--error" : ""}`}
+              style={{ paddingRight: "4.4rem" }}
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-texto-suave)] hover:text-[var(--color-texto)]"
+              style={{
+                position: "absolute",
+                right: "1rem",
+                top: "50%",
+                transform: "translateY(-50%)",
+                background: "none",
+                border: "none",
+                color: "var(--color-texto-suave)",
+                cursor: "pointer",
+                fontSize: "1.6rem",
+                padding: "0.4rem",
+              }}
               aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
             >
-              {showPassword ? "👁️‍🗨️" : "👁️"}
+              <i className={`fa ${showPassword ? "fa-eye-slash" : "fa-eye"}`} aria-hidden="true"></i>
             </button>
           </div>
-          {errors.password && <p className="text-sm text-red-600 mt-1">{errors.password}</p>}
-          <p className="text-xs text-[var(--color-texto-suave)] mt-1">Mínimo 12 caracteres</p>
+          {errors.password && <span className="campo-error">{errors.password}</span>}
+          <span className="campo-hint">Mínimo 12 caracteres</span>
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="block text-sm font-medium text-[var(--color-texto)] mb-1">
-            Confirmar contraseña
-          </label>
+          <label htmlFor="confirmPassword" className="campo-label">Confirmar contraseña</label>
           <input
             id="confirmPassword"
             type={showPassword ? "text" : "password"}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
-            className={`w-full px-4 py-3 border rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primario)] focus:border-transparent ${errors.confirmPassword ? "border-red-500" : "border-[var(--color-borde)]"}`}
+            className={`campo-control ${errors.confirmPassword ? "campo-control--error" : ""}`}
           />
-          {errors.confirmPassword && <p className="text-sm text-red-600 mt-1">{errors.confirmPassword}</p>}
+          {errors.confirmPassword && <span className="campo-error">{errors.confirmPassword}</span>}
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="w-full py-3 px-4 bg-[var(--color-primario)] text-white rounded-[var(--radius-md)] hover:bg-[var(--color-primario-oscuro)] transition-colors font-medium"
-      >
+      <button type="submit" className="boton boton--primario boton--bloque">
         Continuar
       </button>
     </form>

@@ -3,6 +3,7 @@
 
 'use server';
 
+import type { User } from '@supabase/supabase-js';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createAdminClient } from '@/lib/supabase/admin';
 import { checkRateLimit } from '@/services/rate-limit';
@@ -76,7 +77,7 @@ export async function logoutAction(): Promise<{ ok: boolean; redirect?: string }
   return { ok: true, redirect: '/acceso-psicologa' };
 }
 
-export async function getSessionAction(): Promise<{ user: any | null }> {
+export async function getSessionAction(): Promise<{ user: User | null }> {
   const supabase = await createServerClient();
   const { data: { user } } = await supabase.auth.getUser();
   return { user };

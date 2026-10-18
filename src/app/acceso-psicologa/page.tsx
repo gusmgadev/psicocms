@@ -3,11 +3,13 @@
 import { useState, FormEvent } from "react";
 import { loginAction } from "@/actions/auth";
 import { useRouter } from "next/navigation";
+import styles from "./acceso.module.css";
 
 export default function AccesoPage() {
   const router = useRouter();
   const [showRecover, setShowRecover] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [recoverMsg, setRecoverMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [remember, setRemember] = useState(false);
 
@@ -17,15 +19,15 @@ export default function AccesoPage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-    formData.set('remember', String(remember));
+    formData.set("remember", String(remember));
 
     const result = await loginAction(formData);
 
     if (result.ok) {
-      router.push('/panel-psicologa');
+      router.push("/panel-psicologa");
       router.refresh();
     } else {
-      setError(result.error || 'Error al iniciar sesión');
+      setError(result.error || "Error al iniciar sesión");
       setLoading(false);
     }
   };
@@ -33,30 +35,43 @@ export default function AccesoPage() {
   const handleRecover = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    const res = await fetch('/api/auth/recover', {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await res.json();
-    if (data.ok) {
-      setShowRecover(false);
-      alert('Si el email existe, recibirás instrucciones para restablecer tu contraseña.');
+    try {
+      const res = await fetch("/api/auth/recover", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setShowRecover(false);
+        setRecoverMsg("Si el email existe, recibirás instrucciones para restablecer tu contraseña.");
+      } else {
+        setRecoverMsg(null);
+        setError(data.error || "Error al enviar el enlace");
+      }
+    } catch {
+      setError("Error de conexión");
     }
   };
 
   return (
-    <div className="space-y-6">
+    <div>
+      {recoverMsg && !showRecover && (
+        <div className="alerta alerta--exito" style={{ marginBottom: "1.6rem" }} role="status">
+          {recoverMsg}
+        </div>
+      )}
+
       {!showRecover ? (
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className={styles.formulario}>
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-[var(--radius-md)] text-red-700 text-sm" role="alert">
+            <div className="alerta alerta--error" role="alert">
               {error}
             </div>
           )}
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-[var(--color-texto)] mb-1">
-              Email <span className="text-red-500">*</span>
+            <label htmlFor="email" className="campo-label">
+              Email <span style={{ color: "var(--color-peligro)" }}>*</span>
             </label>
             <input
               id="email"
@@ -64,13 +79,13 @@ export default function AccesoPage() {
               type="email"
               required
               autoComplete="email"
-              className="w-full px-4 py-3 border border-[var(--color-borde)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primario)] focus:border-transparent"
+              className="campo-control"
             />
           </div>
 
           <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-[var(--color-texto)] mb-1">
-              Teléfono <span className="text-red-500">*</span>
+            <label htmlFor="phone" className="campo-label">
+              Teléfono <span style={{ color: "var(--color-peligro)" }}>*</span>
             </label>
             <input
               id="phone"
@@ -79,13 +94,13 @@ export default function AccesoPage() {
               required
               autoComplete="tel"
               placeholder="600000000"
-              className="w-full px-4 py-3 border border-[var(--color-borde)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primario)] focus:border-transparent"
+              className="campo-control"
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-[var(--color-texto)] mb-1">
-              Contraseña <span className="text-red-500">*</span>
+            <label htmlFor="password" className="campo-label">
+              Contraseña <span style={{ color: "var(--color-peligro)" }}>*</span>
             </label>
             <input
               id="password"
@@ -94,56 +109,53 @@ export default function AccesoPage() {
               required
               minLength={12}
               autoComplete="current-password"
-              className="w-full px-4 py-3 border border-[var(--color-borde)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primario)] focus:border-transparent"
+              className="campo-control"
             />
-            <p className="text-xs text-[var(--color-texto-suave)] mt-1">Mínimo 12 caracteres</p>
+            <span className="campo-hint">Mínimo 12 caracteres</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <label className="fila-check">
             <input
               id="remember"
               name="remember"
               type="checkbox"
               checked={remember}
               onChange={(e) => setRemember(e.target.checked)}
-              className="w-4 h-4 text-[var(--color-primario)] border-[var(--color-borde)] rounded focus:ring-[var(--color-primario)]"
             />
-            <label htmlFor="remember" className="text-sm text-[var(--color-texto-suave)]">
-              Mantener sesión iniciada
-            </label>
-          </div>
+            Mantener sesión iniciada
+          </label>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-[var(--color-primario)] text-white rounded-[var(--radius-md)] hover:bg-[var(--color-primario-oscuro)] transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="boton boton--primario boton--bloque"
           >
-            {loading ? 'Iniciando sesión...' : 'Iniciar sesión'}
+            {loading ? "Iniciando sesión..." : "Iniciar sesión"}
           </button>
 
-          <p className="text-center text-sm text-[var(--color-texto-suave)]">
-            ¿Olvidaste tu contraseña?{' '}
+          <p className={styles.enlaceCentro}>
+            ¿Olvidaste tu contraseña?{" "}
             <button
               type="button"
-              onClick={() => setShowRecover(true)}
-              className="text-[var(--color-primario)] hover:underline"
+              onClick={() => { setShowRecover(true); setError(null); setRecoverMsg(null); }}
+              className={styles.enlaceBoton}
             >
               Recuperar
             </button>
           </p>
         </form>
       ) : (
-        <form onSubmit={handleRecover} className="space-y-4">
-          <div className="text-center mb-4">
-            <h3 className="text-lg font-medium text-[var(--color-texto)]">Recuperar contraseña</h3>
-            <p className="text-[var(--color-texto-suave)] text-sm mt-1">
+        <form onSubmit={handleRecover} className={styles.formulario}>
+          <div>
+            <h2 className={styles.recuperarTitulo}>Recuperar contraseña</h2>
+            <p className={styles.recuperarTexto}>
               Introduce tu email y te enviaremos un enlace para restablecerla.
             </p>
           </div>
 
           <div>
-            <label htmlFor="recoverEmail" className="block text-sm font-medium text-[var(--color-texto)] mb-1">
-              Email <span className="text-red-500">*</span>
+            <label htmlFor="recoverEmail" className="campo-label">
+              Email <span style={{ color: "var(--color-peligro)" }}>*</span>
             </label>
             <input
               id="recoverEmail"
@@ -151,22 +163,19 @@ export default function AccesoPage() {
               type="email"
               required
               autoComplete="email"
-              className="w-full px-4 py-3 border border-[var(--color-borde)] rounded-[var(--radius-md)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primario)] focus:border-transparent"
+              className="campo-control"
             />
           </div>
 
-          <button
-            type="submit"
-            className="w-full py-3 px-4 bg-[var(--color-primario)] text-white rounded-[var(--radius-md)] hover:bg-[var(--color-primario-oscuro)] transition-colors font-medium"
-          >
+          <button type="submit" className="boton boton--primario boton--bloque">
             Enviar enlace
           </button>
 
-          <p className="text-center text-sm text-[var(--color-texto-suave)]">
+          <p className={styles.enlaceCentro}>
             <button
               type="button"
-              onClick={() => setShowRecover(false)}
-              className="text-[var(--color-primario)] hover:underline"
+              onClick={() => { setShowRecover(false); setError(null); }}
+              className={styles.enlaceBoton}
             >
               Volver al login
             </button>
