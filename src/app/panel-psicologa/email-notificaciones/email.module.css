@@ -1,0 +1,131 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 2.6rem;
+  line-height: 1.2;
+}
+
+.subtitulo {
+  margin: 0.6rem 0 0;
+  color: var(--color-texto-suave);
+  max-width: 70rem;
+}
+
+.rejilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 1.6rem;
+  align-items: start;
+}
+
+.seccionTitulo {
+  margin: 0 0 1.6rem;
+  font-size: 1.8rem;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.interruptores {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  padding: 1.4rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+}
+
+.interruptorFila {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.interruptorFila input {
+  margin-top: 0.4rem;
+}
+
+.interruptorTexto {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  font-weight: 400;
+}
+
+.avanzado {
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.4rem;
+}
+
+.avanzado summary {
+  cursor: pointer;
+  font-size: 1.4rem;
+  color: var(--color-texto-suave);
+}
+
+.avanzadoCampos {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.2rem;
+  margin-top: 1.4rem;
+}
+
+.botones {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.tutorial {
+  margin: 0;
+  padding-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  font-size: 1.4rem;
+  line-height: 1.6;
+  color: var(--color-texto);
+}
+
+.tutorial a {
+  color: var(--color-primario);
+}
+
+.nota {
+  margin: 1.6rem 0 0;
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  background-color: var(--color-fondo-alt);
+  border-radius: var(--radius-md);
+  padding: 1.2rem 1.4rem;
+}
+
+@media (max-width: 900px) {
+  .rejilla {
+    grid-template-columns: 1fr;
+  }
+
+  .avanzadoCampos {
+    grid-template-columns: 1fr;
+  }
+}

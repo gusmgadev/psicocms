@@ -45,7 +45,6 @@ function aEvento(cita: CitaFila, timezone: string): EventoCalendarJs {
     to: fechaLocalDePartes(fin.fecha, fin.hora),
     description: `${cita.pacienteNumero} · ${modalidad}`,
     color,
-    locked: finalizada,
   };
 }
 

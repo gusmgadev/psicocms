@@ -1,0 +1,135 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.6rem;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 2.6rem;
+  line-height: 1.2;
+}
+
+.subtitulo {
+  margin: 0.6rem 0 0;
+  color: var(--color-texto-suave);
+  max-width: 70rem;
+}
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  gap: 1.6rem;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.fila:first-child {
+  padding-top: 0;
+}
+
+.fila:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.filaIcono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--color-primario-claro);
+  color: var(--color-primario);
+  font-size: 1.7rem;
+}
+
+.filaTextos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.filaNombre {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+.filaDescripcion {
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+}
+
+.filaEstado {
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+  min-width: 9rem;
+  text-align: right;
+}
+
+.interruptor {
+  position: relative;
+  width: 4.6rem;
+  height: 2.6rem;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background-color: var(--color-borde);
+  cursor: pointer;
+  transition: background-color var(--transition-normal);
+}
+
+.interruptor:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.interruptorActivo {
+  background-color: var(--color-primario);
+}
+
+.interruptorPunto {
+  position: absolute;
+  top: 0.3rem;
+  left: 0.3rem;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background-color: #ffffff;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-normal);
+}
+
+.interruptorActivo .interruptorPunto {
+  transform: translateX(2rem);
+}
+
+@media (max-width: 640px) {
+  .fila {
+    flex-wrap: wrap;
+  }
+
+  .filaEstado {
+    min-width: 0;
+    margin-left: auto;
+  }
+}

@@ -1,11 +1,14 @@
-﻿import { PaginaSeccion } from "../PaginaSeccion";
+﻿import { exigirSesion } from "@/lib/auth-guard";
+import { obtenerPlantillaProteccion, obtenerDatosResponsable } from "@/services/proteccion-datos";
+import ProteccionDatosPanel from "./ProteccionDatosPanel";
 
-export default function Pagina() {
-  return (
-    <PaginaSeccion
-      titulo="Protección de datos"
-      descripcion="Plantilla de política de privacidad y consentimientos."
-      icono="fa-shield-halved"
-    />
-  );
+export default async function PaginaProteccionDatos() {
+  await exigirSesion();
+
+  const [plantilla, responsable] = await Promise.all([
+    obtenerPlantillaProteccion(),
+    obtenerDatosResponsable(),
+  ]);
+
+  return <ProteccionDatosPanel plantilla={plantilla} responsable={responsable} />;
 }

@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { ToastProvider } from "@/components/ui";
+import type { PreferenciasPanel } from "@/lib/panel-tema";
+import TemaPanelModal from "./TemaPanelModal";
 import styles from "./panel.module.css";
 
 type ItemHijo = { label: string; href: string };
@@ -30,6 +33,7 @@ const menuItems: MenuItem[] = [
       { label: "Frases públicas", href: "/panel-psicologa/frases" },
       { label: "Redes sociales", href: "/panel-psicologa/redes-sociales" },
       { label: "Imágenes", href: "/panel-psicologa/imagenes" },
+      { label: "Secciones de la web", href: "/panel-psicologa/secciones" },
       { label: "Temas visuales", href: "/panel-psicologa/temas" },
     ],
   },
@@ -40,6 +44,7 @@ const menuItems: MenuItem[] = [
       { label: "Información pública", href: "/panel-psicologa/informacion-publica" },
       { label: "Email y notificaciones", href: "/panel-psicologa/email-notificaciones" },
       { label: "Protección de datos", href: "/panel-psicologa/proteccion-datos" },
+      { label: "Política de privacidad", href: "/panel-psicologa/politica-privacidad" },
       { label: "Perfil privado", href: "/panel-psicologa/perfil" },
       { label: "Preferencias del panel", href: "/panel-psicologa/preferencias" },
     ],
@@ -58,14 +63,31 @@ function esExterno(item: MenuItem): item is { label: string; href: string; icon:
 
 interface PanelShellProps {
   children: React.ReactNode;
-  usuario: { nombre: string | null; email: string | null };
+  usuario: { nombre: string | null; email: string | null; avatarUrl: string | null };
+  preferencias: PreferenciasPanel;
 }
 
-export default function PanelShell({ children, usuario }: PanelShellProps) {
+export default function PanelShell({ children, usuario, preferencias }: PanelShellProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [menusAbiertos, setMenusAbiertos] = useState<string[]>([]);
   const [sidebarAbierta, setSidebarAbierta] = useState(false);
+  const [tema, setTema] = useState<PreferenciasPanel>(preferencias);
+  const [modalTemaAbierto, setModalTemaAbierto] = useState(false);
+  const [menuUsuarioAbierto, setMenuUsuarioAbierto] = useState(false);
+  const [busqueda, setBusqueda] = useState("");
+
+  useEffect(() => {
+    if (!menuUsuarioAbierto) return;
+    const cerrar = () => setMenuUsuarioAbierto(false);
+    document.addEventListener("click", cerrar);
+    return () => document.removeEventListener("click", cerrar);
+  }, [menuUsuarioAbierto]);
+
+  useEffect(() => {
+    setMenuUsuarioAbierto(false);
+    setSidebarAbierta(false);
+  }, [pathname]);
 
   const alternarMenu = (label: string) => {
     setMenusAbiertos((prev) =>
@@ -81,8 +103,26 @@ export default function PanelShell({ children, usuario }: PanelShellProps) {
     router.refresh();
   };
 
+  const buscar = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const q = busqueda.trim();
+    if (!q) return;
+    router.push(`/panel-psicologa/buscar?q=${encodeURIComponent(q)}`);
+  };
+
+  const iniciales = (usuario.nombre || usuario.email || "?")
+    .split(/\s+/)
+    .map((parte) => parte.charAt(0))
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
   return (
-    <div className={styles.shell}>
+    <div
+      className={styles.shell}
+      data-modo-panel={tema.modo}
+      style={{ "--color-primario": tema.colorPrimario } as CSSProperties}
+    >
       {sidebarAbierta && (
         <button
           type="button"
@@ -175,15 +215,20 @@ export default function PanelShell({ children, usuario }: PanelShellProps) {
         </nav>
 
         <div className={styles.sidebarFooter}>
-          <div className={styles.usuarioFila}>
-            <div className={styles.usuarioAvatar}>
-              <i className="fa fa-user" aria-hidden="true"></i>
-            </div>
-            <div className={styles.usuarioInfo}>
-              <p className={styles.usuarioNombre}>{usuario.nombre || "Psicóloga"}</p>
-              <p className={styles.usuarioEmail}>{usuario.email || "—"}</p>
-            </div>
-          </div>
+          <Link href="/panel-psicologa/perfil" className={`${styles.usuarioFila} ${styles.usuarioEnlace}`}>
+            <span className={styles.usuarioAvatar}>
+              {usuario.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img className={styles.avatarImg} src={usuario.avatarUrl} alt="" />
+              ) : (
+                <i className="fa fa-user" aria-hidden="true"></i>
+              )}
+            </span>
+            <span className={styles.usuarioInfo}>
+              <span className={styles.usuarioNombre}>{usuario.nombre || "Psicóloga"}</span>
+              <span className={styles.usuarioEmail}>{usuario.email || "—"}</span>
+            </span>
+          </Link>
         </div>
       </aside>
 
@@ -202,22 +247,94 @@ export default function PanelShell({ children, usuario }: PanelShellProps) {
             <p className={styles.headerTitulo}>Panel de administración</p>
           </div>
           <div className={styles.headerAcciones}>
+            <form onSubmit={buscar} className={styles.buscador} role="search">
+              <i className="fa fa-magnifying-glass" aria-hidden="true"></i>
+              <input
+                type="search"
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                placeholder="Buscar…"
+                aria-label="Buscar en el panel"
+                className={styles.buscadorInput}
+              />
+            </form>
+            <button
+              type="button"
+              onClick={() => setModalTemaAbierto(true)}
+              className={styles.iconoBoton}
+              title="Cambiar tema del panel"
+            >
+              <i
+                className={`fa ${tema.modo === "dark" ? "fa-sun" : "fa-moon"}`}
+                aria-hidden="true"
+              ></i>
+              <span className="sr-only">Cambiar tema del panel</span>
+            </button>
             <Link href="/panel-psicologa/ayuda" className={styles.iconoBoton} title="Ayuda">
               <i className="fa fa-circle-question" aria-hidden="true"></i>
               <span className="sr-only">Ayuda</span>
             </Link>
-            <button
-              type="button"
-              onClick={cerrarSesion}
-              className={styles.logoutBoton}
-              title="Cerrar sesión"
-            >
-              <i className="fa fa-right-from-bracket" aria-hidden="true"></i>
-              <span>Cerrar sesión</span>
-            </button>
+            <div className={styles.usuarioContenedor}>
+              <button
+                type="button"
+                className={styles.usuarioBoton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMenuUsuarioAbierto((prev) => !prev);
+                }}
+                aria-expanded={menuUsuarioAbierto}
+                aria-haspopup="menu"
+              >
+                <span className={styles.usuarioAvatarCabecera}>
+                  {usuario.avatarUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img className={styles.avatarImg} src={usuario.avatarUrl} alt="" />
+                  ) : (
+                    <span aria-hidden="true">{iniciales}</span>
+                  )}
+                </span>
+                <span className={styles.usuarioBotonNombre}>{usuario.nombre || "Mi perfil"}</span>
+                <i className={`fa fa-chevron-down ${styles.usuarioBotonFlecha}`} aria-hidden="true"></i>
+              </button>
+
+              {menuUsuarioAbierto && (
+                <div className={styles.usuarioMenu} role="menu">
+                  <div className={styles.usuarioMenuCabecera}>
+                    <p className={styles.usuarioMenuNombre}>{usuario.nombre || "Psicóloga"}</p>
+                    <p className={styles.usuarioMenuEmail}>{usuario.email || "—"}</p>
+                  </div>
+                  <Link href="/panel-psicologa/perfil" className={styles.usuarioMenuItem} role="menuitem">
+                    <i className="fa fa-id-badge" aria-hidden="true"></i>
+                    Perfil privado
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={cerrarSesion}
+                    className={`${styles.usuarioMenuItem} ${styles.usuarioMenuItemPeligro}`}
+                    role="menuitem"
+                  >
+                    <i className="fa fa-right-from-bracket" aria-hidden="true"></i>
+                    Cerrar sesión
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         </header>
-        <main className={styles.contenido}>{children}</main>
+        <ToastProvider>
+          <main className={styles.contenido}>{children}</main>
+          {modalTemaAbierto && (
+            <TemaPanelModal
+              abierto
+              onCerrar={() => setModalTemaAbierto(false)}
+              preferencias={tema}
+              onGuardado={(nuevas) => {
+                setTema(nuevas);
+                setModalTemaAbierto(false);
+              }}
+            />
+          )}
+        </ToastProvider>
       </div>
     </div>
   );

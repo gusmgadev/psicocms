@@ -1,11 +1,9 @@
-﻿import { PaginaSeccion } from "../PaginaSeccion";
+﻿import { exigirSesion } from "@/lib/auth-guard";
+import { obtenerConfigTema } from "@/services/temas";
+import TemasPanel from "./TemasPanel";
 
-export default function Pagina() {
-  return (
-    <PaginaSeccion
-      titulo="Temas visuales"
-      descripcion="Elige el aspecto de tu web entre las plantillas disponibles."
-      icono="fa-palette"
-    />
-  );
+export default async function PaginaTemas() {
+  await exigirSesion();
+  const config = await obtenerConfigTema();
+  return <TemasPanel inicial={config} />;
 }

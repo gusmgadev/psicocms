@@ -9,15 +9,22 @@ export default async function PaginaHistoriaPaciente({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ cita?: string }>;
+  searchParams: Promise<{ cita?: string; nueva?: string }>;
 }) {
   await exigirSesion();
   const { id } = await params;
-  const { cita } = await searchParams;
+  const { cita, nueva } = await searchParams;
 
   const [historia, timezone] = await Promise.all([listarHistoriaPaciente(id), obtenerTimezone()]);
 
   if (!historia) notFound();
 
-  return <HistoriaPaciente inicial={historia} timezone={timezone} citaPreseleccionada={cita ?? null} />;
+  return (
+    <HistoriaPaciente
+      inicial={historia}
+      timezone={timezone}
+      citaPreseleccionada={cita ?? null}
+      abrirNueva={nueva === "1"}
+    />
+  );
 }

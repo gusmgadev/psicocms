@@ -12,6 +12,11 @@
   font-weight: 500;
   color: var(--color-texto-suave);
   margin-bottom: 0.4rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .volver:hover {

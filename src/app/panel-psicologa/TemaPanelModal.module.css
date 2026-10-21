@@ -1,0 +1,166 @@
+.bloque {
+  margin-bottom: 2rem;
+}
+
+.bloque:last-child {
+  margin-bottom: 0;
+}
+
+.tituloBloque {
+  margin: 0 0 1rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+/* ===== Modo claro/oscuro ===== */
+
+.rejillaModos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.modoBoton {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  text-align: left;
+  padding: 1.4rem;
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--color-texto);
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.modoBoton:hover:not(:disabled) {
+  background-color: var(--color-fondo-alt);
+}
+
+.modoBoton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.modoBotonActivo {
+  border-color: var(--color-primario);
+  background-color: var(--color-primario-claro);
+}
+
+.modoIcono {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: var(--color-primario-claro);
+  color: var(--color-primario);
+  font-size: 1.6rem;
+}
+
+.modoBotonActivo .modoIcono {
+  background-color: var(--color-primario);
+  color: #ffffff;
+}
+
+.modoTextos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.modoNombre {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.modoDescripcion {
+  font-size: 1.3rem;
+  line-height: 1.4;
+  color: var(--color-texto-suave);
+}
+
+.etiquetaActivo {
+  position: absolute;
+  top: 0.8rem;
+  right: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-primario);
+}
+
+/* ===== Colores principales ===== */
+
+.rejillaColores {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.2rem;
+}
+
+.colorBoton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 0.6rem;
+  background-color: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.colorBoton:hover:not(:disabled) {
+  background-color: var(--color-fondo-alt);
+}
+
+.colorBoton:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.colorBotonActivo {
+  border-color: var(--color-primario);
+  background-color: var(--color-primario-claro);
+}
+
+.colorMuestra {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 1.4rem;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1);
+}
+
+.colorNombre {
+  font-size: 1.2rem;
+  color: var(--color-texto);
+}
+
+.nota {
+  margin: 1.2rem 0 0;
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+}
+
+@media (max-width: 640px) {
+  .rejillaModos {
+    grid-template-columns: 1fr;
+  }
+
+  .rejillaColores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

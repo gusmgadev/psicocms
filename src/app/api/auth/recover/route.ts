@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     const supabase = await createServerClient();
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    const siteUrl = process.env.NEXT_PUBLIC_URL?.trim().replace(/\/+$/, "") || 'http://localhost:3000';
 
     // Enviar email de recuperación - siempre devuelve éxito aunque el email no exista
     const { error } = await supabase.auth.resetPasswordForEmail(email, {

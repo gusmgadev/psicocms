@@ -11,7 +11,8 @@ description: Lógica de disponibilidad, citas y reservas de PsicoCMS (online y p
 - Dos modalidades, **online** y **presencial**, cada una con su duración de sesión y su descanso entre sesiones.
 - Disponibilidad semanal por modalidad: día de la semana + hora de inicio (`availability_slots`). La psicóloga marca las horas con clic en una semana de 7 días.
 - Vacaciones: un interruptor general (modo vacaciones) y periodos concretos (`vacation_periods`). El modo vacaciones pausa las reservas nuevas pero **no cancela** las citas ya existentes.
-- Una cita (`appointments`) enlaza con un paciente, tiene modalidad, inicio, fin, estado, motivo y origen (web o manual).
+- Una cita (`appointments`) enlaza con un paciente, tiene modalidad, inicio, fin, motivo, origen (web o manual) y estado: pendiente, realizada, cancelada o no asistió. Una reserva nueva empieza en pendiente; cancelada y no asistió liberan el hueco.
+- La cita es lo **agendado**; la nota de sesión (`clinical_records`) es lo **clínico** y se escribe después. Son cosas distintas.
 
 ## Reglas que no se rompen
 1. **Un solo hueco, una sola cita.** La base de datos debe impedir que dos citas activas se solapen (restricción de exclusión sobre un rango de tiempo con `btree_gist`). El frontend solo avisa; la garantía es la base de datos.
@@ -22,6 +23,7 @@ description: Lógica de disponibilidad, citas y reservas de PsicoCMS (online y p
 6. **Respuesta pública genérica:** nunca dice si el teléfono ya existía ni devuelve datos del paciente.
 7. **Acceso:** `create_public_booking` solo la ejecuta `service_role` y solo desde la Server Action de reserva (ver skill `psicocms-seguridad`).
 8. **Fechas y horas:** sigue la skill `local-dates` para zonas horarias y cambios de hora.
+9. **Cita y nota de sesión:** la nota pertenece a un paciente (obligatorio) y se enlaza a una cita solo de forma opcional (`appointment_id`, `ON DELETE SET NULL`). Borrar, mover o cancelar una cita **nunca** borra ni cambia sus notas. La nota guarda su propia `session_date`. Una cita puede tener varias notas y puede haber notas sin cita. Las notas no se muestran en el calendario, el listado de citas ni los emails, y el motivo de la cita no se copia automáticamente a la nota.
 
 ## Casos límite que debes probar o dejar listos para probar
 - Última franja del día y primera de la mañana.
@@ -32,6 +34,8 @@ description: Lógica de disponibilidad, citas y reservas de PsicoCMS (online y p
 - Cita con descanso: el siguiente hueco empieza después del descanso, no pegado.
 - Editar una cita en el panel sin romper la regla de solapamiento.
 - Reserva con el mismo teléfono y distinto nombre.
+- Cancelar o borrar una cita que ya tiene nota: la nota se conserva con el enlace vacío.
+- Mover una cita con nota: la nota mantiene su fecha de sesión.
 
 ## Al implementar
 - Cambios de esquema: migración nueva, RLS y permisos de funciones (skill `psicocms-seguridad`).

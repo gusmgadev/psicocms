@@ -22,7 +22,7 @@
 - [x] Comprobar que `.opencode/commands/` está en la raíz y que los comandos aparecen al escribir `/` en OpenCode
 - [x] Estructura de rutas y carpetas (public, instalacion, acceso-psicologa, panel-psicologa, lib, services, actions, themes, components/ui)
 - [x] Clientes de Supabase (navegador, servidor, admin server-only)
-- [x] Middleware (o proxy.ts) que protege `/panel-psicologa/*`
+- [x] Middleware (o proxy.ts) que protege `/panel-psicologa/*` — *con Next 16.4.1 el nombre oficial es `proxy.ts`: renombrar `middleware.ts` pendiente*
 - [x] `.env.local` y `.env.example` (incluye `INSTALL_TOKEN`), `.gitignore` correcto
 - [x] Páginas mínimas de prueba, `npm run build`, `git init` y primer commit
 - [x] Actualizar MAP.md
@@ -30,7 +30,7 @@
 ## FASE 0B: Supabase y base de datos
 - [x] Guía para crear el proyecto Supabase, desactivar registros públicos y obtener URL, anon key y service_role key
 - [x] Migración 001: tablas
-- [x] Migración 002: restricciones (teléfono solo dígitos y no único, número de ficha correlativo, no solapamiento de citas con btree_gist)
+- [x] Migración 002: restricciones (teléfono solo dígitos y no único, número de ficha correlativo, no solapamiento de citas con btree_gist) — *el `appointment_id ON DELETE SET NULL` de las notas clínicas quedó en la migración 010, no en la 002*
 - [x] Migración 003: función `is_owner()` y RLS con políticas (anon solo contenido público; authenticated solo con `is_owner()`)
 - [x] Migración 004: funciones RPC (`get_available_slots`, `create_public_booking`, `is_setup_completed`, `verify_login_phone`)
 - [x] Migración 004b: revocar `EXECUTE` a `PUBLIC` y `anon` en todas las funciones (solo `create_public_booking` y `check_rate_limit` para `service_role`)
@@ -50,8 +50,8 @@
 - [x] Corregir textos con errores y dejar un único `h1` por página (sin duplicar cabecera de escritorio y móvil)
 - [x] Quitar textos de relleno fijos con nombre propio (serán datos configurables)
 - [x] Font Awesome: conservar solo `all.min.css` y `webfonts` (WOFF2); eliminar el resto
-- [x] Convertir fuentes propias a WOFF2, solo los pesos usados, con `next/font/local` (TTF copiados, pendiente conversión WOFF2 para producción)
-- [x] Optimizar imágenes (por ejemplo `psicologa.png` a WebP) y listar las imágenes de stock en MAP.md para verificar licencias
+- [ ] Convertir fuentes propias a WOFF2, solo los pesos usados, con `next/font/local` — *siguen en TTF en `src/lib/fonts.ts`; también sobran pesos no usados en `public/fonts/`*
+- [ ] Optimizar imágenes (por ejemplo `psicologa.png` a WebP) — *el listado de imágenes en MAP.md está hecho; falta la optimización (`psicologa.png` ~987 KB, ningún `.webp` en el proyecto)*
 - [x] Colocar recursos limpios en `public/` y `src/themes/base/`
 - [x] Extraer tokens del panel desde `dashboard-design` (colores, tipografía, radios, sombras, espaciados) a variables CSS y anotarlos en MAP.md
 - [x] Verificar que el tema base se ve igual y que `npm run build` compila
@@ -86,8 +86,8 @@
 - [x] Modo vacaciones (interruptor) y periodos de vacaciones (añadir/borrar)
 - [x] Aviso al cambiar duración o descanso (reconfigurar huecos)
 - [x] CRUD de citas: listado paginado con filtros, añadir, editar, eliminar
-- [x] Validación de solapamientos (frontend + base de datos)
-- [x] Solapes bloqueados también entre modalidades online y presencial, en las 4 capas (migración 009 + `hayConflicto`)
+- [x] Validación de solapamientos (frontend + base de datos; también entre modalidades: migración 009 + `hayConflicto`)
+- [x] Estados de la cita (pendiente, realizada, cancelada, no asistió) con cambio desde el listado y el calendario; cancelada o no asistió libera el hueco
 
 ## FASE 5: Calendario de citas
 - [x] Verificar compatibilidad de CalendarJS con React/Next (o proponer alternativa)
@@ -107,81 +107,87 @@
 - [x] Buscador de pacientes (por nombre, teléfono o número de ficha) al crear una cita; crear paciente + cita a la vez si no existe
 
 ## FASE 8: Historias clínicas
-- [x] Historia por paciente (notas por sesión)
+- [x] Historia por paciente con notas de sesión (fecha propia, contenido, fechas de creación y edición)
+- [x] Enlace opcional nota-cita: botón "Escribir nota de sesión" en citas realizadas y "Nueva nota" en la ficha del paciente (con opción de elegir una cita pasada sin nota)
+- [x] Comprobar que cancelar o borrar una cita conserva sus notas y que las notas no aparecen en calendario, listados, emails ni búsqueda pública
 - [x] Subida de fotos y PDFs al bucket privado con validación de tipo y tamaño en servidor, nombres UUID y vista con URLs firmadas de corta duración
 - [x] Sanear con DOMPurify el contenido de las historias al mostrarlo
-
-## FASE 8B: Enlace citas ↔ historias clínicas
-- [x] Migración nueva: columna `clinical_records.appointment_id` (opcional, FK a `appointments` con `ON DELETE SET NULL`, índice)
-- [x] Servicios/actions de historias: aceptar `appointmentId` opcional al crear/editar nota; validar en servidor que la cita pertenece al mismo paciente y que no tenga ya otra nota enlazada
-- [x] En el listado/calendario de citas: en una cita completada, botón "Escribir nota de sesión" que abra la historia del paciente con la cita pre-enlazada
-- [x] En la historia del paciente: "Nueva nota" permite elegir una cita pasada sin nota (o sin cita) y prellena `session_date` con la fecha de la cita; si luego se mueve/edita la cita, la fecha de la nota no cambia
-- [x] Cada nota muestra su fecha y, si la tiene, la cita de origen (fecha, hora, modalidad)
-- [x] Al borrar o cancelar una cita la nota sobrevive (el enlace queda vacío)
-- [x] El calendario y el listado de citas no muestran contenido clínico (solo enlace a la nota si existe)
+- Nota: la migración **010** (`clinical_records.appointment_id`) está **aplicada**. Decisión del usuario (2026-10-18): una cita puede tener **varias notas** → código ajustado (`validarCitaParaNota` sin rechazo de duplicados, `listarCitasParaNota` devuelve todas las citas pasadas, selector del modal ampliado); el índice único parcial de la 010 se elimina con la migración **011**, **aplicada** el 2026-10-19
 
 ## FASE 9: Protección de datos
-- [ ] Configuración de la plantilla con editor wysiwyg
-- [ ] PDF vacío descargable y PDF relleno desde la ficha del paciente (vista de impresión)
+- [x] Configuración de la plantilla con editor wysiwyg
+- [x] PDF vacío descargable y PDF relleno desde la ficha del paciente (vista de impresión)
 
 ## FASE 10: Preguntas frecuentes
-- [ ] CRUD de FAQs con orden
+- [x] CRUD de FAQs con orden
 
 ## FASE 11: Información pública
-- [ ] Edición de todos los datos mostrados en la web (servicios, especialidades, planes, horarios, dirección, sobre mí)
-- [ ] Revalidar las páginas públicas al guardar
+- [x] Edición de todos los datos mostrados en la web (servicios, especialidades, planes, horarios, dirección, sobre mí)
+- [x] Revalidar las páginas públicas al guardar
+- Nota: los horarios ya se configuran en Disponibilidad (FASE 4); Información pública enlaza allí. La foto se gestiona desde Perfil privado (FASE 15). El "sobre mí" usa editor wysiwyg con DOMPurify. Sin migración nueva (RLS y tablas ya existían)
 
 ## FASE 12: Temas visuales
-- [ ] Crear los 4 temas restantes en `src/themes/` (basados en el tema base)
-- [ ] Selector de tema, modo landing o multipágina, previsualización en nueva pestaña
-- [ ] Botón "¿Quieres un diseño personalizado?"
+- [x] Crear los 4 temas restantes en `src/themes/` (basados en el tema base)
+- [x] Selector de tema, modo landing o multipágina, previsualización en nueva pestaña
+- [x] Botón "¿Quieres un diseño personalizado?"
+- [x] Web pública aplica el tema activo (clase `.tema-<nombre>` + tokens por clase)
+- [x] Migración 012: CHECK de `layout_mode` en site_settings (el `active_theme` queda sin CHECK para ser plug and play)
 
 ## FASE 13: Gestión de imágenes
-- [ ] Gestión de imágenes estáticas por hueco (`site_images` + Storage), con prioridad sobre las de stock
-- [ ] Configurar `next/image` con el dominio de Supabase Storage
+- [x] Gestión de imágenes estáticas por hueco (`site_images` + Storage), con prioridad sobre las de stock
+- [x] Configurar `next/image` con el dominio de Supabase Storage
 
 ## FASE 14: Tema del panel y secciones activables
-- [ ] Modal de tema claro/oscuro + 8 colores principales, persistente (DB + cookie)
-- [ ] Activar/desactivar secciones (blog, reservas, FAQ, etc.)
+- [x] Modal de tema claro/oscuro + 8 colores principales, persistente (DB + cookie)
+- [x] Activar/desactivar secciones (blog, reservas, FAQ, etc.)
 
 ## FASE 15: Configuraciones y extras del panel
-- [ ] Frases públicas editables
-- [ ] Redes sociales
-- [ ] Email y notificaciones (formulario Gmail + mini tutorial) con nodemailer en Server Action
-- [ ] Perfil privado (datos, contraseña, avatar) con contraseña actual para cambios sensibles
-- [ ] Verificación en dos pasos (TOTP) activable desde el perfil, si Supabase lo permite
-- [ ] Política de privacidad editable y versionada, enlazada desde el formulario de reserva
-- [ ] Buscador global (citas, pacientes, historias, blog...)
-- [ ] Sección de ayuda con tutorial
-- [ ] Botón "ver web pública" en la barra lateral
+- [x] Frases públicas editables
+- [x] Redes sociales
+- [x] Email y notificaciones (formulario Gmail + mini tutorial) con nodemailer en Server Action
+- [x] Perfil privado (datos, contraseña, email de acceso, avatar) con contraseña actual para cambios sensibles
+- [x] Verificación en dos pasos (TOTP) activable desde el perfil (Supabase MFA TOTP confirmado disponible)
+- [x] Política de privacidad editable y versionada (panel + página pública /politica-privacidad + enlace en el footer)
+- [x] Buscador general en la cabecera (pacientes, citas, notas de sesión, blog, FAQs) con página de resultados agrupados
+- [x] Sección de ayuda con tutorial completo del dashboard
+- [x] Cabecera del panel: botón de usuario (avatar + nombre) con desplegable "Perfil privado" / "Cerrar sesión"
+- [x] Migración 014: `phone_private` (+ `verify_login_phone` la prefiere) y grants por columnas de `email_settings`
+- [x] Migración 015: tabla `privacy_policy` (single-row, versionada, RLS: anon lectura / dueña CRUD / service_role)
+- [x] Botón "ver web pública" en la barra lateral
+- Nota: el enlace a la política de privacidad desde el **formulario de reserva** queda para la FASE 17 (el formulario aún no existe); ya está el enlace en el footer público.
+- Nota: `professional_profile` no gana `email_private`: el email de acceso es el email de Supabase Auth (fuente única de verdad).
+- Nota: recuperación del TOTP si se pierde la app: script en servidor con `admin.auth.admin.unenroll()` (documentado en MAP.md), pendiente de ejecutar cuando haga falta.
 
 ## FASE 16: Parte pública
-- [ ] Páginas: inicio, sobre mí, servicios, blog, FAQ, pide cita (+ dónde estamos con mapa)
-- [ ] Botones de cita, llamada, WhatsApp y email
-- [ ] Modo landing (una página con scroll suave) o multipágina según el tema
-- [ ] SEO: `generateMetadata`, `sitemap.ts`, `robots.ts`, JSON-LD, revalidación
+- [x] Páginas: inicio, sobre mí, servicios, blog, FAQ, pide cita (+ dónde estamos con mapa)
+- [x] Botones de cita, llamada, WhatsApp y email
+- [x] Modo landing (una página con scroll suavizado) o multipágina según el tema
+- [x] SEO: `generateMetadata`, `sitemap.ts`, `robots.ts`, JSON-LD, revalidación
+- Nota: el blog público se crea aquí en versión básica (listado + artículo); paginación y filtro por categorías quedan para la FASE 18. El formulario de reserva en `/pide-cita` llega en la FASE 17 (hasta entonces, empty state con contacto directo).
+- Nota: `NEXT_PUBLIC_URL` añadida a `.env.example` (SEO: canonical, sitemap, Open Graph). Añadirla en `.env.local` y en el hosting con el dominio real.
 
 ## FASE 17: Reservas públicas
-- [ ] Selector online/presencial y calendario con la disponibilidad real (`get_available_slots`)
-- [ ] Formulario (nombre, teléfono solo números, motivo) y Server Action que llama a `create_public_booking` (solo `service_role`)
-- [ ] Casilla obligatoria de política de privacidad y guardado del consentimiento
-- [ ] Honeypot o captcha, límite de intentos por IP y teléfono, máximo de citas futuras activas por teléfono
-- [ ] Validación en servidor (longitudes, fechas pasadas, disponibilidad) y respuesta pública genérica
-- [ ] Modal de confirmación + enlace a Google Calendar (sin APIs)
-- [ ] Email a la psicóloga si está configurado (sin romper la reserva si falla) y sin el motivo de la consulta
+- [x] Selector online/presencial y calendario con la disponibilidad real (`get_available_slots`)
+- [x] Formulario (nombre, teléfono solo números, motivo) y Server Action que llama a `create_public_booking` (solo `service_role`)
+- [x] Casilla obligatoria de política de privacidad y guardado del consentimiento
+- [x] Honeypot o captcha, límite de intentos por IP y teléfono, máximo de citas futuras activas por teléfono
+- [x] Validación en servidor (longitudes, fechas pasadas, disponibilidad) y respuesta pública genérica
+- [x] Modal de confirmación + enlace a Google Calendar (sin APIs)
+- [x] Email a la psicóloga si está configurado (sin romper la reserva si falla) y sin el motivo de la consulta
 
 ## FASE 18: Blog público
-- [ ] Listado paginado, filtro por categorías, artículo individual
-- [ ] Redes sociales en el footer
+- [x] Listado paginado, filtro por categorías, artículo individual
+- [x] Redes sociales en el footer
 
 ## FASE 19: Seguridad y despliegue
-- [ ] Cabeceras de seguridad en Next (CSP, frame-ancestors, Referrer-Policy, Permissions-Policy) y HSTS
-- [ ] `npm audit` sin vulnerabilidades graves
-- [ ] Auditoría de RLS, storage, RPC, Server Actions y claves (prompt 07)
-- [ ] Prueba de abuso: llamar directamente a la reserva en Supabase y enviar muchas reservas seguidas
-- [ ] Elegir y documentar la región de Supabase y la política de conservación de datos
-- [ ] Comprobar copias de seguridad del plan de Supabase
-- [ ] Desplegar en Vercel y configurar variables de entorno
-- [ ] Configurar dominio y URLs permitidas en Supabase Auth
-- [ ] Revisar copias de seguridad del proyecto Supabase
-- [ ] Prueba final completa del flujo: instalación -> login -> reserva -> email -> historia
+- [x] Cabeceras de seguridad en Next (CSP, frame-ancestors, Referrer-Policy, Permissions-Policy) y HSTS
+- [x] `npm audit` sin vulnerabilidades graves *(5 high solo en eslint-config-next, dependencias de desarrollo; no afectan al runtime — anotado en MAP.md)*
+- [x] Auditoría de RLS, storage, RPC, Server Actions y claves (código); hallazgos en MAP.md
+- [ ] Prueba de abuso: llamar directamente a la reserva en Supabase y enviar muchas reservas seguidas *(usuario, con el sitio desplegado)*
+- [x] Elegir y documentar la región de Supabase y la política de conservación de datos *(eu-west-1 anotado; política en MAP.md, revisar con asesor legal)*
+- [ ] Comprobar copias de seguridad del plan de Supabase *(usuario, dashboard Supabase)*
+- [ ] Desplegar en Vercel y configurar variables de entorno *(usuario; pasos en MAP.md)*
+- [ ] Configurar dominio y URLs permitidas en Supabase Auth *(usuario; pasos en MAP.md)*
+- [ ] Revisar copias de seguridad del proyecto Supabase *(usuario)*
+- [ ] Prueba final completa del flujo: instalación -> login -> reserva -> email -> historia *(usuario)*
+- Nota: `middleware.ts` renombrado a `proxy.ts` (Next 16); rate limit de login con IP real; URL del sitio unificada en `NEXT_PUBLIC_URL`

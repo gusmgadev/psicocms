@@ -1,0 +1,165 @@
+.rejilla {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+  gap: 2.4rem;
+}
+
+.tarjeta {
+  background-color: var(--color-fondo-blanco, var(--color-fondo));
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-lg, 1.2rem);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.tarjeta:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.enlace {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: inherit;
+}
+
+.imagen {
+  width: 100%;
+  height: 18rem;
+  object-fit: cover;
+}
+
+.imagenVacia {
+  width: 100%;
+  height: 18rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--color-fondo-alt);
+  color: var(--color-texto-muy-suave, var(--color-texto-suave));
+  font-size: 3.2rem;
+}
+
+.cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 2rem;
+  flex: 1;
+}
+
+.fecha {
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+}
+
+.categoria {
+  align-self: flex-start;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--color-primario);
+  background-color: var(--color-primario-muy-claro, var(--color-fondo-alt));
+  padding: 0.3rem 1rem;
+  border-radius: 99rem;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 1.7rem;
+  line-height: 1.35;
+  color: var(--color-texto);
+}
+
+.extracto {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.55;
+  color: var(--color-texto-suave);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.leer {
+  margin-top: auto;
+  padding-top: 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-primario);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 2.4rem;
+}
+
+.filtro,
+.filtroActivo {
+  display: inline-block;
+  padding: 0.6rem 1.6rem;
+  border-radius: 99rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1px solid var(--color-borde);
+  color: var(--color-texto-suave);
+  background-color: var(--color-fondo);
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.filtro:hover {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.filtroActivo {
+  background-color: var(--color-primario);
+  border-color: var(--color-primario);
+  color: #ffffff;
+}
+
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.6rem;
+  margin-top: 3.2rem;
+  font-size: 1.4rem;
+}
+
+.paginaEnlace {
+  color: var(--color-primario);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.paginaEnlace:hover {
+  text-decoration: underline;
+}
+
+.paginaDesactivada {
+  color: var(--color-texto-suave);
+  opacity: 0.5;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.paginaInfo {
+  color: var(--color-texto-suave);
+}

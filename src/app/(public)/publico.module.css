@@ -1,24 +1,57 @@
+.temaContenedor {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-fondo);
+  color: var(--color-texto);
+  font-family: var(--font-panel, "Lexend", system-ui, sans-serif);
+}
+
+.modoLanding {
+  scroll-behavior: smooth;
+}
+
 .header {
   border-bottom: 1px solid var(--color-borde);
-  background-color: var(--color-fondo);
+  background-color: var(--color-fondo-blanco, var(--color-fondo));
+  position: sticky;
+  top: 0;
+  z-index: 20;
 }
 
 .headerContenedor {
   max-width: 120rem;
   margin: 0 auto;
   padding: 0 2.4rem;
-  height: 6.4rem;
+  min-height: 6.4rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 2.4rem;
 }
 
+.logoCaja {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
 .logo {
+  font-family: var(--font-marca, "Castoro", Georgia, serif);
   font-size: 2rem;
   font-weight: 600;
   color: var(--color-primario);
-  margin: 0;
+  line-height: 1.2;
+}
+
+.eslogan {
+  font-size: 1.2rem;
+  color: var(--color-texto-suave);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 28rem;
 }
 
 .nav {
@@ -41,20 +74,65 @@
 .pagina {
   max-width: 120rem;
   margin: 0 auto;
-  padding: 8rem 2.4rem;
+  padding: 6.4rem 2.4rem;
 }
 
 .paginaTitulo {
-  font-size: 3.6rem;
+  font-size: 3.2rem;
   font-weight: 700;
   color: var(--color-texto);
-  margin: 0 0 2.4rem;
+  margin: 0 0 1.2rem;
 }
 
 .paginaTexto {
-  font-size: 1.7rem;
+  font-size: 1.6rem;
   color: var(--color-texto-suave);
-  margin: 0;
+  margin: 0 0 3.2rem;
+  max-width: 72rem;
+}
+
+/* Contenido enriquecido saneado (política de privacidad, artículos del blog) */
+.prosa {
+  margin-top: 0;
+  max-width: 80rem;
+  font-size: 1.6rem;
+  line-height: 1.7;
+  color: var(--color-texto);
+  overflow-wrap: anywhere;
+}
+
+.prosa h2 {
+  font-size: 2.2rem;
+  margin: 2.4rem 0 1.2rem;
+  color: var(--color-texto);
+}
+
+.prosa h3 {
+  font-size: 1.8rem;
+  margin: 2rem 0 1rem;
+  color: var(--color-texto);
+}
+
+.prosa p {
+  margin: 0 0 1.4rem;
+}
+
+.prosa ul,
+.prosa ol {
+  margin: 0 0 1.4rem;
+  padding-left: 2.4rem;
+}
+
+.prosa li {
+  margin-bottom: 0.6rem;
+}
+
+.prosa a {
+  color: var(--color-primario);
+}
+
+.prosa strong {
+  color: var(--color-texto);
 }
 
 .footer {
@@ -76,10 +154,43 @@
   margin: 0;
 }
 
+.footerRedes {
+  list-style: none;
+  margin: 0 0 1.6rem;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.footerRedEnlace {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  border: 1px solid var(--color-borde);
+  color: var(--color-texto-suave);
+  font-size: 1.6rem;
+  text-decoration: none;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.footerRedEnlace:hover {
+  color: var(--color-primario);
+  border-color: var(--color-primario);
+  background-color: var(--color-fondo);
+}
+
+/* Anclas del modo landing: compensar la cabecera fija */
+.modoLanding [id] {
+  scroll-margin-top: 8rem;
+}
+
 @media (max-width: 900px) {
   .headerContenedor {
     flex-direction: column;
-    height: auto;
     padding: 1.6rem 2.4rem;
     gap: 1.2rem;
   }
@@ -87,5 +198,9 @@
   .nav {
     justify-content: center;
     gap: 1.2rem;
+  }
+
+  .eslogan {
+    max-width: 100%;
   }
 }

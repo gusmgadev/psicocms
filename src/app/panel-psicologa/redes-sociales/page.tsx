@@ -1,11 +1,9 @@
-﻿import { PaginaSeccion } from "../PaginaSeccion";
+﻿import { exigirSesion } from "@/lib/auth-guard";
+import { listarRedes } from "@/services/redes";
+import RedesPanel from "./RedesPanel";
 
-export default function Pagina() {
-  return (
-    <PaginaSeccion
-      titulo="Redes sociales"
-      descripcion="Enlaces a tus perfiles en redes sociales."
-      icono="fa-share-nodes"
-    />
-  );
+export default async function PaginaRedes() {
+  await exigirSesion();
+  const redes = await listarRedes();
+  return <RedesPanel iniciales={redes} />;
 }

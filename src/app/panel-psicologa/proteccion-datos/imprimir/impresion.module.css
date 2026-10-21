@@ -1,0 +1,190 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  align-items: center;
+}
+
+.barra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  width: 100%;
+  max-width: 80rem;
+}
+
+.documento {
+  width: 100%;
+  max-width: 80rem;
+  padding: 4rem 4.5rem;
+  background: #ffffff;
+  color: #1a1a1a;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md, 0 4px 16px rgb(0 0 0 / 0.08));
+  font-size: 1.4rem;
+  line-height: 1.6;
+}
+
+.documentoCabecera {
+  text-align: center;
+  padding-bottom: 2rem;
+  border-bottom: 2px solid #1a1a1a;
+  margin-bottom: 2.4rem;
+}
+
+.responsableNombre {
+  margin: 0 0 0.6rem;
+  font-size: 1.6rem;
+  font-weight: 600;
+}
+
+.documentoTitulo {
+  margin: 0;
+  font-size: 2.2rem;
+  line-height: 1.2;
+}
+
+.documentoMeta {
+  margin: 0.8rem 0 0;
+  color: #555;
+  font-size: 1.3rem;
+}
+
+.bloque {
+  margin-bottom: 2.4rem;
+}
+
+.bloqueTitulo {
+  margin: 0 0 1.2rem;
+  font-size: 1.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.4rem;
+}
+
+.fila {
+  margin: 0 0 0.8rem;
+}
+
+.filaEtiqueta {
+  font-weight: 600;
+}
+
+.filaValor {
+  border-bottom: 1px dotted #999;
+}
+
+.filaBlanco {
+  color: #999;
+  letter-spacing: 0.02em;
+}
+
+.contenidoHtml {
+  margin-bottom: 2.8rem;
+  overflow-wrap: anywhere;
+}
+
+.contenidoHtml h2 {
+  font-size: 1.7rem;
+  margin: 0 0 1rem;
+}
+
+.contenidoHtml h3 {
+  font-size: 1.5rem;
+  margin: 1.6rem 0 0.8rem;
+}
+
+.contenidoHtml p {
+  margin: 0 0 1rem;
+}
+
+.contenidoHtml ul,
+.contenidoHtml ol {
+  margin: 0 0 1rem;
+  padding-left: 2.4rem;
+}
+
+.aviso {
+  padding: 1.6rem;
+  background: #f5f5f5;
+  border: 1px dashed #bbb;
+  border-radius: var(--radius-sm);
+  color: #444;
+}
+
+.documentoPie {
+  border-top: 1px solid #ccc;
+  padding-top: 1.6rem;
+}
+
+.responsable {
+  margin-bottom: 2.4rem;
+}
+
+.responsable p {
+  margin: 0 0 0.4rem;
+}
+
+.firmas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  margin-bottom: 2rem;
+}
+
+.firma {
+  text-align: center;
+}
+
+.firmaLinea {
+  display: block;
+  border-bottom: 1px solid #1a1a1a;
+  margin-bottom: 0.6rem;
+  min-height: 0.1rem;
+}
+
+.firma p {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.pieFecha {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #333;
+}
+
+@page {
+  size: A4;
+  margin: 2cm;
+}
+
+@media print {
+  .barra {
+    display: none;
+  }
+
+  .documento {
+    max-width: none;
+    width: 100%;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    font-size: 11.5pt;
+    color: #000;
+  }
+
+  .documentoTitulo {
+    font-size: 16pt;
+  }
+
+  .contenidoHtml,
+  .bloque,
+  .documentoPie {
+    break-inside: avoid;
+  }
+}

@@ -15,12 +15,14 @@
     "jcalendar.js": "^2.12.6",
     "jodit-react": "^5.8.3",
     "next": "16.4.1",
+    "nodemailer": "^10.1.7",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "server-only": "^0.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

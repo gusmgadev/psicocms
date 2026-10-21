@@ -1,0 +1,39 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.precios {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.2rem;
+}
+
+.formAcciones {
+  display: flex;
+  gap: 0.8rem;
+  padding-top: 0.4rem;
+}
+
+.caracteristicas {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 1.2rem;
+  color: var(--color-texto-suave);
+}
+
+.caracteristicas li i {
+  color: var(--color-exito);
+  margin-right: 0.4rem;
+}
+
+@media (max-width: 640px) {
+  .precios {
+    grid-template-columns: 1fr;
+  }
+}

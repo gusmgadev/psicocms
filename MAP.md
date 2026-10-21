@@ -4,8 +4,8 @@
 > Estado inicial: proyecto sin iniciar. Todo lo marcado como (planificado) aún no existe.
 
 ## Estado actual
-- Fase en curso: FASE 9 (siguiente: FASE 9)
-- Última fase completada: FASE 8B
+- Fase en curso: — (siguiente: —; todas las fases del plan completadas o con pasos manuales pendientes)
+- Última fase completada: FASE 19 (implementación); quedan pasos manuales del usuario (desplegar, probar abuso, backups, dominio)
 
 ## Stack
 - Next.js (App Router) + React + TypeScript estricto
@@ -15,18 +15,18 @@
 - Despliegue previsto: Vercel
 
 ## Estructura (implementado en FASE 0A)
-- `supabase/migrations/`: SQL numerado (12 ficheros; la 010 **pendiente de aplicar**, el resto aplicadas en el proyecto Supabase)
+- `supabase/migrations/`: SQL numerado (15 ficheros; **001–015 aplicadas** en el proyecto Supabase)
 - `src/app/`: (public), instalacion, acceso-psicologa, panel-psicologa (cada una con su layout)
 - `src/lib/supabase/`: cliente de navegador (browser.ts), de servidor (server.ts) y admin (admin.ts con server-only)
 - `src/actions/`, `src/services/`, `src/themes/`, `src/components/ui/` (creados)
-- `middleware.ts` protege `/panel-psicologa/*` y redirige a `/acceso-psicologa` sin sesión
+- `proxy.ts` (renombrado desde `middleware.ts` en FASE 19) protege `/panel-psicologa/*` y redirige a `/acceso-psicologa` sin sesión
 - `.env.local` y `.env.example` con variables requeridas, `.gitignore` excluye `.env*.local`
 - `.agents/skills/`: psicocms-seguridad, psicocms-citas, local-dates, psicocms-temas, psicocms-textos
-- `.opencode/commands/`: 13 comandos personalizados
+- `.opencode/commands/`: 13 comandos personalizados (equivalen a los prompts de la carpeta `0 recursos/prompts/`)
 
 ## Base de datos (implementado en FASE 0B)
-**Tablas (22):**
-- professional_profile, site_settings, services, specialties, plans, availability_slots, vacation_periods, patients, appointments, clinical_records, clinical_files, data_protection_template, blog_categories, blog_posts, faqs, public_phrases, social_links, site_images, email_settings, dashboard_preferences, rate_limit_events
+**Tablas (23):**
+- professional_profile, site_settings, services, specialties, plans, availability_slots, vacation_periods, patients, appointments, clinical_records, clinical_files, data_protection_template, blog_categories, blog_posts, faqs, public_phrases, social_links, site_images, email_settings, dashboard_preferences, rate_limit_events, **privacy_policy** (migración 015)
 
 **Funciones RPC (6):**
 - `is_owner()` — authenticated, service_role
@@ -47,10 +47,14 @@
 - `create_public_booking`: la revalidación de solape mira cualquier modalidad; el límite de 3 citas futuras por teléfono sigue contando **por modalidad**
 - Sin cambios de permisos (`CREATE OR REPLACE` conserva los grants existentes)
 
-**Migración 010 (FASE 8B, pendiente de aplicar):**
+**Migración 010 (FASE 8B, aplicada):**
 - Añade `clinical_records.appointment_id` (`uuid NULL REFERENCES appointments(id) ON DELETE SET NULL`): enlace opcional entre una nota de historia y su cita; la nota es propia (`session_date` propio) y sobrevive si la cita se borra (el FK vacía el enlace) o se cancela (el servicio de citas vacía el enlace en el servidor)
-- Índices: `idx_clinical_records_appointment_id` (búsqueda) y `idx_clinical_records_appointment_unique` (parcial WHERE NOT NULL): una sola nota por cita
+- Índices creados en la 010: `idx_clinical_records_appointment_id` (búsqueda) y `idx_clinical_records_appointment_unique` (parcial WHERE NOT NULL, anulado por la 011)
 - Sin cambios de políticas RLS (`is_owner()` en `clinical_records` ya cubre la columna nueva); sin funciones RPC nuevas
+
+**Migración 011 (varias notas por cita, aplicada):**
+- `DROP INDEX IF EXISTS idx_clinical_records_appointment_unique` (decisión 2026-10-18: una cita puede tener varias notas de sesión)
+- Solo elimina un índice; sin cambios de RLS, políticas ni funciones
 
 **Buckets Storage (3):**
 - `public-images` (público, jpg/png/webp, 5MB)
@@ -58,8 +62,8 @@
 - `avatars` (público, jpg/png/webp, 2MB)
 
 **RLS:** Activado en todas las tablas. Políticas:
-- `anon`: solo lectura de contenido público (servicios, especialidades, planes, FAQs, blog publicado, categorías, frases, redes, imágenes, plantilla protección datos)
-- `authenticated`: **solo si `is_owner()` = true** — CRUD completo en todo excepto `email_settings` (solo SELECT, sin contraseña)
+- `anon`: solo lectura de contenido público (servicios, especialidades, planes, FAQs, blog publicado, categorías, frases, redes, imágenes, plantilla protección datos, **política de privacidad**)
+- `authenticated`: **solo si `is_owner()` = true** — CRUD completo en todo; en `email_settings` solo lectura de las columnas no secretas (grants por columnas desde la migración 014: la contraseña SMTP solo la lee/escrive `service_role`)
 - `service_role`: acceso total a todo (para Server Actions)
 
 **Restricciones clave:**
@@ -201,17 +205,20 @@
 | (y 30+ más consolidadas en ~25 semánticas) | | |
 
 ## Rutas (implementadas en FASE 0A)
-- Públicas: /inicio, /sobre-mi, /servicios, /blog, /faq, /pide-cita, /contacto (bajo route group `(public)`)
+- Públicas: /inicio, /sobre-mi, /servicios, /blog, /faq, /pide-cita, /contacto, **/politica-privacidad** (FASE 15; bajo route group `(public)`)
 - Panel: /panel-psicologa/* (requiere sesión, middleware), login en /acceso-psicologa, instalación en /instalacion
 - Raíz `/` redirige a `/inicio`
 
 ## Decisiones técnicas
 - Pacientes: clave primaria `id` (UUID) + `patient_number` correlativo legible. El teléfono es dato de contacto obligatorio, normalizado y NO único. Las urls usan el id interno.
 - Reserva pública: se reutiliza la ficha si coinciden teléfono y nombre; si el teléfono existe con otro nombre se crea ficha nueva marcada como `possible_duplicate`.
+- Cita y nota de sesión: la cita (`appointments`) es lo agendado y la nota (`clinical_records`) es lo clínico. Estados de cita: pendiente (`scheduled`, por defecto), realizada (`completed`), cancelada (`cancelled`), no asistió (`no_show`); cancelada/no asistió libera el hueco (la restricción de exclusión solo cuenta `scheduled`/`completed`). La nota pertenece a un paciente y puede enlazarse a una cita (opcional, `ON DELETE SET NULL`); **una cita puede tener varias notas** (decisión 2026-10-18) y puede haber notas sin cita. El motivo de la cita y el contenido clínico son datos distintos y no se copian entre sí; las notas nunca se muestran en calendario, listados ni emails. Vocabulario de interfaz: "cita" = lo agendado, "nota de sesión" = lo clínico.
 - Si hay conflicto entre `dashboard-design` y AGENTS.md, manda AGENTS.md.
 - Seguridad: ver sección "Seguridad" de AGENTS.md. `is_owner()` en todas las políticas de `authenticated`; `INSTALL_TOKEN` para la instalación; `create_public_booking` solo `service_role`; contraseña de Gmail no legible desde el cliente.
 - CSS base: font-size 10px (1rem = 10px), variables de color con significado, rem para medidas.
 - Región Supabase: **eu-west-1** (anotar la tuya si es diferente)
+- Next 16.4.1: `middleware.ts` **renombrado a `proxy.ts`** con `export async function proxy` (FASE 19); el matcher y la lógica de protección son los mismos
+- `/debug-login`: ruta de diagnóstico solo en desarrollo (`notFound()` en producción y exige `INSTALL_TOKEN`); se puede eliminar del repositorio si se prefiere
 
 ## Rutas API (implementadas en FASE 1)
 - `POST /api/instalacion/verificar-conexion` — Valida `INSTALL_TOKEN` (recibido por FormData, con trim) y verifica conectividad con Supabase
@@ -225,7 +232,7 @@
 - `GET /api/auth/session` — Obtiene usuario actual para header del panel
 
 ## Server Actions de autenticación (FASE 2)
-- `loginAction` — Login con email+password, verifica teléfono via RPC `verify_login_phone`, rate limiting por IP/email, cookies persistentes opcionales
+- `loginAction` — Login con email+password, verifica teléfono via RPC `verify_login_phone`, rate limiting por IP/email, cookies persistentes opcionales. Desde la FASE 15 devuelve `mfaRequerido: true` si hay verificación en dos pasos activada (sin cerrar la sesión de primer factor)
 - `logoutAction` — Cierre de sesión
 - `recoverPasswordAction` — Recuperación de contraseña
 - `updatePasswordAction` — Cambio de contraseña con verificación de contraseña actual
@@ -323,7 +330,7 @@ Cada sección del menú tiene página con `PaginaSeccion` (h1 + EmptyState "Secc
 - Arrastrar y soltar (vistas mes, semana y día) → `onEventUpdated` persiste con `editarCitaAction` (validación de solape y descanso en servidor); si falla o si el usuario cambia la duración, toast + reversión con `updateEventDateTimes`
 - La duración es fija (la de la sesión): los resize se revierten
 - Alta desde hueco libre: el doble clic abre `CitaModal` precargado (ver arriba); el botón "Nueva cita" abre con la fecha de hoy y hora vacía
-- Colores de evento (hex fijos, pendientes de alinear con tokens cuando exista tema oscuro del panel): online `#2563eb`, presencial `#059669`, completada `#64748b`, cancelada/no presentó `#94a3b8` (además `locked: true` en finalizadas)
+- Colores de evento (hex fijos, pendientes de alinear con tokens cuando exista tema oscuro del panel): online `#2563eb`, presencial `#059669`, completada `#64748b`, cancelada/no presentó `#94a3b8` (color neutro, sin `locked`: canceladas y no presentó se pueden mover)
 - Fechas visuales: helpers nuevos `fechaLocalDePartes`/`partesDeFechaLocal` en `src/lib/fechas.ts` — fechas "wall-clock" con los dígitos de la zona de la psicóloga para que el navegador no desplace nada
 - Opciones: semana desde lunes (`startOfWeekDay: 0`), popups internos desactivados (se usan los Toast del panel), sin exportar/importar/configuración/búsqueda, feriados ocultos; al navegar de mes se recarga el rango visible (`onPreviousMonth`/`onNextMonth`/`onToday`/`onSetDate`)
 
@@ -380,8 +387,8 @@ Cada sección del menú tiene página con `PaginaSeccion` (h1 + EmptyState "Secc
 
 ### Rutas del panel
 - `/panel-psicologa/historias` — listado de pacientes con TablaPaginada (ficha, nombre, nº de sesiones, última sesión), búsqueda por nombre/ficha y enlace a la historia
-- `/panel-psicologa/historias/[id]` — línea de tiempo de sesiones (fecha dd/mm/aaaa, contenido HTML saneado con `dangerouslySetInnerHTML` + `sanitizarHtml`, archivos adjuntos con nombre/tamaño/tipo), botones Nueva sesión, Editar, Eliminar (ConfirmarModal), adjuntar archivos por sesión y abrirlos con URL firmada en pestaña nueva. `SesionModal.tsx` con fecha (input date), `EditorWysiwyg` (prop `placeholder` nueva) y selección de archivos con lista previa
-- Enlace "Ver historia clínica" desde la ficha del paciente (`PacienteDetalle.tsx`)
+- `/panel-psicologa/historias/[id]` — línea de tiempo de notas (fecha dd/mm/aaaa, contenido HTML saneado con `dangerouslySetInnerHTML` + `sanitizarHtml`, archivos adjuntos con nombre/tamaño/tipo), botones Nueva nota, Editar, Eliminar (ConfirmarModal), adjuntar archivos por nota y abrirlos con URL firmada en pestaña nueva. Botón "Volver" con `router.back()` (con fallback al listado de historias si no hay historial), para poder regresar a la cita de origen al llegar desde Citas/Calendario con `?cita=`. `SesionModal.tsx` con fecha (input date), `EditorWysiwyg` (prop `placeholder` nueva) y selección de archivos con lista previa. Vocabulario unificado: "nota" en toda la interfaz de HC ("Nueva nota", "Editar nota", "Eliminar nota", "Fecha de la nota"); los identificadores internos (`ses-*`, `SesionHistoria`) no cambian
+- Enlace "Ver historia clínica" y botón "Nueva nota" (`?nueva=1`) desde la ficha del paciente (`PacienteDetalle.tsx`) — el botón "Nueva nota" navega a la historia abriendo el `SesionModal` con el selector de cita
 
 ### Decisiones FASE 8
 - **Ruta de storage**: la política `owner_write_clinical_files` exige que el primer segmento de la ruta sea `auth.uid()`, por lo que los archivos se guardan como `uid/pacienteId/uuid.ext` (cumple AGENTS.md: id del paciente en la ruta y nombre UUID). Sin migración nueva: tablas, RLS (`is_owner()` en `clinical_records`/`clinical_files`) y bucket `clinical-files` ya existían desde la FASE 0B
@@ -396,29 +403,419 @@ Cada sección del menú tiene página con `PaginaSeccion` (h1 + EmptyState "Secc
 ## Enlace citas ↔ historias clínicas (FASE 8B)
 
 ### Base de datos
-- Migración **010** (pendiente de aplicar): `clinical_records.appointment_id` nullable con `ON DELETE SET NULL` + índice simple + índice único parcial (una sola nota por cita). RLS sin cambios (`is_owner()` ya cubre la tabla)
+- Migración **010** (aplicada): `clinical_records.appointment_id` nullable con `ON DELETE SET NULL` + índice simple; su índice único parcial (una nota por cita) se quitó con la **011** (aplicada) tras la decisión 2026-10-18 de permitir **varias notas por cita**. RLS sin cambios (`is_owner()` ya cubre la tabla)
+- Ajuste de código 2026-10-18 (varias notas): `validarCitaParaNota` ya no rechaza "Ya existe una nota para esa cita" (solo comprueba que la cita existe y pertenece al paciente); `listarCitasParaNota` devuelve **todas** las citas del paciente, pasadas y futuras (sin filtro de nota previa ni embed `clinical_records`); `SesionModal` y la acción correspondientes sin `excluirRecordId`
 
 ### Servicio (`src/services/historias.ts`)
-- `crearSesionHistoria`/`editarSesionHistoria` aceptan `appointmentId` opcional; con `validarCitaParaNota` se comprueba en servidor que la cita existe, pertenece al mismo paciente y no tiene ya otra nota enlazada (devuelve mensaje genérico de error)
-- `listarCitasParaNota(patientId, excluirRecordId?)`: citas pasadas del paciente con `clinical_records(id)` embebido; excluye las ya enlazadas a otra nota (salvo la propia al editar); límite 50
+- `crearSesionHistoria`/`editarSesionHistoria` aceptan `appointmentId` opcional; con `validarCitaParaNota` se comprueba en servidor que la cita existe y pertenece al mismo paciente (una misma cita puede repetirse en varias notas)
+- `listarCitasParaNota(patientId)`: citas del paciente, pasadas y futuras (todas, límite 50); se quitó el embed `clinical_records`, el filtro de exclusiones y el filtro `.lt("starts_at", now)` que dejaba el selector vacío con citas de hoy/futuras
 - `listarHistoriaPaciente` trae `appointment_id` y la cita embebida (`fechaIso`, `finIso`, `modality`) como `citaOrigen` en cada sesión; los embeds se normalizan con `Array.isArray` (PostgREST los devuelve como array)
 - `session_date` sigue siendo propio de la nota: se prellena de la cita al elegirla en el modal, pero si luego se mueve o edita la cita, la fecha de la nota no cambia
 
 ### Citas (`src/services/citas.ts`)
-- `SELECT_CITA` incluye `clinical_records(id)` → `notaId` en `CitaFila`; el listado y el calendario no muestran contenido clínico, solo el enlace a la nota
-- Al editar una cita, si el estado final es `cancelled` y el anterior no lo era, se vacía `appointment_id` de la nota enlazada (la nota sobrevive con el enlace vacío)
+- `SELECT_CITA` incluye `clinical_records(id)` (array con varias notas posibles) → `notaId` en `CitaFila` toma el primer id del array; el listado y el calendario no muestran contenido clínico, solo el enlace a la nota
+- Al editar una cita, si el estado final es `cancelled` y el anterior no lo era, se vacía `appointment_id` de **todas** las notas enlazadas a esa cita (las notas sobreviven con el enlace vacío)
 - Borrar una cita vacía el enlace por el FK `ON DELETE SET NULL`
+- `crearCita`/`editarCita` solo ejecutan `hayConflicto` cuando el estado final es `scheduled` o `completed` (guardia `ocupaAgenda`), coherente con la restricción `appointments_no_overlap` de la BD; así las citas canceladas/no presentó se pueden mover a huecos "ocupados" por programadas sin falso positivo de solape
 
 ### Panel
 - `CitaModal`: en citas editadas con estado Completada (o con nota ya enlazada), bloque de enlace "Ver nota en la historia" o "Escribir nota de sesión" (`?cita=<id>`)
 - `CitasPanel`: en la columna de acciones, icono de enlace a la historia (ver nota si `notaId`, o escribir si completada sin nota)
-- `SesionModal`: selector "Cita de origen (opcional)" con citas pasadas sin nota (excluye la propia al editar); al elegir cita se prellena la fecha
+- `SesionModal`: selector "Cita de origen (opcional)" con **cualquier** cita del paciente, pasadas y futuras (varias notas por cita permitidas); al elegir cita se prellena la fecha
 - `HistoriaPaciente`: badge de cita de origen (fecha, hora, modalidad) en cada sesión; acepta `?cita=` en la URL para abrir el modal de nueva sesión con la cita preseleccionada
+- `CalendarioPanel`: las citas canceladas/no presentó ya **no** se pintan con `locked` (podían quedar "cerradas" sin poder moverlas de día/hora); siguen con color neutro para distinguirlas visualmente de las programadas
+- `PacienteDetalle` (ficha del paciente): botón "Nueva nota" que navega a `/panel-psicologa/historias/[id]?nueva=1`; `HistoriaPaciente` acepta la prop `abrirNueva` y abre `SesionModal` al montar (mismo patrón que `?cita=`); `page.tsx` de la historia lee el search param `nueva`. Completado el pendiente de la FASE 8
 
 ### Reglas de seguridad aplicadas
-- Toda acción pasa por Server Actions con `exigirSesion()`; RLS `is_owner()` sin cambios; validación de la cita en servidor (mismo paciente, sin nota previa); el contenido clínico no sale del panel (citas muestran solo enlace)
+- Toda acción pasa por Server Actions con `exigirSesion()`; RLS `is_owner()` sin cambios; validación de la cita en servidor (mismo paciente); el contenido clínico no sale del panel (citas muestran solo enlace)
+
+## Protección de datos (FASE 9)
+
+### Servicio y Server Action
+- `src/services/proteccion-datos.ts` (`import "server-only"`) — `obtenerPlantillaProteccion` (fila única de `data_protection_template`, HTML saneado; sin fila devuelve vacío con versión "1.0"), `guardarPlantillaProteccion` (valida no vacío y ≤100 000 caracteres, sanea con DOMPurify, upsert de la fila única con versión autoincrementada `X.Y → X.(Y+1)`), `obtenerDatosResponsable` (nombre, colgiado, dirección, teléfono y email públicos de `professional_profile`)
+- `src/actions/proteccion-datos.ts` — `guardarPlantillaProteccionAction` con `exigirSesion()`
+- `src/lib/plantilla-proteccion.ts` — `PLANTILLA_DEFECTO`: modelo orientativo inicial en español (marcado como "debe adaptarse y hacerse revisar"); vive en `lib` (no en el servicio `server-only`) porque lo usa el componente cliente
+
+### Rutas del panel
+- `/panel-psicologa/proteccion-datos` — editor wysiwyg con pestañas Editar/Vista previa (sanitizada), tarjeta de versión actual (se incrementa en cada guardado), botón "Descargar plantilla vacía (PDF)" y tarjeta con los datos del responsable. Si la plantilla está vacía se precarga el modelo orientativo en el editor (sin guardar hasta pulsar "Guardar plantilla") y aparece "Restaurar modelo inicial"
+- `/panel-psicologa/proteccion-datos/imprimir` — vista imprimible (servidor con `exigirSesion()`); con `?paciente=<id>` rellena los datos del titular desde la ficha, sin parámetro descarga la plantilla vacía con huecos en blanco; botón "Guardar como PDF" (`window.print()`). Sin librerías de PDF: hoja A4 con `@page` y CSS de impresión, firmas en blanco al pie
+
+### Decisiones FASE 9
+- **PDF sin librerías** (según AGENTS.md): vista imprimible + `window.print()` ("Guardar como PDF" del navegador); si no queda bien, se propondrá jsPDF y se pedirá autorización
+- **Reglas de impresión globales del panel**: en `panel.module.css`, `@media print` oculta sidebar, header y overlay y quita el padding de `.contenido` (beneficia cualquier impresión desde el panel)
+- **Documento**: cabecera (nombre de la psicóloga, título, versión y fecha de emisión en la zona de la psicóloga), bloque "Datos del titular" (relleno con la ficha o líneas en blanco), contenido HTML de la plantilla saneado, pie con el responsable del tratamiento y líneas de firma (persona titular y psicóloga) más fecha a mano
+- **Versionado**: cada guardado incrementa la versión (1.0 → 1.1 → …); la tabla solo guarda la fila actual, así que no hay historial de contenidos anteriores (recuperarlos requeriría una migración nueva; anotado por si se pide)
+- **Botón en la ficha del paciente**: "PDF protección de datos" abre `/panel-psicologa/proteccion-datos/imprimir?paciente=<id>` en pestaña nueva
+- **Sin migración nueva**: `data_protection_template` (fila única, RLS: anon lectura, owner CRUD con `is_owner()`, service_role total) ya existía desde la FASE 0B
+- **Seguridad**: Server Action con `exigirSesion()`; HTML sanitizado con DOMPurify al guardar, al servir y al imprimir; la lectura de la plantilla y del perfil pasa por RLS `is_owner()` (el cliente de servidor usa la sesión de la psicóloga); el PDF de un paciente solo se genera con sesión iniciada (ruta bajo `/panel-psicologa`)
+
+## Preguntas frecuentes (FASE 10)
+
+### Servicio y Server Actions
+- `src/services/faqs.ts` (`import "server-only"`) — `listarFaqs` (todas las del panel, orden `order_index` + pregunta; la respuesta se sanea con DOMPurify al servir), `crearFaq` (valida pregunta 3–300, respuesta no vacía ≤50 000 caracteres, categoría opcional ≤80; sanea con DOMPurify; `order_index` = máximo + 1), `editarFaq` (misma validación; conserva el orden), `eliminarFaq`, `moverFaq(id, "arriba"|"abajo")` (renumbera posiciones de los dos vecinos, robusto ante empates de orden). Crear/editar/eliminar/mover revalidan `/faq`
+- `src/actions/faqs.ts` — 5 Server Actions (`listarFaqsAction`, `crearFaqAction`, `editarFaqAction`, `eliminarFaqAction`, `moverFaqAction`), todas con `exigirSesion()` y validación de tipos de entrada
+
+### Rutas del panel
+- `/panel-psicologa/faqs` — lista numerada en orden (posición, pregunta, badge de categoría opcional, badge Visible/Oculta) con acciones subir/bajar (flechas, deshabilitadas en los extremos), editar y eliminar (ConfirmarModal); botón "Nueva pregunta" y EmptyState con la misma acción si no hay ninguna. `FaqModal.tsx`: pregunta, categoría opcional, editor wysiwyg con pestañas Editar/Vista previa (sanitizada) y checkbox "Visible en la web"; el estado se resetea al abrir (patrón de los demás modales)
+
+### Decisiones FASE 10
+- **Sin paginación**: las FAQs suelen ser pocas; la lista completa con reordenación por flechas es más intuitiva que una tabla paginada (si crece mucho, se valorará paginar; anotado)
+- **Orden con flechas en vez de número editable**: reordenar es un clic y no permite números duplicados; `moverFaq` renumera las dos posiciones afectadas
+- **Respuesta en HTML**: la columna `answer_html` usa `EditorWysiwyg` (regla de AGENTS: campos de texto grandes con wysiwyg), saneado con DOMPurify al guardar y al servir, como blog e historias
+- **Categoría como texto libre** (no tabla): el campo `category` de `faqs` ya existía como texto opcional; suficiente para agrupar en la web sin CRUD extra (si se pide un CRUD de categorías de FAQ, sería migración nueva)
+- **Visibilidad**: `is_active` controla qué FAQs ve `anon` (la política `anon_read_faqs` ya filtra activas desde la FASE 0B); el panel muestra todas con badge
+- **Sin migración nueva**: la tabla `faqs`, su RLS (anon lectura de activas, owner CRUD con `is_owner()`, service_role total) y el trigger de `updated_at` ya existían desde la FASE 0B
+- **Revalidación**: `/faq` se revalida en cada mutación (la página pública es placeholder hasta la FASE 16, pero el hook queda listo)
+- **Seguridad**: Server Actions con `exigirSesion()`; sin datos sensibles; HTML sanitizado en las dos capas (servicio al guardar/servir, modal en la vista previa)
+
+## Información pública y catálogo (FASE 11)
+
+### Servicio y Server Actions
+- `src/services/informacion-publica.ts` (`import "server-only"`) — `obtenerInformacionPublica` (datos públicos de `professional_profile`: nombre, eslogan, colegiado, teléfono, email, sobre mí, dirección y lugar de consulta; el HTML del sobre mí se sanea con DOMPurify al servir), `guardarInformacionPublica` (valida nombre 2–150, eslogan ≤200, colegiado ≤50, teléfono ≤30 con símbolos permitidos, email con formato, sobre mí no vacío ≤100 000 caracteres saneado, dirección ≤250, lugar ≤150; actualiza la fila del perfil y revalida la web pública). `src/actions/informacion-publica.ts` — 2 Server Actions con `exigirSesion()`
+- `src/services/catalogo-web.ts` (`import "server-only"`) — CRUD genérico para `services` y `specialties` (`TipoCatalogo`, mismos campos) con `listarItems`, `crearItem` (nombre 2–120, descripción ≤600, icono opcional con formato Font Awesome `fa-heart` o `fa-solid fa-heart`, guardado en minúsculas), `editarItem`, `eliminarItem`, `moverItem` (renumbera vecinos); CRUD de `plans` con `listarPlanes`, `crearPlan` (nombre 2–120, descripción ≤600, precios ≥0 ≤99 999,99, características ≤15 líneas × ≤120 caracteres), `editarPlan`, `eliminarPlan`, `moverPlan`. Todas las mutaciones revalidan la web pública
+- `src/actions/catalogo-web.ts` — 10 Server Actions con `exigirSesion()` y comprobación de tipo de catálogo
+- `src/lib/revalidar-web.ts` — helper `revalidarWebPublica()` que revalida `/`, `/inicio`, `/sobre-mi`, `/servicios`, `/pide-cita` y `/contacto`
+
+### Componentes y rutas
+- `src/components/panel/CatalogoSeccion.tsx` + `CatalogoModal.tsx` + `catalogo.module.css` — panel genérico de lista (posición, icono si es servicio, badge Visible/Oculto, flechas subir/bajar, editar, eliminar con ConfirmarModal) y modal (nombre, descripción, icono solo en servicios, checkbox de visibilidad), parametrizado por `tipo`
+- `/panel-psicologa/servicios` y `/panel-psicologa/especialidades` — páginas de servidor que cargan los datos y usan `CatalogoSeccion`
+- `/panel-psicologa/planes` — `PlanesPanel.tsx` + `PlanModal.tsx` (nombre, descripción, precio online y presencial, características una por línea, visibilidad); precios formateados en euros con `Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR" })`
+- `/panel-psicologa/informacion-publica` — `InfoPublicaPanel.tsx` con tarjetas (Datos básicos, Contacto público, Sobre mí con editor wysiwyg y pestañas Editar/Vista previa, Dirección y consulta) y lateral con "Guardar cambios", enlace a Disponibilidad (los horarios se configuran allí desde la FASE 4) y enlace a Perfil privado (la foto se gestiona allí desde la FASE 15)
+
+### Decisiones FASE 11
+- **Horarios**: ya se configuran en Disponibilidad (FASE 4); Información pública no los duplica, solo enlaza a esa sección
+- **Foto de la psicóloga**: no se edita aquí; queda para Perfil privado (FASE 15), donde se gestiona el avatar
+- **Sobre mí con wysiwyg**: regla de AGENTS para campos de texto grandes; HTML saneado con DOMPurify al guardar y al servir (el texto plano del asistente se muestra bien; los saltos de línea antiguos no se convierten en `<br>`)
+- **Descripciones de catálogo en texto plano**: son campos cortos (≤600 caracteres); el wysiwyg se reserva para contenido largo (blog, FAQs, sobre mí, historias)
+- **Servicios y especialidades comparten componente**: mismas columnas (`name`, `description`, `order_index`, `is_active`); un solo `CatalogoSeccion` parametrizado por tipo en lugar de duplicar paneles
+- **Iconos**: texto libre con validación de formato Font Awesome en servidor (regex `fa-…`); se previsualiza en la lista con `<i className="fa …">`
+- **Precios en euros**: moneda fija EUR con formato es-ES; no es configurable (sin columna; si se pide, migración nueva)
+- **Revalidación compartida**: `revalidarWebPublica()` revalida las 6 páginas públicas en cada mutación de perfil o catálogo (hoy son placeholders hasta la FASE 16, pero el hook queda listo)
+- **Sin migración nueva**: `professional_profile`, `services`, `specialties` y `plans` con su RLS (anon lectura de activos, owner CRUD con `is_owner()`) ya existían desde la FASE 0B
+- **Seguridad**: Server Actions con `exigirSesion()`; validación en servidor de todos los campos; sobre mí sanitizado con DOMPurify en servidor (guardar/servir) y cliente (vista previa); anon solo lee filas activas vía RLS existente
+
+## Temas visuales (FASE 12)
+
+### Índice de temas (`src/themes/index.ts`)
+- Módulo seguro para cliente y servidor (sin `server-only`): lo usan el panel, la instalación y el servidor
+- `TEMAS`: registro de los 5 temas (id, nombre, descripción y colores de muestra para el panel)
+- Temas: `base` (terracota original), `calma` (azules suaves), `naturaleza` (verdes/tierra), `moderno` (teal minimalista), `elegancia` (oscuro con dorado)
+- `MODOS_LAYOUT`: `multipage` (por defecto) y `landing`
+- Helpers: `esTemaValido()`, `esModoLayoutValido()`
+
+### Estructura de tokens por tema
+- `src/themes/<nombre>/tokens.css`: colores del tema con alcance `.tema-<nombre>` (no `:root`, para poder aplicarlos por clase sin pisar el panel)
+- `src/themes/base/css/variables.css` conserva los valores en `:root` (FASE 0C, apariencia idéntica del tema base)
+- `src/themes/todos-los-temas.css`: importa los tokens de los 5 temas; se carga en la web pública y en la previsualización
+- Cada tema redefine el conjunto de variables semánticas de color (primario, fondos, textos, bordes, estados, sombras); tipografía, espaciado y radios son comunes del tema base
+- La web pública (`(public)/layout.tsx`) lee `site_settings.active_theme` y envuelve el contenido en `<div class="tema-<nombre>">`; los componentes usan `var(--...)` y el tema cambia automáticamente
+
+### Selector del panel (`/panel-psicologa/temas`)
+- `TemasPanel.tsx`: tarjetas de tema con muestras de color (datos del índice, no estilos fijos), guardado inmediato al hacer clic con toast de confirmación, etiqueta "En uso"
+- Modo de la web (landing/multipágina) en tarjetas al lado, mismo patrón
+- Previsualización en pestaña nueva: `/preview-tema/<id>` (fuera del shell del panel, protegida por `exigirSesion()` en la página) con header, hero, servicios y contacto usando los datos reales del perfil y las variables del tema
+- Botón "¿Quieres un diseño personalizado? Pídelo aquí" → https://victorroblesweb.es/contacto
+- Servicio `src/services/temas.ts` (`obtenerConfigTema`/`guardarConfigTema`, valida contra el índice y revalida la web pública) + 2 Server Actions con `exigirSesion()`
+- El asistente de instalación (`PasoTema.tsx`) consume el mismo `TEMAS` del índice (lista única)
+
+### Decisiones
+- `active_theme` SIN CHECK en BD (plug and play: añadir un tema es una carpeta nueva + una línea en el índice, sin migración); se valida en servidor contra el índice
+- Migración **012**: CHECK de `layout_mode` (`landing`/`multipage`) en site_settings
+- Los componentes React por tema (secciones de la web) llegarán en la FASE 16; ahora cada tema es su carpeta de tokens y el índice
+
+## Imágenes del sitio (FASE 13)
+
+### Huecos (catálogo en código: `src/services/imagenes.ts` → `HUECOS_IMAGEN`)
+- 8 huecos con id, nombre, descripción e imagen de stock: `hero`, `sobre-mi`, `servicios`, `especialidades`, `cita`, `contacto`, `blog`, `faq`
+- Tabla `site_images` (PK `placeholder`, `image_path`, `alt_text`): si hay fila con `image_path`, esa imagen tiene prioridad sobre la de stock
+- `obtenerImagenHueco(placeholder)`: helper listo para la FASE 16 (devuelve la URL personalizada o la stock)
+
+### Panel `/panel-psicologa/imagenes`
+- Rejilla de tarjetas con vista previa (`next/image`), badge "Tu imagen" / "De ejemplo", botones "Subir/Cambiar imagen" y "Usar la de ejemplo" (con ConfirmarModal)
+- Subida: input de archivo oculto por tarjeta; validación en cliente y servidor (jpg/png/webp, ≤5 MB); ruta UUID en `public-images/imagenes/`; al cambiar se borra el archivo anterior; revalida la web pública
+- Servicio `src/services/imagenes.ts` + 3 Server Actions con `exigirSesion()`
+
+### next/image
+- `next.config.ts` con `images.remotePatterns` hacia el hostname de `NEXT_PUBLIC_SUPABASE_URL` (pathname `/storage/v1/object/public/**`), para poder usar `next/image` con las URLs de Storage
+
+### Decisiones
+- Catálogo de huecos en código (no en BD): añadir un hueco es editar `HUECOS_IMAGEN`; sin migración
+- `alt_text` se rellena con el nombre del hueco al subir; editable directamente en la tabla si se necesita (sin UI dedicada por ahora)
+- Sin migración nueva (tabla y RLS de `site_images` ya existían desde la FASE 0B)
+
+## Tema del panel y secciones (FASE 14)
+
+### Preferencias del panel (tema claro/oscuro + color principal)
+- Constantes y validaciones en `src/lib/panel-tema.ts` (compartido cliente/servidor): `ModoPanel` (`light`/`dark`), `COLORES_PANEL` (8 colores con nombre: Azul `#2563eb` por defecto, Verde menta, Lavanda, Rosa, Terracota, Índigo, Verde bosque, Ámbar), `esModoPanel()`, `esColorPanel()`, nombre de cookie `psicocms-preferencias-panel`
+- Tabla `dashboard_preferences` (PK `user_id`): `theme_mode` + `primary_color`; RLS ya existente (`is_owner() AND user_id = auth.uid()`)
+- Flujo sin parpadeo: el layout de `/panel-psicologa` lee la cookie (y si no existe, `obtenerPreferencias()` de BD) y pasa `preferencias` a `PanelShell`, que las aplica en el div raíz (`data-modo-panel` + `--color-primario` inline)
+- Botón del header (luna/sol) → `TemaPanelModal`: modo Claro/Oscuro + 8 colores; "Guardar tema" → `guardarPreferenciasAction` (`exigirSesion()`, valida en servidor, upsert en BD y escribe la cookie con `maxAge` de 1 año)
+- Servicio `src/services/preferencias.ts`: lectura con fallback a valores por defecto y escritura
+
+### Modo oscuro (CSS)
+- Paleta en `panel.module.css`: `.shell[data-modo-panel="dark"]` redefine `--color-fondo`, `--color-fondo-alt`, `--color-app`, `--color-texto`, `--color-texto-suave`, `--color-borde`, colores de alerta y `color-scheme: dark`; el alcance es el panel, la web pública no cambia
+- Derivados del primario con `color-mix()` en `.shell[data-modo-panel]` (`--color-primario-oscuro`/`--color-primario-claro`); en oscuro `--color-primario-claro` = primario 25% + blanco
+- `globals.css`: bordes y textos de `.alerta--*` son ahora variables (`--color-*-borde`, `--color-*-texto`); los valores claros son idénticos a los anteriores
+- `@media print` restaura la paleta clara cuando el panel está en oscuro (PDF con `window.print()` de la FASE 9) y `body:has(.shell[data-modo-panel="dark"])` pone el fondo del documento en oscuro
+
+### Secciones activables de la web
+- Claves (lista blanca en `src/lib/panel-tema.ts` → `SECCIONES_WEB`): `booking`, `services`, `specialties`, `plans`, `blog`, `faq`; clave ausente = activada
+- Guardadas en `site_settings.sections_enabled` (jsonb, RLS `is_owner()` ya existente); servicio `src/services/secciones.ts` (`parsearSecciones()`, `guardarSecciones()` con revalidación de la web pública) + Server Action `guardarSeccionesAction` con `exigirSesion()`
+- Página `/panel-psicologa/secciones` (menú Gestión web): filas con icono, nombre, descripción, estado Visible/Oculta e interruptor; guardado inmediato con toast
+- Consumo en la web pública: el layout `(public)` lee las secciones con `obtenerSecciones()` y solo muestra los enlaces del menú activos; `/servicios`, `/blog`, `/faq` y `/pide-cita` devuelven 404 (`notFound()`) si su sección está desactivada (helper `seccionActivaPublica()`), fix posterior a la FASE 14
+
+### Decisiones
+- Migración **013** (aplicada): CHECK de `dashboard_preferences.primary_color` con los 8 colores; la misma validación se hace en el servidor
+- La cookie es solo un atajo de lectura (`httpOnly`, `secure` en producción, `sameSite=lax`); la BD es la fuente de verdad
+- Sin funciones RPC nuevas ni tablas nuevas; RLS existente sin cambios
+
+## Configuraciones y extras del panel (FASE 15)
+
+### Frases públicas
+- Servicio `src/services/frases.ts` (lectura, `GRUPOS_FRASES` para agrupar por zona del panel, `guardarFrases` con límite de 1000 caracteres por frase) + Server Action `guardarFrasesAction` con `exigirSesion()`
+- Página `/panel-psicologa/frases` (menú Gestión web) con buscador, edición inline por grupos y botón global "Guardar" con contador de cambios sin guardar
+
+### Redes sociales
+- `src/lib/redes.ts`: **módulo compartido cliente/servidor (sin `server-only`)** con `REDES_DISPONIBLES` (iconos FA), tipos y `opcionRed` — los componentes cliente solo pueden importar *tipos* de módulos `server-only`, por eso los valores viven en `src/lib/`
+- Servicio `src/services/redes.ts` (CRUD + orden + interruptor de visibilidad, valida URL http/https) + 5 Server Actions con `exigirSesion()`
+- Página `/panel-psicologa/redes-sociales` con tarjetas por red (interruptor, flechas de orden, Modal de edición, ConfirmarModal de borrado)
+
+### Email y notificaciones (nodemailer)
+- Servicio `src/services/email.ts`: `obtenerConfigEmail`/`guardarConfigEmail` **solo con cliente admin** (`service_role`; los grants por columnas de la migración 014 impiden leer `smtp_password_encrypted` con sesión), `enviarEmail` y `enviarEmailPrueba`
+- Contraseña de Gmail cifrada en el servidor con **AES-256-GCM** (clave derivada de `SUPABASE_SERVICE_ROLE_KEY` con sha256, formato `v1:iv:tag:ct`); nunca vuelve al frontend (la interfaz solo muestra `hasPassword` → "•••• (contraseña guardada)")
+- Un único campo "Email de Gmail" alimenta `smtp_user` y `from_email`; SMTP avanzado (host/puerto) oculto en un `<details>`; mini tutorial de Gmail con enlaces a myaccount.google.com/security y /apppasswords + botón "Enviar email de prueba"
+- Página `/panel-psicologa/email-notificaciones`; Server Actions `guardarConfigEmailAction` y `enviarEmailPruebaAction` con `exigirSesion()`
+
+### Perfil privado
+- Servicio `src/services/perfil-privado.ts` (`obtenerPerfilPrivado`, `obtenerCabeceraUsuario`, `obtenerEstadoMfa`, `guardarPerfilPrivado` con validación de nombre 2–150 y teléfono 5–30 con símbolos, `subirAvatar`/`quitarAvatar` en bucket `avatars` ≤2 MB jpg/png/webp con nombre UUID, `cambiarEmailAcceso` que verifica la contraseña con `signInWithPassword` y luego `admin.updateUserById({ email, email_confirm: true })`) + 4 Server Actions en `src/actions/perfil.ts`
+- Página `/panel-psicologa/perfil` con 4 tarjetas: Tus datos (nombre + `phone_private`), Foto de perfil (cambiar/quitar con ConfirmarModal), Email y contraseña de acceso (cambios sensibles con contraseña actual) y Verificación en dos pasos
+- **Decisión:** `professional_profile` NO tiene `email_private`: el email de acceso es el email de Supabase Auth (fuente única de verdad). El login usa `phone_private` si existe, si no `phone_public` (migración 014)
+
+### Verificación en dos pasos (TOTP con Supabase MFA)
+- Server Actions en `src/actions/mfa.ts`: `iniciarMfaAction` (enroll TOTP, devuelve `qr_code` como data-URI — sin librería QR — y secreto para entrada manual; limpia factores pendientes previos), `activarMfaAction` (challenge + verify), `desactivarMfaAction` (unenroll) y `verificarCodigoMfaAction` (durante el login). Rate limits con `checkRateLimit`: `mfa-enroll:`/`mfa:`/`mfa-login:` 5 intentos / 15 min
+- `loginAction` devuelve `mfaRequerido` sin cerrar la sesión de primer factor; `/acceso-psicologa` pasa a un segundo "paso" (formulario de 6 dígitos, detecta `?mfa=pendiente` con `window.location.search` en un `useEffect` para evitar el wrapper de Suspense de `searchParams`)
+- `exigirSesion()` y `getSesionOPcional()` rechazan sesiones `aal1` con `nextLevel === "aal2"` → redirect a `/acceso-psicologa?mfa=pendiente`; el `middleware` redirige igual para `/panel-psicologa/*` pero **permite quedarse en `/acceso-psicologa`** con MFA pendiente (evita bucle de redirects)
+- **Recuperación si se pierde la app de autenticación:** en servidor con `service_role` → `supabase.auth.admin.listFactors(userId)` + `supabase.auth.admin.unenroll({ userId, factorId })`; queda documentado aquí y en la propia página del perfil. Se recomienda anotar el factor al activarlo
+- `professional_profile` NO gana campos nuevos para el TOTP (los factores viven en Supabase Auth)
+
+### Política de privacidad
+- **Migración 015:** tabla `privacy_policy` (fila única `id boolean`, `content_html`, `version`, `updated_at`, trigger `update_updated_at_column`), RLS: `anon` SELECT, `authenticated` con `is_owner()`, `service_role` total; grants explícitos; texto base orientativo (seed)
+- Servicio `src/services/politica-privacidad.ts` (espejo de `proteccion-datos.ts`: DOMPurify al guardar y al servir, versión autoincrementada `x.y`) + Server Action `guardarPoliticaPrivacidadAction` con `exigirSesion()` que además llama a `revalidarWebPublica()`
+- Panel `/panel-psicologa/politica-privacidad` (menú Configuración) con `EditorWysiwyg`, pestañas Editar/Vista previa sanitizada, tarjeta de versión/fecha y enlace "Ver página pública"
+- Página pública `/politica-privacidad` con `generateMetadata` y HTML saneado (clase `.prosa` nueva en `publico.module.css`); **footer público enlaza** a la política desde la FASE 15
+- Enlace a la política desde el formulario de reserva (FASE 17): hecho; el formulario lee `consent_version` de esta tabla y la envía a `create_public_booking`
+
+### Buscador general
+- Servicio `src/services/busqueda.ts`: 5 grupos (pacientes por nombre/teléfono/ficha, citas por motivo o por pacientes encontrados, notas de sesión por contenido con fragmento de texto, artículos por título/slug, FAQs por pregunta); límite 8 por grupo; sanea `,()` del texto por el parser `.or()` de PostgREST (patrón del resto del proyecto)
+- Página `/panel-psicologa/buscar?q=…` (server component, `exigirSesion()`) con resultados agrupados y enlaces directos a la ficha/historia/artículo; EmptyState si no hay resultados
+- Cabecera del panel: `<form>` de búsqueda en `PanelShell` que navega a `/panel-psicologa/buscar?q=`
+
+### Ayuda con tutorial
+- `/panel-psicologa/ayuda` (antes placeholder): tutorial en texto, en español y con tuteo, en 9 tarjetas (primeros pasos, citas y calendario, disponibilidad, pacientes, historias clínicas, contenido de la web, reservas y avisos, cuenta y seguridad, buscar y ayuda) + consejos; solo servidor, sin interactividad
+
+### Cabecera del panel (nueva)
+- Botón de usuario (avatar o iniciales + nombre + chevron) con desplegable: "Perfil privado" y "Cerrar sesión" (sustituye al botón suelto de logout); se cierra al pulsar fuera o al cambiar de ruta
+- El pie del menú lateral (avatar + nombre + email) ahora es un enlace a `/panel-psicologa/perfil`
+- Responsive: nombre del usuario oculto ≤900 px, título del header oculto ≤620 px
+
+### Migraciones 014 y 015 (aplicadas)
+- **014 `014_perfil_privado_email_settings.sql`:** `professional_profile.phone_private` (text, CHECK de formato 5–30 con símbolos), `verify_login_phone` recreada (prefiere `phone_private`, cae a `phone_public`, mismos grants que antes) y `email_settings` con grants por columnas: `authenticated` solo ve las columnas no secretas; `INSERT/UPDATE/DELETE` revocados a `anon` y `authenticated` (escrituras solo vía admin client en Server Action)
+- **015 `015_privacy_policy.sql`:** tabla `privacy_policy` + trigger + RLS + grants + seed (ver arriba)
+
+### Reglas de seguridad aplicadas (checklist psicocms-seguridad)
+- Toda Server Action de la fase (frases, redes, email, perfil, MFA, política) llama a `exigirSesion()` (getUser en servidor); `verificarCodigoMfaAction` usa `getUser()` directamente porque trabaja sobre la sesión aal1 (donde `exigirSesion` redirigiría)
+- `service_role` solo en `src/lib/supabase/admin.ts` (`server-only`); la contraseña SMTP cifrada solo viaja servidor ↔ servidor
+- Contraseña actual obligatoria para cambiar email y contraseña; contraseña mínima de 12 caracteres (ya existente); mensajes de error genéricos en login
+- TOTP como segundo factor real (el teléfono público no lo es); límite de intentos por usuario con `check_rate_limit` (solo `service_role`)
+- Bucket `avatars` con validación de tipo real y tamaño en servidor, nombres UUID
+- Todo HTML de editores (política, vista previa) saneado con DOMPurify antes de `dangerouslySetInnerHTML`
+- Sin datos personales en logs ni en mensajes de error; el buscador solo consulta con sesión iniciada
+
+## Parte pública (FASE 16)
+
+### Componentes compartidos (`src/components/publico/`)
+- **Decisión:** los componentes de la web pública viven en `src/components/publico/` y usan solo `var(--...)` del tema activo; no se duplican por tema. Cambiar el tema cambia la apariencia sin tocar componentes (mismo plugguening que los tokens de la FASE 12).
+- `secciones.tsx`: `Hero`, `SobreMi`, `Servicios`, `Especialidades`, `Planes`, `Faq` (acordeón nativo `<details>`), `CtaCita`, `Contacto` (con mapa embebido de Google Maps por dirección) y `VacioPublico`
+- `botones-contacto.tsx`: `BotonesContacto` (cita / llamar / WhatsApp / email); WhatsApp con `wa.me/` + dígitos del teléfono público
+- `publico-secciones.module.css`: estilos de secciones; `publico.module.css` del layout: header sticky, modo landing (smooth scroll + `scroll-margin-top`)
+
+### Servicios de lectura pública
+- `src/services/textos-web.ts`: mapa de frases públicas con valores por defecto (`obtenerTextosWeb`, `texto`, `formatearPrecio`, `enlaceWhatsApp`, `enlaceLlamada`, `enlaceEmail`)
+- `src/services/blog-publico.ts`: `listarArticulosPublicos` (con paginación y filtro por categoría), `contarArticulosPublicos`, `obtenerArticuloPublicoPorSlug`, `listarCategoriasPublicas` (refuerza filtros del RLS por si la dueña visita la web con sesión abierta)
+- El RLS de anon ya filtra `is_active`/`published`; las páginas filtran además en servidor
+
+### Layout público (`src/app/(public)/layout.tsx`)
+- Logo = nombre real de la psicóloga + eslogan; menú según secciones activas y modo de la web
+- Modo **landing**: enlaces del menú a anclas (`/#sobre-mi`, `/#servicios`, `/#pide-cita`, `/#contacto`); el Blog siempre en `/blog` (listado dinámico)
+- Modo **multipágina**: enlaces a rutas; `/` redirige a `/inicio`; en landing, `/inicio` redirige a `/#inicio`
+- JSON-LD `ProfessionalService` en el layout; `generateMetadata` con título por defecto/plantilla
+- Footer con nombre, derechos, política de privacidad y redes sociales activas (`listarRedesActivas`, iconos FA, abren en pestaña nueva)
+
+### Páginas
+- `/`: landing completa (hero, sobre mí, servicios, especialidades, planes, FAQ, CTA y contacto con mapa) o redirect a `/inicio`
+- `/inicio`, `/sobre-mi`, `/servicios`, `/faq`, `/contacto`: secciones con datos reales; 404 si la sección está desactivada
+- `/pide-cita`: título + empty state del formulario (llega en FASE 17) + contacto con mapa
+- `/blog` y `/blog/[slug]`: listado paginado con filtro por categorías, y artículo con HTML saneado (DOMPurify)
+
+### SEO (`src/lib/seo.ts`)
+- `urlBase()`/`urlAbsoluta()` con `NEXT_PUBLIC_URL` (fallback localhost); `metadatosPublicos()` (canonical, Open Graph, Twitter) y `jsonLd()` (escapa `<`)
+- `src/app/sitemap.ts`: páginas según secciones activas + artículos publicados; se revalida con la web
+- `src/app/robots.ts`: permite `/`, deniega `/panel-psicologa`, `/acceso-psicologa`, `/instalacion`, `/preview-tema`, `/api`
+- `revalidarWebPublica()` revalida también `/`, `/blog/[slug]` y `/sitemap.xml`
+
+### Decisiones FASE 16
+- **Mapa:** iframe embebido de Google Maps (`maps?q=<dirección>&output=embed`), sin API key; si no hay dirección, no se muestra
+- **WhatsApp:** dígitos del `phone_public` (sin `+` ni espacios); el número debe incluir prefijo de país para que funcione
+- **FAQ sin JS:** `<details>/<summary>` con icono FA vía CSS
+- **Imágenes:** `next/image` con `obtenerImagenHueco()` (personalizada o stock)
+- **Fuentes:** se reutilizan las del layout raíz (`--font-panel` Lexend, `--font-marca` Castoro)
+- **Blog básico en FASE 16:** listado + detalle para no dejar la ruta hueca; FASE 18 completa paginación, filtro y pie con redes
+- Sin migraciones nuevas; sin Server Actions nuevas (solo lectura anónima vía RLS existente)
+
+### Reglas de seguridad aplicadas
+- Solo lectura anónima de contenido público ya permitido por RLS (003); se refuerza filtrando en servidor por si la sesión es de la dueña
+- HTML de artículos y FAQ saneado con DOMPurify antes de `dangerouslySetInnerHTML`
+- Sin datos personales de pacientes en ninguna página pública; sin `service_role`; sin nuevas acciones mutantes
+- `robots.txt` y `disallow` de rutas privadas del panel
+
+## Reservas públicas (FASE 17)
+
+### Flujo
+- El visitante abre `/pide-cita` → elijo online/presencial → calendario con huecos reales (`get_available_slots` vía `service_role` en la Server Action) → nombre, teléfono (solo números), email y motivo opcionales → casilla de política de privacidad → `crearReservaAction` → `create_public_booking` (solo `service_role`) → confirmación con enlace a Google Calendar.
+- Si la sección de reservas está desactivada, `/pide-cita` devuelve 404 (ya existente).
+
+### Módulos nuevos
+- `src/services/reservas.ts` (`import "server-only"`) — `obtenerHuecosPublicos` (RPC `get_available_slots` con admin client; filtra `available`; 60 días desde hoy en zona de la psicóloga), `crearReservaPublica` (valida nombre 2–100, teléfono 6–15 dígitos, email, motivo ≤500, modalidad, fecha/hora y consentimiento; calcula `ends_at` = inicio + duración de sesión; llama a `create_public_booking`; traduce errores de la RPC a mensajes genéricos; si se reutiliza una ficha existente actualiza `consent_at`/`consent_version`; envía email de aviso en segundo plano sin romper la reserva)
+- `src/actions/reservas.ts` — `obtenerHuecosAction(modality)`, `obtenerVersionPoliticaAction()`, `crearReservaAction(formData)`. Honeypot en campo oculto `website`; rate limits con `check_rate_limit` (IP 5/hora, teléfono 3/hora); respuesta genérica de error; sin `exigirSesion` (ruta pública)
+- `src/lib/google-calendar.ts` — `enlaceGoogleCalendar()` (url plantilla, fechas en UTC `AAAAMMDDTHHMMSSZ`; sin motivo ni datos de salud)
+- `src/components/publico/formulario-reserva.tsx` + `formulario-reserva.module.css` — selector de modalidad, calendario mensual propio (sin librerías; marca días con huecos), horas del día elegido, formulario con honeypot, consentimiento enlazado a `/politica-privacidad`, estado de carga y confirmación con botón Google Calendar
+
+### Datos de entrada
+- El formulario envía `fecha` (YYYY-MM-DD) y `hora` (HH:MM) en zona local de la psicóloga; el servidor convierte con `instanteDesdeLocal` + timezone de `site_settings`
+- La duración de la cita se obtiene de `professional_profile` por modalidad; el RPC exige que `ends_at - starts_at` sea exactamente la sesión (no sesión+descanso)
+
+### Email de aviso
+- Destinatario: `email_settings.from_email` (el email de Gmail configurado en el panel)
+- Contenido: solo nombre, fecha, hora y modalidad; **sin** motivo ni datos de salud
+- Se envía con `void` (no await destructivo): si falla, la reserva ya está creada
+- Requiere que las notificaciones estén activadas y exista contraseña de aplicación (FASE 15)
+
+### Decisiones FASE 17
+- **Sin captcha** (solo honeypot): AGENTS permite honeypot o captcha; el honeypot no requiere servicios externos ni autorización extra
+- **Calendario propio sin librerías**: rejilla mensual HTML/CSS; Calendar.js se reserva para el panel (FASE 5)
+- **Límites**: IP 5 reservas/hora y teléfono 3/hora en `rate_limit_events`; el RPC ya limita a 3 citas futuras activas por teléfono y modalidad
+- **Sin migración nueva**: `get_available_slots`, `create_public_booking`, `check_rate_limit` y los grants ya existían (004, 004c, 007, 008, 009)
+- **RPC quién puede ejecutar** (sin cambios): `get_available_slots` → authenticated, service_role (la Server Action usa service_role; el navegador nunca la llama); `create_public_booking` → solo service_role; `check_rate_limit` → solo service_role
+
+### Reglas de seguridad aplicadas
+- Reserva solo vía Server Action; el navegador no toca Supabase
+- `service_role` solo en `src/services/reservas.ts` (server-only) y en el admin client
+- Honeypot + rate limit IP/teléfono + máximo de citas futuras (RPC)
+- Validación en servidor de longitudes, teléfono y fecha; revalidación de disponibilidad dentro de `create_public_booking`
+- Respuesta pública genérica: no revela si el teléfono existía ni datos del paciente
+- Casilla de privacidad obligatoria; se guarda `consent_at` y `consent_version` (nueva ficha o actualización al reutilizar)
+- Email sin motivo de consulta; fallo del email no revierte la reserva
+- Sin datos personales en logs
+
+## Blog público y redes (FASE 18)
+
+### Listado y filtro de `/blog`
+- Paginación por `searchParams` (`?page=N`, 9 artículos por página) y filtro por categoría (`?categoria=<slug>`); los links de categoría reinician a la página 1
+- `listarArticulosPublicos(limite, { desplazamiento, categoriaSlug })` con `.range()` y `.eq("category.slug", ...)`; `contarArticulosPublicos(categoriaSlug)` con count exacto
+- Chips de categorías ("Todas" + activas); empty state específico si la categoría no tiene artículos
+- Título del `h1` = nombre de la categoría activa o "Blog"; paginación con Anterior/Siguiente (iconos FA) y "Página N / M"
+- Textos configurables: `blog.all_categories`, `blog.no_posts_category`, `blog.prev`, `blog.next`, `blog.page_of`
+
+### Redes sociales en el footer
+- `listarRedesActivas()` en `src/services/redes.ts` (filtra `is_active = true` también en servidor, por si la dueña visita con sesión)
+- Footer del layout público: lista de iconos FA (`red.icon`), enlace `target="_blank" rel="noopener noreferrer"`, `aria-label` con el nombre de la red (`opcionRed`)
+- Estilos en `publico.module.css`: círculos con borde, hover con color primario
+
+### Decisiones FASE 18
+- **9 artículos por página** (múltiplo de 3 para la rejilla de 3 columnas)
+- **Filtro por query string** (`?categoria=`) en vez de ruta `/blog/categoria/[slug]`: más simple y el sitemap ya lista artículos sueltos
+- **Sin migraciones nuevas:** `social_links` y `blog_categories` ya existían con RLS de anon (003)
+- **Sin Server Actions nuevas:** solo lectura anónima vía RLS existente; revalidación de `/blog` ya existía (FASE 16)
+- **RPC quién puede ejecutar** (sin cambios): ninguna nueva en esta fase
+
+### Reglas de seguridad aplicadas
+- Solo lectura anónima de contenido público ya permitido por RLS (003); se refuerza filtrando `is_active` y `status: published` en servidor
+- Sin datos personales; sin `service_role`; sin acciones mutantes nuevas
+
+## Seguridad y despliegue (FASE 19)
+
+### Cabeceras de seguridad (`next.config.ts`)
+- `headers()` en `next.config.ts` aplica a `/(.*)`:
+  - CSP: `default-src 'self'`; `script-src 'self' 'unsafe-inline' 'unsafe-eval'` (payloads RSC de App Router); `style-src 'self' 'unsafe-inline'`; `img-src`/`connect-src` con el hostname real de Supabase (+ `wss://` para Realtime); `frame-src` solo Google Maps; `frame-ancestors 'none'`; `worker-src 'self' blob:`; `object-src 'none'`; `base-uri`/`form-action` `'self'`
+  - `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: strict-origin-when-cross-origin`
+  - `Permissions-Policy`: camera/microphone/geolocation/payment/usb/interest-cohort desactivados
+  - HSTS (`max-age=63072000; includeSubDomains; preload`) **solo en producción** (`NODE_ENV=production`)
+
+### `proxy.ts` (antes `middleware.ts`)
+- Next 16.4.1: el nombre oficial es `proxy.ts` con `export async function proxy`; matcher y lógica de protección de `/panel-psicologa/*` sin cambios
+
+### Auditoría de seguridad (código, 2026-10-21)
+| Área | Resultado |
+|------|-----------|
+| RLS | Todas las políticas `authenticated` usan `is_owner()`; `anon` solo lee contenido público (servicios, FAQ, blog publicado, frases, redes, imágenes, plantilla protección, política de privacidad). `anon` NO accede a `patients`, `appointments`, `clinical_*`, `email_settings` ni datos privados del perfil |
+| RPC | `create_public_booking` y `check_rate_limit` solo `service_role` (004b/004c/007); `verify_login_phone` solo `authenticated` + `service_role` con `is_owner()`; `get_available_slots` solo `authenticated` + `service_role`; `is_setup_completed` también `anon` (sin datos personales); `EXECUTE` revocado a `PUBLIC` en todas |
+| Storage | `clinical-files` privado (solo dueña + service_role); URLs firmadas de 60 s; nombres UUID; validación de tipo real y tamaño en servidor |
+| Server Actions del panel | Todas usan `exigirSesion()` (`getUser` en servidor); el middleware/proxy es capa adicional, no la única |
+| Reserva pública | Solo Server Action → RPC con `service_role`; honeypot + rate limit IP/teléfono + máximo de citas futuras; respuesta genérica; email sin motivo |
+| Claves | `service_role` solo en `src/lib/supabase/admin.ts` (`server-only`); sin prefijo `NEXT_PUBLIC_`; nunca en componentes de cliente |
+| Login | Rate limit por IP real (`x-forwarded-for`/`x-real-ip`) 5/15 min y por email 3/15 min; mensajes genéricos; MFA TOTP opcional |
+| Contraseña Gmail | Cifrada AES-256-GCM; solo service_role la lee; grants por columnas (014) |
+| Logs | Solo `console.warn/error` genéricos en rate-limit e instalación; sin datos personales ni de salud |
+
+### `npm audit` (2026-10-21)
+- **5 vulnerabilidades "high"** en `braces` vía cadena `eslint-config-next` → `@next/eslint-plugin-next` → `fast-glob` → `micromatch` → `braces`
+- Son dependencias de **desarrollo** (ESLint); **no** se incluyen en el bundle de producción ni en el runtime de Vercel
+- El fix automático (`npm audit fix --force`) instalaría `eslint-config-next@14.2.35` (degradación mayor); **no se aplica**
+- Riesgo residual: DoS por patrones muy anidados al ejecutar ESLint localmente sobre entradas no confiables — no aplica al CMS en uso real
+
+### Pasos manuales pendientes (usuario)
+1. **Prueba de abuso de reservas**: con el sitio desplegado, enviar muchas reservas seguidas desde la misma IP y con el mismo teléfono; deben bloquearse a partir de 5/h (IP) y 3/h (teléfono). También probar llamando `create_public_booking` con la anon key desde el navegador: debe fallar (solo `service_role`)
+2. **Región de Supabase**: confirmar en el dashboard de Supabase que el proyecto está en **eu-west-1** (Frankfurt, UE) o anotar la región real si es otra; influye en la normativa aplicable (RGPD)
+3. **Política de conservación de datos** (revisar con asesoramiento legal; el sistema solo la aplica técnicamente):
+   - Datos de pacientes y historias clínicas: se conservan mientras exista relación terapéutica y los plazos legales de la normativa sanitaria/LOPD aplicable; la psicóloga puede exportarlos o anonimizarlos desde la ficha (derechos de acceso, supresión y portabilidad)
+   - `rate_limit_events`: se pueden purgar periódicamente (son temporales)
+   - Copias de seguridad: revisar el plan de Supabase (PITR o backups diarios según plan); si no bastan para datos clínicos, exportar `patients`, `appointments` y `clinical_records` periódicamente (pg_dump o panel → Exportar)
+4. **Copias de seguridad en Supabase**: en Database → Backups, comprobar el plan activo y la retención; si es el plan gratuito (snapshots diarios, retención limitada), valorar un plan de pago o un volcado programado
+5. **Despliegue en Vercel**:
+   - Importar el repo; Node 20.19+ (ideal 22+ o 24 LTS)
+   - Variables de entorno en Vercel (Production + Preview): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `INSTALL_TOKEN` (≥32 caracteres), `NEXT_PUBLIC_URL=https://tudominio.com`
+   - **Nunca** poner `SUPABASE_SERVICE_ROLE_KEY` con prefijo `NEXT_PUBLIC_`
+6. **Dominio y URLs en Supabase Auth**: en Authentication → URL Configuration, añadir `https://tudominio.com` y `https://tudominio.com/acceso-psicologa` a Site URL y Redirect URLs (recuperación de contraseña)
+7. **Prueba final del flujo**: instalación (si no está hecha) → login con los 3 datos → reserva pública → email de aviso → nota de sesión en la historia → comprobar cabeceras de seguridad en el navegador (DevTools → Network)
+
+### Reglas de seguridad aplicadas (FASE 19)
+- Cabeceras de seguridad en todas las respuestas (CSP, frame-ancestors, HSTS en prod)
+- `service_role` solo en servidor; rate limit de login con IP real
+- Auditoría completa de RLS/RPC/storage/actions sin hallazgos críticos en el código
+- Sin migraciones nuevas
 
 ## Historial de cambios
+
+- 2026-10-21: FASE 19 completada (implementación; pasos manuales abajo) - Seguridad y despliegue: (1) **Cabeceras de seguridad** en `next.config.ts` (`headers()`): CSP (default/script/style/img/connect/frame-src/worker-src adaptadas a Supabase y Google Maps), `frame-ancestors 'none'` + `X-Frame-Options: DENY`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` y HSTS solo en producción. (2) **`middleware.ts` → `proxy.ts`** con `export async function proxy` (Next 16). (3) **Rate limit de login por IP real**: `loginAction` lee `x-forwarded-for`/`x-real-ip` (antes usaba `'unknown'` fijo). (4) **URL del sitio unificada**: `NEXT_PUBLIC_SITE_URL` → `NEXT_PUBLIC_URL` en recuperación de contraseña. (5) **Auditoría de seguridad** (RLS, RPC, storage, Server Actions, claves): todas las políticas `authenticated` usan `is_owner()`; anon solo lee contenido público; `create_public_booking` y `check_rate_limit` solo `service_role`; contraseña SMTP ilegible desde cliente (grants por columnas 014); admin client con `server-only`; `exigirSesion()` en todas las acciones del panel. (6) `npm audit`: 5 vulnerabilidades high en `braces` vía `eslint-config-next` (solo dependencias de desarrollo/eslint, **no** en el runtime de producción; corregir requeriría degradar eslint-config-next a 14.x). Sin migraciones nuevas. `npm run build` exitoso (49 páginas). Skills usadas: psicocms-seguridad.
+- 2026-10-21: FASE 18 completada - Blog público y redes en el footer: `/blog` con paginación (`?page=`, 9/página), filtro por categorías (`?categoria=slug`, chips con "Todas"), empty state específico por categoría y `h1` según categoría activa; servicio `blog-publico.ts` con `listarArticulosPublicos` (offset + filtro embed) y `contarArticulosPublicos`; footer del layout público con redes activas (`listarRedesActivas` filtra `is_active` también en servidor, iconos FA, abren en pestaña nueva con `rel="noopener noreferrer"`); textos configurables (`blog.all_categories`, `blog.no_posts_category`, `blog.prev/next/page_of`); estilos de chips y paginación en `blog.module.css` y de redes en `publico.module.css`. Sin migraciones nuevas (tablas y RLS ya existían). `npm run build` exitoso (49 páginas). Skills usadas: psicocms-textos.
+- 2026-10-20: FASE 17 completada - Reservas públicas en `/pide-cita`: selector online/presencial, calendario mensual propio con huecos reales (`get_available_slots` vía service_role), formulario (nombre, teléfono solo números, email y motivo opcionales), honeypot, rate limits IP (5/h) y teléfono (3/h), máximo de citas futuras en el RPC, casilla de política de privacidad con `consent_at`/`consent_version`, creación con `create_public_booking` (solo service_role), confirmación con enlace a Google Calendar (sin APIs) y email de aviso a la psicóloga (solo nombre/fecha/hora/modalidad; el fallo del email no rompe la reserva). Módulos: `src/services/reservas.ts`, `src/actions/reservas.ts`, `src/lib/google-calendar.ts`, `src/components/publico/formulario-reserva.tsx` + CSS. Sin migraciones nuevas. `npm run build` exitoso (49 páginas). Skills usadas: psicocms-citas, psicocms-seguridad, local-dates, psicocms-textos.
+- 2026-10-20: FASE 16 completada - Parte pública: componentes compartidos en `src/components/publico/` con solo `var(--...)` (Hero, SobreMi, Servicios, Especialidades, Planes, Faq, CtaCita, Contacto con mapa, VacioPublico, BotonesContacto con WhatsApp `wa.me`); layout público con logo real (nombre + eslogan), menú según secciones y modo (landing con anclas `/#...`, multipágina con rutas; blog siempre en `/blog`), JSON-LD `ProfessionalService`, footer con política de privacidad. Páginas `/` (landing completa o redirect a `/inicio`), `/inicio`, `/sobre-mi`, `/servicios`, `/faq` (acordeón `<details>`), `/contacto`, `/pide-cita` (empty state hasta FASE 17 + contacto con mapa), `/blog` y `/blog/[slug]` (HTML saneado; paginación/categorías → FASE 18). SEO: `src/lib/seo.ts` (`NEXT_PUBLIC_URL`, canonical/OG/Twitter, `jsonLd`), `sitemap.ts` y `robots.ts`, `revalidarWebPublica` con `/`, `/blog/[slug]` y `/sitemap.xml`. Servicios de lectura: `textos-web.ts` y `blog-publico.ts` (refuerza filtros del RLS por sesión de la dueña). Sin migraciones nuevas. `NEXT_PUBLIC_URL` añadida a `.env.example`. `npm run build` exitoso (49 páginas). Skills usadas: psicocms-temas, psicocms-textos, psicocms-seguridad.
+- 2026-10-20: FASE 15 completada - Configuraciones y extras del panel: frases públicas editables (`/frases` con grupos, buscador y guardado global) y redes sociales (`/redes-sociales` con CRUD, orden e interruptores; valores compartidos en `src/lib/redes.ts` porque los componentes cliente no pueden importar módulos `server-only`); email y notificaciones con nodemailer (un solo campo "Email de Gmail", contraseña SMTP cifrada AES-256-GCM en servidor, mini tutorial de Google, email de prueba; escrituras con admin client por los nuevos grants por columnas de `email_settings`); perfil privado (`/perfil`: nombre, `phone_private`, avatar en bucket `avatars` ≤2 MB, email de acceso y contraseña con contraseña actual en cambios sensibles) con botón de usuario en el header (desplegable Perfil privado / Cerrar sesión) y pie del menú lateral enlazado al perfil; verificación en dos pasos TOTP con Supabase MFA (enroll con QR data-URI, challenge/verify, desactivar; `loginAction` devuelve `mfaRequerido`, paso de código en `/acceso-psicologa`, `exigirSesion`/middleware redirigen a `?mfa=pendiente` sin bucles, rate limits 5/15 min, recuperación documentada con `admin.unenroll`); política de privacidad editable y versionada (panel + página pública `/politica-privacidad` con `generateMetadata` + enlace en el footer); buscador general en la cabecera con página de resultados agrupados (`/buscar?q=`); ayuda con tutorial completo (9 secciones). Migraciones **014** (`phone_private` + `verify_login_phone` preferente + grants por columnas de `email_settings`) y **015** (`privacy_policy` con RLS anon/owner/service_role y seed) creadas y **pendientes de aplicar** (junto a la 013). Enlace de la política desde el formulario de reserva → FASE 17. `npm run build` exitoso (47 páginas). Skills usadas: psicocms-seguridad, psicocms-textos.
+
+
+- 2026-10-20: Fix FASE 14 (pendiente de `fixes.md` resuelto) - Las secciones ocultadas en el panel seguían viéndose en la web pública porque el layout `(public)` no leía `site_settings.sections_enabled`. Ahora el menú público filtra Servicios/Blog/FAQ/Pide cita con `obtenerSecciones()`; las páginas `/servicios`, `/blog`, `/faq` y `/pide-cita` devuelven 404 con `notFound()` si su sección está desactivada (nuevo helper `seccionActivaPublica()` en `src/services/secciones.ts`); `revalidarWebPublica()` pasa a revalidar también `/blog` y `/faq`. Lectura anónima válida por la política `anon_read_site_settings`; sin migraciones ni cambios de permisos. `npm run build` exitoso (44 páginas). Skill aplicada: psicocms-seguridad.
+- 2026-10-20: FASE 14 completada - Tema del panel y secciones activables: botón de tema en el header (luna/sol) que abre `TemaPanelModal` con modo Claro/Oscuro y 8 colores principales (el azul actual entre ellos), guardado con `guardarPreferenciasAction` (Server Action con `exigirSesion()`) en `dashboard_preferences` + cookie `psicocms-preferencias-panel` (httpOnly, 1 año) que el layout lee en servidor para aplicar el tema sin parpadeo. Constantes/validaciones en `src/lib/panel-tema.ts`, servicios `preferencias.ts` y `secciones.ts`. Paleta oscura completa por variables en `.shell[data-modo-panel="dark"]` (tokens, alertas como variables nuevas en `globals.css`, `color-scheme` y `color-mix()` para los derivados del primario), con `@media print` que restaura el claro para los PDF de la FASE 9. Nueva página `/panel-psicologa/secciones` (Gestión web) con interruptores para booking, servicios, especialidades, planes, blog y FAQs, guardando `site_settings.sections_enabled` con lista blanca y revalidando la web pública. Migración **013** (pendiente de aplicar): CHECK de `primary_color`. `npm run build` exitoso (45 páginas). Skills usadas: psicocms-seguridad, psicocms-textos.
+- 2026-10-20: FASE 13 completada - Imágenes del sitio: catálogo de 8 huecos (`hero`, `sobre-mi`, `servicios`, `especialidades`, `cita`, `contacto`, `blog`, `faq`) en `src/services/imagenes.ts` con su imagen de stock; la tabla `site_images` da prioridad a la imagen personalizada. Panel `/panel-psicologa/imagenes` con rejilla de tarjetas (vista previa `next/image`, badge "Tu imagen"/"De ejemplo"), subida con validación jpg/png/webp ≤5 MB en cliente y servidor, ruta UUID en `public-images/imagenes/`, borrado del archivo anterior y "Usar la de ejemplo" con ConfirmarModal. Helper `obtenerImagenHueco()` listo para los temas (FASE 16). `next.config.ts` con `images.remotePatterns` hacia el hostname de Supabase para `next/image`. Servicio + 3 Server Actions con `exigirSesion()`; sin migraciones (tabla y RLS ya existían). `npm run build` exitoso (44 páginas). Skills usadas: psicocms-seguridad, psicocms-textos.
+- 2026-10-20: FASE 12 completada - Temas visuales: índice único de temas en `src/themes/index.ts` (5 temas con id/nombre/descripción/conjunto de colores de muestra, seguro para cliente y servidor) consumido por el panel y por el asistente de instalación. 5 carpetas de tema con `tokens.css` con alcance `.tema-<nombre>` (base, calma, naturaleza, moderno, elegancia) + `todos-los-temas.css`; la web pública envuelve el contenido en `tema-<activo>` leyendo `site_settings`, así que cambiar el tema cambia la apariencia completa. Panel `/panel-psicologa/temas`: tarjetas de tema con muestras y guardado inmediato (toast), formato landing/multipágina en tarjetas, previsualización en pestaña nueva `/preview-tema/<id>` (fuera del shell del panel, protegida por `exigirSesion()`, con datos reales del perfil y servicios) y botón de diseño personalizado → victorroblesweb.es/contacto. Servicio `temas.ts` con validación contra el índice + 2 Server Actions con `exigirSesion()`; revalidación de la web pública al guardar. Migración **012** (pendiente de aplicar): CHECK de `layout_mode`; `active_theme` queda sin CHECK para ser plug and play (decisión anotada). `npm run build` exitoso (44 páginas). Skills usadas: psicocms-temas, psicocms-seguridad, psicocms-textos.
+- 2026-10-20: Fix HC (pendiente de `fixes.md` resuelto) - Los botones de añadir nota de `HistoriaPaciente.tsx` (cabecera y estado vacío) pasan de "Nueva nota" a "Agregar nota", según lo pedido. Título del modal sin cambios. Sin migraciones. `npm run build` exitoso.
+- 2026-10-20: FASE 11 completada - Información pública y catálogo: `/panel-psicologa/informacion-publica` con edición de los datos públicos del perfil (nombre, eslogan, colegiado, teléfono, email, sobre mí con `EditorWysiwyg` y pestañas Editar/Vista previa sanitizada, dirección y lugar de consulta), enlaces laterales a Disponibilidad (horarios) y Perfil privado (foto). CRUD completo de servicios y especialidades con panel compartido `CatalogoSeccion`/`CatalogoModal` (orden con flechas, visibilidad, icono Font Awesome en servicios con validación de formato) y de planes (`PlanesPanel` con precios online/presencial en euros y características por líneas). Servicios `informacion-publica.ts` y `catalogo-web.ts` con validación en servidor; 12 Server Actions con `exigirSesion()`; helper `src/lib/revalidar-web.ts` que revalida las 6 páginas públicas en cada mutación. Sin migraciones (tablas y RLS ya existían). `npm run build` exitoso (43 páginas). Skills usadas: psicocms-seguridad, psicocms-textos.
+- 2026-10-20: FASE 10 completada - Preguntas frecuentes: `/panel-psicologa/faqs` con CRUD completo (crear, editar, eliminar con ConfirmarModal, reordenar con flechas subir/bajar) e interruptor de visibilidad "Visible en la web". Respuesta con `EditorWysiwyg` (pestañas Editar/Vista previa sanitizada) y categoría opcional de texto libre. Servicio `src/services/faqs.ts` (validación + DOMPurify + revalidación de `/faq`) y 5 Server Actions con `exigirSesion()`. Lista numerada sin paginación (decisión anotada) y EmptyState con acción. Sin migraciones (tabla y RLS ya existían). `npm run build` exitoso (43 páginas). Skills usadas: psicocms-seguridad, psicocms-textos.
+- 2026-10-20: FASE 9 completada - Protección de datos: `/panel-psicologa/proteccion-datos` con editor wysiwyg (Jodit, pestañas Editar/Vista previa sanitizada), guardado con `guardarPlantillaProteccionAction` (Server Action con `exigirSesion()`, HTML saneado con DOMPurify, versión autoincrementada en la fila única `data_protection_template`) y modelo orientativo inicial (`src/lib/plantilla-proteccion.ts`, marcado para adaptar y revisar). `/panel-psicologa/proteccion-datos/imprimir`: vista imprimible A4 sin librerías (`window.print()` → "Guardar como PDF"), plantilla vacía con huecos en blanco o rellena con los datos del paciente (`?paciente=<id>`, botón nuevo "PDF protección de datos" en la ficha), cabecera con versión/fecha y pie con responsable + firmas. Reglas `@media print` en `panel.module.css` para ocultar el chrome del panel al imprimir. Sin migraciones (tabla y RLS ya existían). `npm run build` exitoso (43 páginas). Skills usadas: psicocms-seguridad, psicocms-textos.
+- 2026-10-19: Fixes de HC (pendientes de `fixes.md`) - (1) **No se podía volver a la cita desde HC**: el enlace "Volver" de `HistoriaPaciente.tsx` era un `Link` fijo al listado de historias; pasa a ser un `<button>` con `router.back()` (fallback `/panel-psicologa/historias`), de modo que desde Citas o Calendario con `?cita=` se regresa a la pantalla de origen. CSS `.volver` con reset de botón. (2) **Vocabulario unificado en HC**: textos visibles de `HistoriaPaciente.tsx` y `SesionModal.tsx` ("Nueva sesión" → "Nueva nota", "Editar sesión" → "Editar nota", "Eliminar sesión" → "Eliminar nota", mensajes y etiquetas de campo), según el vocabulario de AGENTS.md ("cita" = agendado, "nota" = clínico); identificadores internos sin cambios. Sin migraciones. `npm run build` exitoso (42 páginas). Skills usadas: psicocms-textos.
+- 2026-10-19: FASE 8 completada (pendiente final) - Botón "Nueva nota" en la ficha del paciente (`PacienteDetalle.tsx`) que navega a `/panel-psicologa/historias/[id]?nueva=1`; `page.tsx` de la historia lee el search param `nueva` y `HistoriaPaciente` lo convierte en `abrirNueva` para abrir `SesionModal` al montar (selector de cita incluido, mismo patrón que `?cita=`). Sin migración, sin cambios de RLS ni de servicios: solo 3 ficheros de UI. `npm run build` exitoso. Skills usadas: psicocms-citas, psicocms-seguridad, psicocms-textos. Migración **011** aplicada por la usuaria el mismo día.
+- 2026-10-18: Fixes de citas e historias (pendientes de `fixes.md`) - (1) **No se podían escribir notas desde las citas / combobox vacío**: `listarCitasParaNota` en `src/services/historias.ts` filtraba `.lt("starts_at", now)`, solo citas ya empezadas; con citas de hoy/futuras el selector salía vacío aunque `citaId` llegara preseleccionado por `?cita=`. Se elimina el filtro → devuelve todas las citas del paciente (pasadas y futuras, orden desc, límite 50). (2) **Citas completadas/canceladas/no presentó "cerradas"**: `aEvento` en `CalendarioPanel.tsx` marcaba `locked: finalizada` (bloqueaba el arrastre de canceladas/no presentó) y `crearCita`/`editarCita` ejecutaban `hayConflicto` incondicionalmente, aunque la restricción `appointments_no_overlap` (migración 009) solo cuenta `scheduled`/`completed` como ocupantes. Se retira `locked` (color neutro se conserva) y se añade la guardia `ocupaAgenda` para solo chequear conflicto en estados que ocupan agenda. Nota: programar citas en el pasado sigue bloqueado por diseño. Sin migraciones. `npm run build` exitoso (42 páginas). Skills usadas: psicocms-citas.
+- 2026-10-18: "Una cita puede tener varias notas" implementada - Nueva migración **011** (pendiente de aplicar) que elimina `idx_clinical_records_appointment_unique`. `src/services/historias.ts`: `validarCitaParaNota` ya no rechaza notas duplicadas por cita; `listarCitasParaNota(patientId)` devuelve todas las citas pasadas (sin embed de notas ni `excluirRecordId`). `SesionModal` y la Server Action actualizados (deps del effect sin `excluirRecordId`). Además fix de `/debug-login` por la actualización de supabase-js a 2.109.0 (`generateLink` ahora devuelve `data.properties.action_link`). `npm run build` exitoso (42 páginas). Skills usadas: psicocms-seguridad, psicocms-citas.
+- 2026-10-18: Fusión del kit actualizado - AGENTS.md nuevo (v2) y skills actualizadas; `plan-implementacion.md` regenerado con la estructura nueva (estados de cita en FASE 4, FASE 8B integrada en FASE 8) y marcas [x] según el código real (sin marcar: fuentes WOFF2, imágenes WebP, botón "Nueva nota" en ficha de paciente y tutorial de ayuda). Decisiones nuevas en el MAP: cita vs nota de sesión con sus 4 estados, **una cita podrá tener varias notas** (ajustar migración 010 y `src/services/historias.ts` antes de aplicar la 010), `middleware.ts` → `proxy.ts` pendiente (Next 16.4.1) y `/debug-login` como ruta de desarrollo sin documentar. Diferencias AGENTS vs código detalladas para el usuario. Sin cambios de código ni de BD en esta tarea.
 - 2026-10-16: FASE 8B completada - Enlace opcional citas ↔ historias clínicas. Migración **010** creada (pendiente de aplicar): `clinical_records.appointment_id` nullable con `ON DELETE SET NULL` + índice único parcial (una nota por cita). Servicio de historias: validación en servidor de la cita (mismo paciente, sin nota previa), `listarCitasParaNota`, `session_date` propio de la nota. Citas: `notaId` vía embed `clinical_records(id)` en `SELECT_CITA`, desenlace al cancelar en servidor. Panel: selector "Cita de origen" en `SesionModal`, badge de cita de origen en cada sesión, "Escribir nota de sesión"/"Ver nota" en `CitaModal` y en el listado de citas (sin contenido clínico en citas). `npm run build` exitoso.
 - 2026-10-16: Fix pegar cita en hueco libre daba falso positivo de ocupado - Calendar.js al pegar (`Yh`) solo cambia la fecha del evento copiado y conserva su hora original, así que un evento copiado de las 09:00 se pegaba a las 09:00 en el día clicado y, si a esa hora había cita, saltaba el toast de ocupado aunque el hueco clicado estuviera libre. Listener de `contextmenu` en fase capture (necesario porque `C(a)` hace `preventDefault`+`cancelBubble`) que guarda en `clicDerechoRef` la hora/minuto del clic en la celda de semana o el área de día, y `onEventAdded` recalcula el rango pegado (`inicio.setHours(clic.hora, clic.min)`, `fin = inicio + duración`) antes de `solapaOcupada`: hueco libre → `CitaModal` con la hora del clic; ocupado → toast sin modal. Verificado en navegador real (página temporal `/debug-cal` ya eliminada): pegar en libre → modal con hora del clic sin toast; pegar en ocupado → toast correcto; doble clic sin regresión; 0 errores de consola. Nota: el navegador automatizado de pruebas corría en `America/Buenos_Aires` mientras las citas usaban `+02:00`, lo que desalineaba `solapaOcupada` solo en el test; en producción la zona del navegador coincide con la configurada. Sin migraciones ni cambios de datos/permisos. `npm run build` exitoso.
 - 2026-10-14: FASE 0A completada - Proyecto Next.js inicializado, estructura de rutas, clientes Supabase, middleware, variables de entorno, build exitoso, primer commit.

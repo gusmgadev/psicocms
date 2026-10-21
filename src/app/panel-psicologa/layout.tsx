@@ -1,30 +1,21 @@
-import { redirect } from "next/navigation";
-import { createClient as createServerClient } from "@/lib/supabase/server";
-import { ToastProvider } from "@/components/ui/Toast";
+import { exigirSesion } from "@/lib/auth-guard";
+import { cookies } from "next/headers";
+import { obtenerCabeceraUsuario } from "@/services/perfil-privado";
+import { obtenerPreferencias } from "@/services/preferencias";
+import { COOKIE_PREFERENCIAS, parsearPreferenciasCookie } from "@/lib/panel-tema";
 import PanelShell from "./PanelShell";
 
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createServerClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { user } = await exigirSesion();
 
-  if (!user) {
-    redirect("/acceso-psicologa");
-  }
-
-  const meta = user.user_metadata as { full_name?: string } | undefined;
+  const [cabecera, cookieStore] = await Promise.all([obtenerCabeceraUsuario(user), cookies()]);
+  const preferencias =
+    parsearPreferenciasCookie(cookieStore.get(COOKIE_PREFERENCIAS)?.value) ??
+    (await obtenerPreferencias());
 
   return (
-    <ToastProvider>
-      <PanelShell
-        usuario={{
-          nombre: meta?.full_name ?? null,
-          email: user.email ?? null,
-        }}
-      >
-        {children}
-      </PanelShell>
-    </ToastProvider>
+    <PanelShell usuario={cabecera} preferencias={preferencias}>
+      {children}
+    </PanelShell>
   );
 }

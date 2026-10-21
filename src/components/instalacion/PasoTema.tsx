@@ -1,19 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { TEMAS } from "@/themes";
 import styles from "@/app/instalacion/instalacion.module.css";
 
 interface PasoTemaProps {
   onData: (data: { theme: string; layoutMode: "landing" | "multipage" }) => void;
 }
-
-const themes = [
-  { id: "base", name: "Base", description: "Tema original cálido y profesional", preview: "/images/stock/psicologa.jpg" },
-  { id: "calma", name: "Calma", description: "Tonos azules suaves, transmiten tranquilidad", preview: "/images/stock/psicologa.jpg" },
-  { id: "naturaleza", name: "Naturaleza", description: "Verdes y tierra, conexión con lo natural", preview: "/images/stock/psicologa.jpg" },
-  { id: "moderno", name: "Moderno", description: "Limpio, minimalista, con acentos de color", preview: "/images/stock/psicologa.jpg" },
-  { id: "elegancia", name: "Elegancia", description: "Oscuro y sofisticado, para consultas premium", preview: "/images/stock/psicologa.jpg" },
-];
 
 export default function PasoTema({ onData }: PasoTemaProps) {
   const [selectedTheme, setSelectedTheme] = useState("base");
@@ -78,7 +71,7 @@ export default function PasoTema({ onData }: PasoTemaProps) {
       <div className={styles.pasoGrupo}>
         <h3 className={styles.seccionTitulo}>Tema visual</h3>
         <div className={styles.rejilla3}>
-          {themes.map((theme) => (
+          {TEMAS.map((theme) => (
             <label key={theme.id} className={styles.opcionRadio}>
               <input
                 type="radio"
@@ -89,11 +82,11 @@ export default function PasoTema({ onData }: PasoTemaProps) {
               />
               <div className={styles.opcionCuerpo}>
                 <div className={styles.temaMiniatura}>
-                  <img src={theme.preview} alt="" aria-hidden="true" />
-                  <span className={styles.temaMiniaturaNombre}>{theme.name}</span>
+                  <img src="/images/stock/psicologa.jpg" alt="" aria-hidden="true" />
+                  <span className={styles.temaMiniaturaNombre}>{theme.nombre}</span>
                 </div>
-                <p className={styles.opcionTitulo}>{theme.name}</p>
-                <p className={styles.opcionTexto}>{theme.description}</p>
+                <p className={styles.opcionTitulo}>{theme.nombre}</p>
+                <p className={styles.opcionTexto}>{theme.descripcion}</p>
               </div>
             </label>
           ))}

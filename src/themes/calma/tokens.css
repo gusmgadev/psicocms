@@ -1,0 +1,50 @@
+/* ============================================================
+   TEMA CALMA - Tokens de color (tonos azules suaves)
+   Solo redefine colores; tipografía, espaciados y radios
+   los aporta el tema base (:root).
+   ============================================================ */
+
+.tema-calma {
+  /* --- Colores de marca --- */
+  --color-primario: #3d6f8c;
+  --color-primario-oscuro: #2c5470;
+  --color-primario-claro: #a8c5d4;
+  --color-primario-muy-claro: #e3eff5;
+  --color-primario-fuerte: #24455c;
+  --color-primario-muy-fuerte: #2c5470;
+
+  /* --- Fondos --- */
+  --color-fondo: #f2f6f8;
+  --color-fondo-blanco: #ffffff;
+  --color-fondo-alt: #e8f0f5;
+  --color-fondo-suave: #eaf2f7;
+  --color-fondo-muy-suave: #e3ecf2;
+  --color-fondo-oscuro: #0e1a22;
+  --color-fondo-muy-oscuro: #15222c;
+
+  /* --- Textos --- */
+  --color-texto: #1a2b36;
+  --color-texto-suave: #5c7382;
+  --color-texto-muy-suave: #8fa3b0;
+  --color-texto-claro: #ffffff;
+  --color-texto-sobre-primario: #ffffff;
+
+  /* --- Bordes --- */
+  --color-borde: #d4e0e8;
+  --color-borde-suave: #dde7ee;
+  --color-borde-medio: #b9ccd8;
+  --color-borde-oscuro: #6d8796;
+
+  /* --- Estados --- */
+  --color-hover-primario: #2c5470;
+  --color-hover-negro: #000000;
+  --color-focus: #3d6f8c;
+  --color-sombra: rgba(26, 43, 54, 0.05);
+  --color-sombra-fuerte: rgba(61, 111, 140, 0.5);
+
+  /* --- Sombras --- */
+  --shadow-sm: 0 1px 2px rgba(26, 43, 54, 0.06);
+  --shadow-md: 0 4px 6px rgba(26, 43, 54, 0.08);
+  --shadow-lg: 0 10px 25px rgba(26, 43, 54, 0.1);
+  --shadow-wave: 0 0 0 0 rgba(61, 111, 140, 0.5);
+}

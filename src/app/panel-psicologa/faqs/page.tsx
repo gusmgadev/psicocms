@@ -1,11 +1,9 @@
-﻿import { PaginaSeccion } from "../PaginaSeccion";
+﻿import { exigirSesion } from "@/lib/auth-guard";
+import { listarFaqs } from "@/services/faqs";
+import FaqsPanel from "./FaqsPanel";
 
-export default function Pagina() {
-  return (
-    <PaginaSeccion
-      titulo="Preguntas frecuentes"
-      descripcion="Gestiona las dudas frecuentes de tus pacientes."
-      icono="fa-circle-question"
-    />
-  );
+export default async function PaginaFaqs() {
+  await exigirSesion();
+  const faqs = await listarFaqs();
+  return <FaqsPanel inicial={faqs} />;
 }

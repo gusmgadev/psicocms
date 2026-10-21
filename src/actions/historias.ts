@@ -32,13 +32,10 @@ export async function listarHistoriaPacienteAction(patientId: string): Promise<H
   return listarHistoriaPaciente(patientId);
 }
 
-export async function listarCitasParaNotaAction(
-  patientId: string,
-  excluirRecordId?: string,
-): Promise<CitaParaNota[]> {
+export async function listarCitasParaNotaAction(patientId: string): Promise<CitaParaNota[]> {
   await exigirSesion();
   if (!patientId) return [];
-  return listarCitasParaNota(patientId, excluirRecordId);
+  return listarCitasParaNota(patientId);
 }
 
 export async function crearSesionHistoriaAction(

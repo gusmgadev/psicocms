@@ -15,6 +15,12 @@
   --color-aviso-fondo: #fffbeb;
   --color-peligro: #dc2626;
   --color-peligro-fondo: #fef2f2;
+  --color-exito-borde: #bbf7d0;
+  --color-exito-texto: #047857;
+  --color-aviso-borde: #fde68a;
+  --color-aviso-texto: #b45309;
+  --color-peligro-borde: #fecaca;
+  --color-peligro-texto: #b91c1c;
   --radius-sm: 0.4rem;
   --radius-md: 0.8rem;
   --radius-lg: 1.2rem;
@@ -207,20 +213,20 @@ img {
 
 .alerta--error {
   background-color: var(--color-peligro-fondo);
-  border-color: #fecaca;
-  color: #b91c1c;
+  border-color: var(--color-peligro-borde);
+  color: var(--color-peligro-texto);
 }
 
 .alerta--exito {
   background-color: var(--color-exito-fondo);
-  border-color: #bbf7d0;
-  color: #047857;
+  border-color: var(--color-exito-borde);
+  color: var(--color-exito-texto);
 }
 
 .alerta--aviso {
   background-color: var(--color-aviso-fondo);
-  border-color: #fde68a;
-  color: #b45309;
+  border-color: var(--color-aviso-borde);
+  color: var(--color-aviso-texto);
 }
 
 .tarjeta {

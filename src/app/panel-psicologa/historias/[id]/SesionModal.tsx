@@ -66,7 +66,7 @@ export default function SesionModal({
     if (!abierto || !patientId) return;
     let cancelado = false;
     setCargandoCitas(true);
-    listarCitasParaNotaAction(patientId, editando?.id)
+    listarCitasParaNotaAction(patientId)
       .then((lista) => {
         if (cancelado) return;
         setCitas(lista);
@@ -88,7 +88,7 @@ export default function SesionModal({
     return () => {
       cancelado = true;
     };
-  }, [abierto, patientId, editando, timezone]);
+  }, [abierto, patientId, timezone]);
 
   const cambiarCita = (id: string) => {
     setCitaId(id);
@@ -117,7 +117,7 @@ export default function SesionModal({
       const res = await editarSesionHistoriaAction(editando.id, fecha, contenido, citaId || null);
       if (!res.ok || !res.sesion) {
         setGuardando(false);
-        setError(res.error ?? "No se pudo guardar la sesión.");
+        setError(res.error ?? "No se pudo guardar la nota.");
         return;
       }
       sesion = { ...res.sesion, archivos: editando.archivos };
@@ -125,7 +125,7 @@ export default function SesionModal({
       const res = await crearSesionHistoriaAction(patientId, fecha, contenido, citaId || null);
       if (!res.ok || !res.sesion) {
         setGuardando(false);
-        setError(res.error ?? "No se pudo crear la sesión.");
+        setError(res.error ?? "No se pudo crear la nota.");
         return;
       }
       sesion = res.sesion;
@@ -145,9 +145,9 @@ export default function SesionModal({
     }
 
     setGuardando(false);
-    mostrar(editando ? "Sesión actualizada." : "Sesión añadida.");
+      mostrar(editando ? "Nota actualizada." : "Nota añadida.");
     if (fallos > 0) {
-      mostrar(`${fallos} archivo(s) no se pudieron subir; puedes adjuntarlos desde la sesión.`, "info");
+      mostrar(`${fallos} archivo(s) no se pudieron subir; puedes adjuntarlos desde la nota.`, "info");
     }
     onGuardado(sesion, !editando);
     onCerrar();
@@ -157,7 +157,7 @@ export default function SesionModal({
     <Modal
       abierto={abierto}
       onCerrar={onCerrar}
-      titulo={editando ? "Editar sesión" : "Nueva sesión"}
+      titulo={editando ? "Editar nota" : "Nueva nota"}
       pie={
         <>
           <button type="button" className="boton boton--secundario" onClick={onCerrar} disabled={guardando}>
@@ -192,7 +192,7 @@ export default function SesionModal({
           </select>
         </Campo>
 
-        <Campo id="ses-fecha" etiqueta="Fecha de la sesión" requerido>
+        <Campo id="ses-fecha" etiqueta="Fecha de la nota" requerido>
           <input
             id="ses-fecha"
             type="date"
@@ -207,14 +207,14 @@ export default function SesionModal({
             valor={contenido}
             onChange={setContenido}
             altura={320}
-            placeholder="Escribe las notas de la sesión de hoy…"
+            placeholder="Escribe las anotaciones de la nota…"
           />
         </Campo>
 
         <Campo
           id="ses-archivos"
           etiqueta="Adjuntar archivos (opcional)"
-          pista="Fotos o PDFs escaneados de esta sesión. Máximo 15 MB por archivo."
+          pista="Fotos o PDFs escaneados de esta nota. Máximo 15 MB por archivo."
         >
           <input
             id="ses-archivos"

@@ -1,0 +1,50 @@
+/* ============================================================
+   TEMA NATURALEZA - Tokens de color (verdes y tierra)
+   Solo redefine colores; tipografía, espaciados y radios
+   los aporta el tema base (:root).
+   ============================================================ */
+
+.tema-naturaleza {
+  /* --- Colores de marca --- */
+  --color-primario: #4f7350;
+  --color-primario-oscuro: #3a5a3d;
+  --color-primario-claro: #a8c3a0;
+  --color-primario-muy-claro: #e8f0e4;
+  --color-primario-fuerte: #2f4632;
+  --color-primario-muy-fuerte: #3a5a3d;
+
+  /* --- Fondos --- */
+  --color-fondo: #f3f5ef;
+  --color-fondo-blanco: #ffffff;
+  --color-fondo-alt: #e9eee3;
+  --color-fondo-suave: #edf1e8;
+  --color-fondo-muy-suave: #e5ebe0;
+  --color-fondo-oscuro: #101610;
+  --color-fondo-muy-oscuro: #182018;
+
+  /* --- Textos --- */
+  --color-texto: #1f2a1c;
+  --color-texto-suave: #5f6e58;
+  --color-texto-muy-suave: #8f9c88;
+  --color-texto-claro: #ffffff;
+  --color-texto-sobre-primario: #ffffff;
+
+  /* --- Bordes --- */
+  --color-borde: #d5ddcc;
+  --color-borde-suave: #dce3d5;
+  --color-borde-medio: #bdc9b2;
+  --color-borde-oscuro: #77856e;
+
+  /* --- Estados --- */
+  --color-hover-primario: #3a5a3d;
+  --color-hover-negro: #000000;
+  --color-focus: #4f7350;
+  --color-sombra: rgba(31, 42, 28, 0.05);
+  --color-sombra-fuerte: rgba(79, 115, 80, 0.5);
+
+  /* --- Sombras --- */
+  --shadow-sm: 0 1px 2px rgba(31, 42, 28, 0.06);
+  --shadow-md: 0 4px 6px rgba(31, 42, 28, 0.08);
+  --shadow-lg: 0 10px 25px rgba(31, 42, 28, 0.1);
+  --shadow-wave: 0 0 0 0 rgba(79, 115, 80, 0.5);
+}

@@ -1,17 +1,29 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { loginAction } from "@/actions/auth";
+import { verificarCodigoMfaAction } from "@/actions/mfa";
 import { useRouter } from "next/navigation";
 import styles from "./acceso.module.css";
 
+type Paso = "login" | "mfa" | "recover";
+
 export default function AccesoPage() {
   const router = useRouter();
+  const [paso, setPaso] = useState<Paso>("login");
   const [showRecover, setShowRecover] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [recoverMsg, setRecoverMsg] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [remember, setRemember] = useState(false);
+  const [codigo, setCodigo] = useState("");
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("mfa") === "pendiente") {
+      setPaso("mfa");
+    }
+  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -26,10 +38,31 @@ export default function AccesoPage() {
     if (result.ok) {
       router.push("/panel-psicologa");
       router.refresh();
+    } else if (result.mfaRequerido) {
+      setCodigo("");
+      setPaso("mfa");
+      setLoading(false);
     } else {
       setError(result.error || "Error al iniciar sesión");
       setLoading(false);
     }
+  };
+
+  const handleMfa = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    const result = await verificarCodigoMfaAction(codigo);
+
+    if (result.ok) {
+      router.push("/panel-psicologa");
+      router.refresh();
+      return;
+    }
+    setError(result.error || "El código no es correcto");
+    setCodigo("");
+    setLoading(false);
   };
 
   const handleRecover = async (e: FormEvent<HTMLFormElement>) => {
@@ -55,13 +88,71 @@ export default function AccesoPage() {
 
   return (
     <div>
-      {recoverMsg && !showRecover && (
+      {recoverMsg && !showRecover && paso === "login" && (
         <div className="alerta alerta--exito" style={{ marginBottom: "1.6rem" }} role="status">
           {recoverMsg}
         </div>
       )}
 
-      {!showRecover ? (
+      {paso === "mfa" ? (
+        <form onSubmit={handleMfa} className={styles.formulario}>
+          <div>
+            <h2 className={styles.recuperarTitulo}>Verificación en dos pasos</h2>
+            <p className={styles.recuperarTexto}>
+              Introduce el código de 6 dígitos de tu aplicación de autenticación.
+            </p>
+          </div>
+
+          {error && (
+            <div className="alerta alerta--error" role="alert">
+              {error}
+            </div>
+          )}
+
+          <div>
+            <label htmlFor="codigo" className="campo-label">
+              Código de verificación <span style={{ color: "var(--color-peligro)" }}>*</span>
+            </label>
+            <input
+              id="codigo"
+              name="codigo"
+              type="text"
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              pattern="\d{6}"
+              maxLength={6}
+              required
+              autoFocus
+              value={codigo}
+              onChange={(e) => setCodigo(e.target.value.replace(/\D/g, ""))}
+              className="campo-control"
+              style={{ textAlign: "center", letterSpacing: "0.4rem", fontSize: "2rem" }}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading || codigo.length !== 6}
+            className="boton boton--primario boton--bloque"
+          >
+            {loading ? "Verificando..." : "Verificar"}
+          </button>
+
+          <p className={styles.enlaceCentro}>
+            <button
+              type="button"
+              onClick={() => {
+                setPaso("login");
+                setError(null);
+                setCodigo("");
+              }}
+              className={styles.enlaceBoton}
+            >
+              Volver al inicio de sesión
+            </button>
+          </p>
+        </form>
+      ) : !showRecover ? (
         <form onSubmit={handleSubmit} className={styles.formulario}>
           {error && (
             <div className="alerta alerta--error" role="alert">

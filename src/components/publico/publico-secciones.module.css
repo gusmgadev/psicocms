@@ -1,0 +1,634 @@
+/* Estilos de las secciones de la web pública.
+   Solo usan variables del tema activo (var(--...)). */
+
+/* ===== Botones de contacto ===== */
+
+.botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-top: 2.4rem;
+}
+
+.botonesCompacto {
+  margin-top: 1.6rem;
+}
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1.2rem 2.4rem;
+  border-radius: var(--radius-full, 99rem);
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.botonPrimario {
+  background-color: var(--color-primario);
+  color: var(--color-texto-sobre-primario, #fff);
+}
+
+.botonPrimario:hover {
+  background-color: var(--color-primario-oscuro, var(--color-primario));
+}
+
+.botonSecundario {
+  background-color: transparent;
+  color: var(--color-texto);
+  border-color: var(--color-borde-medio, var(--color-borde));
+}
+
+.botonSecundario:hover {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.botonWhatsapp {
+  background-color: #25d366;
+  color: #fff;
+}
+
+.botonWhatsapp:hover {
+  background-color: #1da851;
+}
+
+.botonPlan {
+  margin-top: auto;
+  justify-content: center;
+  background-color: var(--color-primario);
+  color: var(--color-texto-sobre-primario, #fff);
+}
+
+.botonPlan:hover {
+  background-color: var(--color-primario-oscuro, var(--color-primario));
+}
+
+/* ===== Hero ===== */
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4.8rem;
+  padding: 7.2rem 2.4rem;
+  background-color: var(--color-fondo-alt);
+}
+
+.heroContenido {
+  flex: 1 1 40rem;
+  max-width: 56rem;
+}
+
+.heroEtiqueta {
+  margin: 0 0 1.2rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primario);
+}
+
+.heroTitulo {
+  margin: 0 0 1.6rem;
+  font-size: 4rem;
+  line-height: 1.15;
+  color: var(--color-texto);
+}
+
+.heroTexto {
+  margin: 0 0 1.2rem;
+  font-size: 1.7rem;
+  line-height: 1.6;
+  color: var(--color-texto-suave);
+}
+
+.heroColegiada {
+  margin: 0;
+  font-size: 1.4rem;
+  color: var(--color-texto-suave);
+}
+
+.heroImagenCaja {
+  flex: 0 1 36rem;
+}
+
+.heroImagen {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg, 1.2rem);
+  object-fit: cover;
+  box-shadow: var(--shadow-lg);
+}
+
+/* ===== Secciones genéricas ===== */
+
+.seccion,
+.seccionAlterna {
+  padding: 6.4rem 2.4rem;
+}
+
+.seccion {
+  background-color: var(--color-fondo);
+}
+
+.seccionAlterna {
+  background-color: var(--color-fondo-alt);
+}
+
+.seccionCabecera {
+  max-width: 72rem;
+  margin: 0 auto 3.2rem;
+  text-align: center;
+}
+
+.seccionEtiqueta {
+  margin: 0 0 0.8rem;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-primario);
+}
+
+.seccionTitulo {
+  margin: 0;
+  font-size: 2.8rem;
+  line-height: 1.2;
+  color: var(--color-texto);
+}
+
+.seccionTexto {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.6;
+  color: var(--color-texto-suave);
+}
+
+/* ===== Rejilla de tarjetas ===== */
+
+.rejilla {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 110rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+  gap: 2.4rem;
+}
+
+.tarjeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  padding: 2.8rem;
+  background-color: var(--color-fondo-blanco, var(--color-fondo));
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-lg, 1.2rem);
+  box-shadow: var(--shadow-sm);
+}
+
+.tarjetaIcono {
+  font-size: 2.2rem;
+  color: var(--color-primario);
+}
+
+.tarjetaTitulo {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--color-texto);
+}
+
+.tarjetaTexto {
+  margin: 0;
+  font-size: 1.4rem;
+  line-height: 1.6;
+  color: var(--color-texto-suave);
+}
+
+/* ===== Sobre mí ===== */
+
+.sobreMi {
+  display: flex;
+  align-items: center;
+  gap: 4.8rem;
+  max-width: 110rem;
+  margin: 0 auto;
+}
+
+.sobreMiImagenCaja {
+  flex: 0 1 36rem;
+}
+
+.sobreMiImagen {
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg, 1.2rem);
+  object-fit: cover;
+  box-shadow: var(--shadow-md);
+}
+
+.sobreMiContenido {
+  flex: 1 1 40rem;
+}
+
+.sobreMiNombre {
+  margin: 0 0 1.2rem;
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--color-primario);
+}
+
+/* ===== Lista con checks (especialidades) ===== */
+
+.listaChecks {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 80rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(28rem, 1fr));
+  gap: 1.6rem;
+}
+
+.listaCheckItem {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+}
+
+.listaCheckItem > i {
+  margin-top: 0.3rem;
+  color: var(--color-primario);
+  font-size: 1.4rem;
+}
+
+.checkTitulo {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+.checkTexto {
+  margin: 0.4rem 0 0;
+  font-size: 1.4rem;
+  line-height: 1.5;
+  color: var(--color-texto-suave);
+}
+
+/* ===== Planes ===== */
+
+.planTarjeta {
+  text-align: center;
+}
+
+.precios {
+  display: flex;
+  justify-content: center;
+  gap: 2.4rem;
+  margin: 1.2rem 0;
+  flex-wrap: wrap;
+}
+
+.precio {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.precioValor {
+  font-size: 2.4rem;
+  font-weight: 700;
+  color: var(--color-primario);
+}
+
+.precioEtiqueta {
+  font-size: 1.3rem;
+  color: var(--color-texto-suave);
+}
+
+.planLista {
+  list-style: none;
+  margin: 0 0 1.6rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  text-align: left;
+}
+
+.planLista li {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1.4rem;
+  color: var(--color-texto-suave);
+}
+
+.planLista i {
+  font-size: 0.7rem;
+  color: var(--color-primario);
+}
+
+/* ===== FAQ (details/summary, sin JS) ===== */
+
+.faqLista {
+  max-width: 80rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.faqItem {
+  background-color: var(--color-fondo-blanco, var(--color-fondo));
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md, 0.8rem);
+  padding: 0 2rem;
+}
+
+.faqPregunta {
+  cursor: pointer;
+  list-style: none;
+  padding: 1.8rem 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-texto);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+
+.faqPregunta::-webkit-details-marker {
+  display: none;
+}
+
+.faqPregunta::after {
+  content: "\f078";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: var(--color-primario);
+  transition: transform 0.2s ease;
+  flex: none;
+}
+
+.faqItem[open] .faqPregunta::after {
+  transform: rotate(180deg);
+}
+
+.faqRespuesta {
+  margin-top: 0;
+  padding-bottom: 1.8rem;
+}
+
+/* ===== CTA cita ===== */
+
+.cta {
+  padding: 6.4rem 2.4rem;
+  text-align: center;
+  background-color: var(--color-primario);
+  color: var(--color-texto-sobre-primario, #fff);
+}
+
+.cta .botonPrimario {
+  background-color: var(--color-fondo-blanco, #fff);
+  color: var(--color-primario);
+}
+
+.cta .botonPrimario:hover {
+  background-color: var(--color-fondo-alt);
+}
+
+.cta .botonSecundario {
+  color: var(--color-texto-sobre-primario, #fff);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.cta .botonSecundario:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
+.cta .botones {
+  justify-content: center;
+}
+
+.ctaTitulo {
+  margin: 0 0 1.2rem;
+  font-size: 2.8rem;
+  color: inherit;
+}
+
+.ctaTexto {
+  margin: 0 auto;
+  max-width: 56rem;
+  font-size: 1.6rem;
+  line-height: 1.6;
+  opacity: 0.92;
+}
+
+/* ===== Contacto y mapa ===== */
+
+.contactoRejilla {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3.2rem;
+  max-width: 100rem;
+  margin: 0 auto;
+  align-items: start;
+}
+
+.contactoDatos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.datoFila {
+  margin: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  font-size: 1.5rem;
+  color: var(--color-texto);
+}
+
+.datoFila > i {
+  margin-top: 0.3rem;
+  color: var(--color-primario);
+  width: 1.8rem;
+  text-align: center;
+}
+
+.datoEtiqueta {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-texto-suave);
+  margin-bottom: 0.2rem;
+}
+
+.mapaCaja {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.mapaTitulo {
+  margin: 0;
+  font-size: 1.8rem;
+  color: var(--color-texto);
+}
+
+.mapa {
+  width: 100%;
+  height: 32rem;
+  border: 0;
+  border-radius: var(--radius-lg, 1.2rem);
+  box-shadow: var(--shadow-sm);
+}
+
+/* ===== Estado vacío ===== */
+
+.vacio {
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 3.2rem;
+  text-align: center;
+  border: 1px dashed var(--color-borde-medio, var(--color-borde));
+  border-radius: var(--radius-lg, 1.2rem);
+  color: var(--color-texto-suave);
+}
+
+.vacio > i {
+  font-size: 2.8rem;
+  margin-bottom: 1.2rem;
+  display: block;
+}
+
+.vacioTitulo {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+.vacioTexto {
+  margin: 0.8rem 0 0;
+  font-size: 1.4rem;
+}
+
+/* ===== Prosas (HTML saneado) ===== */
+
+.prosa {
+  font-size: 1.5rem;
+  line-height: 1.7;
+  color: var(--color-texto);
+  overflow-wrap: anywhere;
+}
+
+.prosa :global(p) {
+  margin: 0 0 1.2rem;
+}
+
+.prosa :global(p):last-child {
+  margin-bottom: 0;
+}
+
+.prosa :global(ul),
+.prosa :global(ol) {
+  margin: 0 0 1.2rem;
+  padding-left: 2rem;
+}
+
+.prosa :global(li) {
+  margin-bottom: 0.4rem;
+}
+
+.prosa :global(strong) {
+  color: var(--color-texto);
+}
+
+.prosa :global(a) {
+  color: var(--color-primario);
+}
+
+/* ===== Responsive ===== */
+
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column-reverse;
+    padding: 4.8rem 2.4rem;
+    text-align: center;
+  }
+
+  .heroContenido {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .heroImagenCaja {
+    flex: none;
+    max-width: 32rem;
+    width: 100%;
+  }
+
+  .heroTitulo {
+    font-size: 3rem;
+  }
+
+  .sobreMi {
+    flex-direction: column;
+  }
+
+  .sobreMiImagenCaja {
+    flex: none;
+    max-width: 32rem;
+    width: 100%;
+  }
+
+  .contactoRejilla {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .seccion,
+  .seccionAlterna,
+  .cta {
+    padding: 4.8rem 1.6rem;
+  }
+
+  .hero {
+    padding: 4rem 1.6rem;
+  }
+
+  .heroTitulo {
+    font-size: 2.6rem;
+  }
+
+  .seccionTitulo,
+  .ctaTitulo {
+    font-size: 2.2rem;
+  }
+
+  .botones {
+    justify-content: center;
+  }
+
+  .boton {
+    width: 100%;
+    justify-content: center;
+  }
+}

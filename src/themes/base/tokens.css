@@ -1,0 +1,51 @@
+/* ============================================================
+   TEMA BASE - Tokens de color (alcance por clase)
+   Mismos valores que css/variables.css (:root), pero con alcance
+   .tema-base para poder previsualizar/aplicar el tema sin
+   sobreescribir las variables globales del panel.
+   ============================================================ */
+
+.tema-base {
+  /* --- Colores de marca (Brand) --- */
+  --color-primario: #976147;
+  --color-primario-oscuro: #66493d;
+  --color-primario-claro: #c0a090;
+  --color-primario-muy-claro: #ffe4d7;
+  --color-primario-fuerte: #5b4034;
+  --color-primario-muy-fuerte: #7e533f;
+
+  /* --- Fondos (Backgrounds) --- */
+  --color-fondo: #eee8e5;
+  --color-fondo-blanco: #ffffff;
+  --color-fondo-alt: #f1ece9;
+  --color-fondo-suave: #f2edea;
+  --color-fondo-muy-suave: #ebe6e3;
+  --color-fondo-oscuro: #120e0e;
+  --color-fondo-muy-oscuro: #1a1414;
+
+  /* --- Textos (Typography) --- */
+  --color-texto: #1a1414;
+  --color-texto-suave: #736b6b;
+  --color-texto-muy-suave: #9f9999;
+  --color-texto-claro: #ffffff;
+  --color-texto-sobre-primario: #ffffff;
+
+  /* --- Bordes y divisores --- */
+  --color-borde: #dfdfdf;
+  --color-borde-suave: #e4e2e2;
+  --color-borde-medio: #c7c3c3;
+  --color-borde-oscuro: #838181;
+
+  /* --- Estados e interactivos --- */
+  --color-hover-primario: #66493d;
+  --color-hover-negro: #000000;
+  --color-focus: #976147;
+  --color-sombra: rgba(0, 0, 0, 0.03);
+  --color-sombra-fuerte: rgba(151, 97, 71, 0.6);
+
+  /* --- Sombras --- */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+  --shadow-wave: 0 0 0 0 rgba(151, 97, 71, 0.6);
+}

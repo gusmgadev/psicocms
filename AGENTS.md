@@ -1,7 +1,7 @@
 # Proyecto: PsicoCMS
 
 ## Rol del agente:
-Desarrollador web con 12 años de experiencia.
+Desarrollador web con 20 años de experiencia.
 
 ---
 
@@ -161,8 +161,8 @@ Estas reglas son obligatorias en todas las fases y se comprueban en la auditorí
     - `services`, `specialties`, `plans` (planes y precios online/presencial)
     - `availability_slots` (modalidad, día de la semana, hora de inicio) y `vacation_periods`
     - `patients` (incluye `consent_at` y `consent_version`; `id` uuid como clave primaria; `patient_number` correlativo legible y único, ej. P-0042; `phone` obligatorio, solo dígitos y sin espacios, NO único; `possible_duplicate` para marcar fichas a revisar)
-    - `appointments` (paciente, modalidad, inicio, fin, estado, motivo, origen: web o manual)
-    - `clinical_records` y `clinical_files` (historias y sus archivos)
+    - `appointments` (paciente, modalidad, inicio, fin, motivo, origen: web o manual, y `estado`: pendiente, realizada, cancelada o no asistió; una reserva nueva empieza en pendiente)
+    - `clinical_records` (notas de sesión de la historia: `id`, `patient_id` obligatorio, `appointment_id` opcional, `session_date`, contenido, fecha de creación y de última edición) y `clinical_files` (archivos de cada nota)
     - `data_protection_template`
     - `blog_categories`, `blog_posts`, `faqs`
     - `public_phrases` (clave/valor), `social_links`, `site_images` (hueco -> imagen)
@@ -171,6 +171,7 @@ Estas reglas son obligatorias en todas las fases y se comprueban en la auditorí
     - `dashboard_preferences` (tema claro/oscuro y color primario)
 - Restricciones en base de datos:
     - `patients.phone` con CHECK de solo dígitos (no único) e índice para buscar rápido. `patients.patient_number` se genera automáticamente y es único. El teléfono nunca es clave primaria ni se usa en las urls.
+    - `clinical_records.appointment_id` es opcional y usa `ON DELETE SET NULL`: borrar o cancelar una cita nunca borra la historia clínica.
     - En `appointments`, restricción de exclusión (extensión `btree_gist`) para que dos citas activas no se solapen en el tiempo.
 - RLS y políticas:
     - RLS activado en todas las tablas.
@@ -276,7 +277,8 @@ Estas reglas son obligatorias en todas las fases y se comprueban en la auditorí
             - El panel de "Modo vacaciones" y el .panel de "Periodos de vacaciones" estarán uno al lado del otro. 
 
     - Gestionar todas las citas, podiendo añadir nuevas, editar y eliminarlas. Se podrán visualizar en una seccion con un listado paginado con diferentes filtros y tambien en el calendario.
-    - Validación de solapamientos: además del frontend, la base de datos debe impedir que dos citas activas se pisen, **incluidas las de modalidades distintas** (restricción de exclusión sobre el rango de fechas, sin distinguir modalidad: online y presencial comparten agenda). El descanso entre sesiones solo aplica dentro de la misma modalidad; entre modalidades basta con que los rangos no se pisen (las citas contiguas se permiten).
+    - Validación de solapamientos: además del frontend, la base de datos debe impedir que dos citas activas se pisen (restricción de exclusión sobre el rango de fechas).
+    - Estados de la cita: pendiente, realizada, cancelada y no asistió. La psicologa puede cambiar el estado desde el listado y desde el calendario. Una cita cancelada o no asistida libera el hueco; una cita realizada permite escribir su nota de sesión (ver FASE 8).
 
 
 ### FASE 5:
@@ -302,6 +304,10 @@ Estas reglas son obligatorias en todas las fases y se comprueban en la auditorí
  - Dentro del panel de administracion:
     - Gestión de historias (seguimiento de sesiones del paciente con posibilidad de escribir y subir fotos o pdfs). El objetivo de esto es que cada paciente, tenga su historia o su ficha, y la psicologa pueda (despues de cada sensión de terapia que tenga con el paciente), escribir en su historia acerca de la sesión de hoy, subir fotos o documentos pdf escaneados con las anotaciones de la terapia de ese dia.
     - Los archivos (fotos y PDFs) se guardan en el bucket privado `clinical-files` de Supabase Storage y se muestran con URLs firmadas de corta duración. Nunca son públicos.
+    - Relación con las citas: cada nota pertenece a un paciente (obligatorio) y puede enlazarse a una cita (opcional). La nota tiene su propia fecha de sesión (`session_date`); si se enlaza a una cita se rellena con la fecha de la cita, pero no cambia si la cita se mueve o se edita. Si la cita se borra o se cancela, la nota se conserva (el enlace queda vacío). Una cita puede tener varias notas, y puede haber notas sin cita (paciente atendido sin reserva previa, llamada, etc.).
+    - En una cita realizada hay un botón "Escribir nota de sesión" que abre la historia de ese paciente con la cita ya enlazada. En la ficha del paciente hay un botón "Nueva nota" con opción de elegir una cita pasada que aún no tenga nota o dejarla sin cita.
+    - Las notas son privadas: no aparecen en el calendario, en el listado de citas, en emails ni en ninguna búsqueda pública. El motivo de la cita (texto escrito por la visitante) y la nota clínica son datos distintos y no se copian automáticamente. Antes de permitir borrar notas, tener en cuenta la política de conservación de datos (ver Seguridad).
+    - Vocabulario en la interfaz: "cita" es lo agendado y "nota de sesión" es lo clínico.
 
 ### FASE 9:
 - Dentro del panel de administracion:

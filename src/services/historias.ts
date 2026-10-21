@@ -145,12 +145,12 @@ function validarFecha(fecha: string): string | null {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-// Valora que la cita exista, pertenezca al paciente y no tenga ya otra nota.
+// Valora que la cita exista y pertenezca al paciente (una cita puede tener
+// varias notas).
 async function validarCitaParaNota(
   supabase: Awaited<ReturnType<typeof createServerClient>>,
   patientId: string,
   appointmentId: string,
-  excluirRecordId?: string,
 ): Promise<string | null> {
   const { data: cita } = await supabase
     .from("appointments")
@@ -161,15 +161,6 @@ async function validarCitaParaNota(
   if ((cita as { patient_id: string }).patient_id !== patientId) {
     return "La cita seleccionada no pertenece a este paciente.";
   }
-
-  let q = supabase
-    .from("clinical_records")
-    .select("id")
-    .eq("appointment_id", appointmentId)
-    .limit(1);
-  if (excluirRecordId) q = q.neq("id", excluirRecordId);
-  const { data: enlazada } = await q;
-  if ((enlazada?.length ?? 0) > 0) return "Ya existe una nota para esa cita.";
   return null;
 }
 
@@ -392,7 +383,6 @@ export async function editarSesionHistoria(
       supabase,
       (previo as { patient_id: string }).patient_id,
       appointmentId,
-      recordId,
     );
     if (errorCita) return { ok: false, error: errorCita };
   }
@@ -424,42 +414,31 @@ export async function editarSesionHistoria(
   };
 }
 
-// Citas pasadas del paciente que aún no tienen nota enlazada (para el
-// selector de "cita de origen" al crear o editar una sesión).
-export async function listarCitasParaNota(
-  patientId: string,
-  excluirRecordId?: string,
-): Promise<CitaParaNota[]> {
+// Citas del paciente (para el selector de "cita de origen" al crear o editar
+// una sesión). Se muestran todas (pasadas y futuras) para que el selector
+// nunca quede vacío; una cita puede tener varias notas.
+export async function listarCitasParaNota(patientId: string): Promise<CitaParaNota[]> {
   if (!patientId) return [];
   const supabase = await createServerClient();
 
   const { data: citas } = await supabase
     .from("appointments")
-    .select("id, starts_at, ends_at, modality, clinical_records(id)")
+    .select("id, starts_at, ends_at, modality")
     .eq("patient_id", patientId)
-    .lt("starts_at", new Date().toISOString())
     .order("starts_at", { ascending: false })
     .limit(50);
 
-  const resultado: CitaParaNota[] = [];
-  for (const c of (citas ?? []) as {
+  return ((citas ?? []) as {
     id: string;
     starts_at: string;
     ends_at: string;
     modality: string;
-    clinical_records: { id: string }[] | null;
-  }[]) {
-    const enlazada = c.clinical_records ?? [];
-    const ocupadaPorOtra = enlazada.some((r) => r.id !== excluirRecordId);
-    if (ocupadaPorOtra) continue;
-    resultado.push({
-      id: c.id,
-      fechaIso: c.starts_at,
-      finIso: c.ends_at,
-      modality: c.modality === "inperson" ? "inperson" : "online",
-    });
-  }
-  return resultado;
+  }[]).map((c) => ({
+    id: c.id,
+    fechaIso: c.starts_at,
+    finIso: c.ends_at,
+    modality: c.modality === "inperson" ? "inperson" : "online",
+  }));
 }
 
 export async function borrarSesionHistoria(recordId: string): Promise<{ ok: boolean; error?: string }> {

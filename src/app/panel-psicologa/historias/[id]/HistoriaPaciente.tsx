@@ -25,9 +25,10 @@ interface Props {
   inicial: HistoriaDatos;
   timezone: string;
   citaPreseleccionada?: string | null;
+  abrirNueva?: boolean;
 }
 
-export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionada }: Props) {
+export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionada, abrirNueva }: Props) {
   const { mostrar } = useToast();
   const router = useRouter();
 
@@ -40,11 +41,11 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
   const [subiendoEn, setSubiendoEn] = useState<string | null>(null);
 
   useEffect(() => {
-    if (citaPreseleccionada) {
+    if (citaPreseleccionada || abrirNueva) {
       setEditando(null);
       setModalAbierto(true);
     }
-  }, [citaPreseleccionada]);
+  }, [citaPreseleccionada, abrirNueva]);
 
   const onGuardado = (sesion: SesionHistoria, esNuevo: boolean) => {
     setSesiones((prev) => {
@@ -61,12 +62,12 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
     setCargando(false);
 
     if (!res.ok) {
-      mostrar(res.error ?? "No se pudo eliminar la sesión.", "error");
+      mostrar(res.error ?? "No se pudo eliminar la nota.", "error");
       return;
     }
     setSesiones((prev) => prev.filter((s) => s.id !== borrando.id));
     setBorrando(null);
-    mostrar("Sesión eliminada.");
+    mostrar("Nota eliminada.");
     router.refresh();
   };
 
@@ -127,12 +128,20 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
     setSubiendoEn(null);
   };
 
+  const volver = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/panel-psicologa/historias");
+    }
+  };
+
   return (
     <div className={styles.pagina}>
-      <Link href="/panel-psicologa/historias" className={styles.volver}>
+      <button type="button" onClick={volver} className={styles.volver}>
         <i className="fa fa-arrow-left" aria-hidden="true"></i>
-        Volver a historias
-      </Link>
+        Volver
+      </button>
 
       <div className={styles.cabecera}>
         <div>
@@ -141,7 +150,7 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
             <span className={styles.badgeTitulo}>{inicial.paciente.numero}</span>
           </h1>
           <p className={styles.subtitulo}>
-            {inicial.paciente.nombre} · {sesiones.length} sesión(es) registrada(s). Estos datos solo son
+            {inicial.paciente.nombre} · {sesiones.length} nota(s) registrada(s). Estos datos solo son
             accesibles desde el panel con tu sesión iniciada.
           </p>
         </div>
@@ -159,7 +168,7 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
             }}
           >
             <i className="fa fa-plus" aria-hidden="true"></i>
-            Nueva sesión
+            Agregar nota
           </button>
         </div>
       </div>
@@ -167,8 +176,8 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
       {sesiones.length === 0 ? (
         <EmptyState
           icono="fa-book-medical"
-          titulo="Todavía no hay sesiones"
-          descripcion="Añade la primera sesión para empezar el seguimiento de este paciente. Puedes escribir notas y adjuntar fotos o PDFs."
+          titulo="Todavía no hay notas"
+          descripcion="Añade la primera nota para empezar el seguimiento de este paciente. Puedes escribir notas y adjuntar fotos o PDFs."
           accion={
             <button
               type="button"
@@ -179,7 +188,7 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
               }}
             >
               <i className="fa fa-plus" aria-hidden="true"></i>
-              Nueva sesión
+              Agregar nota
             </button>
           }
         />
@@ -202,7 +211,7 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
                   </span>
                 )}
                 <span className={styles.sesionAcciones}>
-                  <label className={styles.adjuntarBoton} title="Adjuntar archivos a esta sesión">
+                  <label className={styles.adjuntarBoton} title="Adjuntar archivos a esta nota">
                     <i className={`fa ${subiendoEn === sesion.id ? "fa-spinner fa-spin" : "fa-paperclip"}`} aria-hidden="true"></i>
                     <span className="sr-only">Adjuntar archivos</span>
                     <input
@@ -220,23 +229,23 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
                   <button
                     type="button"
                     className={styles.accionBoton}
-                    title="Editar sesión"
+                    title="Editar nota"
                     onClick={() => {
                       setEditando(sesion);
                       setModalAbierto(true);
                     }}
                   >
                     <i className="fa fa-pen" aria-hidden="true"></i>
-                    <span className="sr-only">Editar sesión del {formatearFecha(sesion.fechaIso, timezone)}</span>
+                    <span className="sr-only">Editar nota del {formatearFecha(sesion.fechaIso, timezone)}</span>
                   </button>
                   <button
                     type="button"
                     className={`${styles.accionBoton} ${styles.accionPeligro}`}
-                    title="Eliminar sesión"
+                    title="Eliminar nota"
                     onClick={() => setBorrando(sesion)}
                   >
                     <i className="fa fa-trash" aria-hidden="true"></i>
-                    <span className="sr-only">Eliminar sesión del {formatearFecha(sesion.fechaIso, timezone)}</span>
+                    <span className="sr-only">Eliminar nota del {formatearFecha(sesion.fechaIso, timezone)}</span>
                   </button>
                 </span>
               </div>
@@ -303,13 +312,13 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
         abierto={borrando !== null}
         onCancelar={() => setBorrando(null)}
         onConfirmar={confirmarBorrado}
-        titulo="Eliminar sesión"
+        titulo="Eliminar nota"
         mensaje={
           borrando
-            ? `Se eliminará la sesión del ${formatearFecha(borrando.fechaIso, timezone)} y sus ${borrando.archivos.length} archivo(s) adjunto(s). Esta acción no se puede deshacer.`
+            ? `Se eliminará la nota del ${formatearFecha(borrando.fechaIso, timezone)} y sus ${borrando.archivos.length} archivo(s) adjunto(s). Esta acción no se puede deshacer.`
             : ""
         }
-        textoConfirmar="Eliminar sesión"
+        textoConfirmar="Eliminar nota"
         cargando={cargando}
       />
 
@@ -318,7 +327,7 @@ export default function HistoriaPaciente({ inicial, timezone, citaPreseleccionad
         onCancelar={() => setQuitando(null)}
         onConfirmar={confirmarQuitarArchivo}
         titulo="Quitar archivo"
-        mensaje={quitando ? `Se eliminará «${quitando.archivo.nombre}» de esta sesión. Esta acción no se puede deshacer.` : ""}
+        mensaje={quitando ? `Se eliminará «${quitando.archivo.nombre}» de esta nota. Esta acción no se puede deshacer.` : ""}
         textoConfirmar="Quitar archivo"
         cargando={cargando}
       />

@@ -79,6 +79,10 @@ export default function PacienteDetalle({ inicial, citas, timezone }: Props) {
     mostrar("Datos exportados.");
   };
 
+  const descargarPdfProteccion = () => {
+    window.open(`/panel-psicologa/proteccion-datos/imprimir?paciente=${paciente.id}`, "_blank", "noopener");
+  };
+
   const anonimizar = async () => {
     setCargandoAccion(true);
     const res = await anonimizarPacienteAction(paciente.id);
@@ -197,9 +201,17 @@ export default function PacienteDetalle({ inicial, citas, timezone }: Props) {
             <i className="fa fa-download" aria-hidden="true"></i>
             Exportar datos (JSON)
           </button>
-          <Link href={`/panel-psicologa/historias/${paciente.id}`} className="boton boton--primario">
+          <button type="button" className="boton boton--secundario" onClick={descargarPdfProteccion}>
+            <i className="fa fa-shield-halved" aria-hidden="true"></i>
+            PDF protección de datos
+          </button>
+          <Link href={`/panel-psicologa/historias/${paciente.id}`} className="boton boton--secundario">
             <i className="fa fa-book-medical" aria-hidden="true"></i>
             Ver historia clínica
+          </Link>
+          <Link href={`/panel-psicologa/historias/${paciente.id}?nueva=1`} className="boton boton--primario">
+            <i className="fa fa-plus" aria-hidden="true"></i>
+            Nueva nota
           </Link>
           <Link href="/panel-psicologa/citas" className="boton boton--secundario">
             <i className="fa fa-calendar-plus" aria-hidden="true"></i>

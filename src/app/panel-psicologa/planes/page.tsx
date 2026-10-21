@@ -1,11 +1,9 @@
-﻿import { PaginaSeccion } from "../PaginaSeccion";
+﻿import { exigirSesion } from "@/lib/auth-guard";
+import { listarPlanes } from "@/services/catalogo-web";
+import PlanesPanel from "./PlanesPanel";
 
-export default function Pagina() {
-  return (
-    <PaginaSeccion
-      titulo="Planes y precios"
-      descripcion="Configura los planes de sesión online y presencial."
-      icono="fa-tags"
-    />
-  );
+export default async function PaginaPlanes() {
+  await exigirSesion();
+  const planes = await listarPlanes();
+  return <PlanesPanel inicial={planes} />;
 }

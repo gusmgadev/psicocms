@@ -32,10 +32,11 @@ export default async function PaginaDebugLogin({
     email,
     options: { redirectTo: "http://localhost:3000/acceso-psicologa" },
   });
-  if (error || !link?.action_link) {
+  const actionLink = link?.properties?.action_link;
+  if (error || !actionLink) {
     return <DebugLoginClient email={email} token="" error={error?.message ?? "No se pudo generar el enlace."} />;
   }
 
-  const token = new URL(link.action_link).searchParams.get("token") ?? "";
+  const token = new URL(actionLink).searchParams.get("token") ?? "";
   return <DebugLoginClient email={email} token={token} />;
 }

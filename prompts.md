@@ -119,3 +119,93 @@ What did we do so far?
 
 ## Prompt 20 (2026-10-16)
 Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+
+---
+
+## Prompt 21 (2026-10-18)
+Voy a actualizar el kit del proyecto. Tengo AGENTS.md (version nueva), plan-implementacion.md (actual, con progreso) y plan-implementacion.nuevo.md (plan nuevo, sin progreso), MAP.md (actual, con estado real) y MAP.nuevo.md (mapa nuevo con decisiones nuevas). Tareas: 1) fusionar plan-implementacion.nuevo en plan-implementacion usando la estructura del nuevo y marcando [x] las hechas segun codigo real y MAP; 2) fusionar MAP.nuevo en MAP conservando estado real y anadiendo decisiones nuevas; 3) comparar AGENTS.md con lo ya construido y dar lista de diferencias sin cambiar nada; 4) al confirmar, borrar los .nuevo.md. No escribas codigo de la aplicacion.
+
+---
+
+## Prompt 22 (2026-10-18)
+Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+
+
+---
+
+## Prompt 23 (2026-10-19)
+Lee @fixes.md y corrige unicamente los pendientes. No toques nada fuera de estos fixes. Si un fix requiere cambios en la base de datos, crea una migracion nueva y dime como aplicarla. Si un fix toca datos, permisos, archivos o autenticacion, aplica la skill psicocms-seguridad. Actualiza @MAP.md y marca cada fix como resuelto en @fixes.md. No me expliques nada, avisame cuando hayas terminado.
+
+
+---
+
+## Prompt 24 (2026-10-20)
+Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+
+
+---
+
+## Prompt 25 (2026-10-20)
+Lee @AGENTS.md, @plan-implementacion.md y @MAP.md. Ejecuta unicamente la FASE 10 del plan. Si la fase anterior no esta marcada como completada en @plan-implementacion.md, avizame antes de empezar. [reglas de ejecucion, skills, seguridad, Supabase/Next, diseno, SDD y salida esperada del prompt]
+
+
+---
+
+## Prompt 26 (2026-10-20)
+What did we do so far?
+
+
+---
+
+## Prompt 27 (2026-10-20)
+Lee @AGENTS.md, @plan-implementacion.md y @MAP.md. Ejecuta unicamente la FASE 12 del plan. Si la fase anterior no esta marcada como completada en @plan-implementacion.md, avizame antes de empezar. [reglas de ejecucion, skills, seguridad, Supabase/Next, diseno, SDD y salida esperada del prompt]
+
+
+---
+
+## Prompt 28 (2026-10-20)
+Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+
+
+---
+
+## Prompt 29 (2026-10-20)
+listo migracion 012 y prueba
+
+
+---
+
+## Prompt 30 (2026-10-20)
+Lee @AGENTS.md, @plan-implementacion.md y @MAP.md. Ejecuta unicamente la FASE 14 del plan. Si la fase anterior no esta marcada como completada en @plan-implementacion.md, avizame antes de empezar. [reglas de ejecucion, skills, seguridad, Supabase/Next, diseno, SDD y salida esperada del prompt]
+
+
+---
+
+## Prompt 31 (2026-10-20)
+What did we do so far?
+
+
+---
+
+## Prompt 32 (2026-10-20)
+Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+
+
+## Prompt 33 (2026-10-20)
+Lee @AGENTS.md, @plan-implementacion.md y @MAP.md. Ejecuta unicamente la FASE 15 del plan (Configuraciones y extras del panel). Si la fase anterior no esta marcada como completada en @plan-implementacion.md, avizame antes de empezar. [reglas de ejecucion, skills, seguridad, Supabase/Next, diseno, SDD y salida esperada del prompt]
+
+
+## Prompt 34 (2026-10-21)
+Lee @AGENTS.md, @plan-implementacion.md y @MAP.md. Ejecuta unicamente la FASE 16 del plan (Parte publica). Si la fase anterior no esta marcada como completada en @plan-implementacion.md, avizame antes de empezar. [reglas de ejecucion, skills, seguridad, Supabase/Next, diseno, SDD y salida esperada del prompt]
+
+
+## Prompt 35 (2026-10-21)
+What did we do so far?
+
+
+## Prompt 36 (2026-10-21)
+Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.
+
+
+## Prompt 37 (2026-10-21)
+Lee @AGENTS.md, @plan-implementacion.md y @MAP.md. Ejecuta únicamente la FASE 19 del plan (Seguridad y despliegue). Si la fase anterior no está marcada como completada en @plan-implementacion.md, avísame antes de empezar. [reglas de ejecución, skills, seguridad, Supabase/Next, diseño, SDD y salida esperada del prompt]

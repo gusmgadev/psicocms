@@ -1,0 +1,153 @@
+.pagina {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.6rem;
+  flex-wrap: wrap;
+}
+
+.cabeceraTextos {
+  flex: 1;
+  min-width: 24rem;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 2.6rem;
+  line-height: 1.2;
+}
+
+.subtitulo {
+  margin: 0.6rem 0 0;
+  color: var(--color-texto-suave);
+  max-width: 70rem;
+}
+
+.cabeceraAcciones {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+}
+
+.buscador {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0 1.2rem;
+  height: 4rem;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  background-color: var(--color-fondo);
+  color: var(--color-texto-suave);
+}
+
+.buscadorInput {
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 1.4rem;
+  color: var(--color-texto);
+  width: 20rem;
+}
+
+.grupos {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.grupoTitulo {
+  margin: 0 0 1.2rem;
+  font-size: 1.7rem;
+  color: var(--color-texto-suave);
+}
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: minmax(18rem, 1fr) minmax(24rem, 2fr);
+  align-items: center;
+  gap: 1.6rem;
+  padding: 1.2rem 1.2rem;
+  border-bottom: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+}
+
+.fila:first-child {
+  padding-top: 1.2rem;
+}
+
+.fila:last-child {
+  border-bottom: none;
+}
+
+.filaModificada {
+  background-color: var(--color-primario-claro);
+  border-bottom-color: transparent;
+}
+
+.filaTextos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.filaEtiqueta {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-texto);
+}
+
+.filaClave {
+  font-size: 1.2rem;
+  color: var(--color-texto-suave);
+  background: none;
+}
+
+.filaInput,
+.filaArea {
+  width: 100%;
+  padding: 0.9rem 1.2rem;
+  font-size: 1.4rem;
+  font-family: inherit;
+  color: var(--color-texto);
+  background-color: var(--color-fondo);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+}
+
+.filaInput:focus,
+.filaArea:focus {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 1px;
+  border-color: var(--color-primario);
+}
+
+.filaArea {
+  resize: vertical;
+  min-height: 7rem;
+}
+
+@media (max-width: 768px) {
+  .fila {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .buscadorInput {
+    width: 14rem;
+  }
+}

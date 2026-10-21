@@ -5,12 +5,17 @@
 
 import type { User } from '@supabase/supabase-js';
 import { createClient as createServerClient } from '@/lib/supabase/server';
-import { createAdminClient } from '@/lib/supabase/admin';
 import { checkRateLimit } from '@/services/rate-limit';
 import { revalidatePath } from 'next/cache';
-import { cookies } from 'next/headers';
+import { headers } from 'next/headers';
 
-export async function loginAction(formData: FormData): Promise<{ ok: boolean; error?: string; redirect?: string }> {
+function urlSitio(): string {
+  const valor = process.env.NEXT_PUBLIC_URL?.trim();
+  if (valor) return valor.replace(/\/+$/, "");
+  return "http://localhost:3000";
+}
+
+export async function loginAction(formData: FormData): Promise<{ ok: boolean; error?: string; redirect?: string; mfaRequerido?: boolean }> {
   const email = formData.get('email') as string;
   const phone = formData.get('phone') as string;
   const password = formData.get('password') as string;
@@ -21,8 +26,13 @@ export async function loginAction(formData: FormData): Promise<{ ok: boolean; er
     return { ok: false, error: 'Email, teléfono y contraseña son obligatorios' };
   }
 
-  // Rate limiting por IP (usar header x-forwarded-for o similar en producción)
-  const ip = 'unknown'; // En producción obtener de headers
+  // Rate limiting por IP (x-forwarded-for en Vercel/proxies)
+  const cabeceras = await headers();
+  const ipCruda =
+    cabeceras.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    cabeceras.get('x-real-ip')?.trim() ||
+    'unknown';
+  const ip = ipCruda || 'unknown';
   const rateLimitResult = await checkRateLimit(`login:${ip}`, 'login', 5, 15 * 60 * 1000); // 5 intentos / 15 min
   if (!rateLimitResult.allowed) {
     return { ok: false, error: 'Demasiados intentos. Intenta de nuevo más tarde.' };
@@ -57,6 +67,12 @@ export async function loginAction(formData: FormData): Promise<{ ok: boolean; er
     // Cerrar sesión y mostrar mensaje genérico
     await supabase.auth.signOut();
     return { ok: false, error: 'Los datos no son correctos' };
+  }
+
+  // 2b. Si la verificación en dos pasos está activada, pedir el código TOTP
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (aal?.currentLevel === 'aal1' && aal?.nextLevel === 'aal2') {
+    return { ok: false, mfaRequerido: true };
   }
 
   // 3. Login exitoso - configurar cookies con maxAge si "recordar"
@@ -101,7 +117,7 @@ export async function recoverPasswordAction(formData: FormData): Promise<{ ok: b
 
   // Enviar email de recuperación - siempre devuelve éxito aunque el email no exista
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/acceso-psicologa?recover=true`,
+    redirectTo: `${urlSitio()}/acceso-psicologa?recover=true`,
   });
 
   // Siempre devolver éxito para no revelar si la cuenta existe

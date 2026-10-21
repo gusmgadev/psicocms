@@ -314,7 +314,8 @@ export async function crearCita(input: InputCita): Promise<ResultadoCita> {
     };
   }
 
-  if (await hayConflicto(supabase, { modality: input.modality, startsAt, endsAt, paso })) {
+  const ocupaAgenda = estadoFinal === "scheduled" || estadoFinal === "completed";
+  if (ocupaAgenda && (await hayConflicto(supabase, { modality: input.modality, startsAt, endsAt, paso }))) {
     return { ok: false, error: "Ese horario no está disponible: se solapa con otra cita (sea la modalidad que sea) o no deja el descanso entre sesiones." };
   }
 
@@ -384,7 +385,10 @@ export async function editarCita(id: string, input: InputCita): Promise<Resultad
     };
   }
 
-  if (await hayConflicto(supabase, { modality: input.modality, startsAt, endsAt, paso, excluirId: id })) {
+  // Cancelada y no presentó no ocupan agenda (ni en la BD ni en el calendario),
+  // así que se pueden mover o cambiar de estado libremente.
+  const ocupaAgenda = estadoFinal === "scheduled" || estadoFinal === "completed";
+  if (ocupaAgenda && (await hayConflicto(supabase, { modality: input.modality, startsAt, endsAt, paso, excluirId: id }))) {
     return { ok: false, error: "Ese horario no está disponible: se solapa con otra cita (sea la modalidad que sea) o no deja el descanso entre sesiones." };
   }
 

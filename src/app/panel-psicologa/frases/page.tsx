@@ -1,11 +1,10 @@
-﻿import { PaginaSeccion } from "../PaginaSeccion";
+﻿import { exigirSesion } from "@/lib/auth-guard";
+import { agruparFrases, listarFrases } from "@/services/frases";
+import FrasesPanel from "./FrasesPanel";
 
-export default function Pagina() {
-  return (
-    <PaginaSeccion
-      titulo="Frases públicas"
-      descripcion="Personaliza los textos y frases de tus temas visuales."
-      icono="fa-quote-left"
-    />
-  );
+export default async function PaginaFrases() {
+  await exigirSesion();
+  const frases = await listarFrases();
+  const grupos = agruparFrases(frases);
+  return <FrasesPanel grupos={grupos} />;
 }

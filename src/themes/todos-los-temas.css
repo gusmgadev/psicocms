@@ -1,0 +1,13 @@
+/* ============================================================
+   Todos los temas (tokens con alcance por clase).
+   Cada tema define sus colores bajo .tema-<nombre>; se aplican
+   envolviendo el contenido de la web en <div class="tema-<nombre>">.
+   El tema base mantiene además sus valores en :root
+   (css/variables.css) para la web pública en modo base.
+   ============================================================ */
+
+@import "./base/tokens.css";
+@import "./calma/tokens.css";
+@import "./naturaleza/tokens.css";
+@import "./moderno/tokens.css";
+@import "./elegancia/tokens.css";

@@ -29,6 +29,11 @@ description: Textos, idioma, tono, nombres y formatos de interfaz de PsicoCMS (t
 ## Términos configurables
 "Paciente" y "psicóloga" deben poder cambiarse sin tocar código (por ejemplo vía textos configurables), para poder generalizar el sistema a otras profesiones en el futuro. No los repitas como cadenas sueltas por todo el código: centralízalos.
 
+## Vocabulario clínico
+- **Cita:** lo agendado (calendario, listado de citas, reservas).
+- **Nota de sesión:** lo que la psicóloga escribe en la historia después de una sesión.
+- Evita la palabra "sesión" suelta cuando pueda confundirse: puede significar la duración del hueco, la sesión de terapia o la sesión iniciada (login). Usa "duración de la cita", "nota de sesión" y "sesión iniciada" respectivamente.
+
 ## Formatos
 - Fecha **dd/mm/aaaa**, hora en **24 horas**, semana que empieza en lunes. Ver skill `local-dates`.
 - Teléfonos: se guardan solo con números; al mostrarlos se pueden agrupar para leerse mejor.
