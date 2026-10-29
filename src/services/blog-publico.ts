@@ -4,7 +4,7 @@
 // es de la dueña (visita la web pública con login abierto).
 
 import "server-only";
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { sanitizarHtml } from "@/lib/sanitizar";
 
 export interface ArticuloPublico {
@@ -72,7 +72,7 @@ export async function listarArticulosPublicos(
   limite = 12,
   opciones?: OpcionesListado
 ): Promise<ArticuloPublico[]> {
-  const supabase = await createServerClient();
+  const supabase = createPublicClient();
   let consulta = supabase
     .from("blog_posts")
     .select(SELECT)
@@ -92,7 +92,7 @@ export async function listarArticulosPublicos(
 }
 
 export async function contarArticulosPublicos(categoriaSlug?: string): Promise<number> {
-  const supabase = await createServerClient();
+  const supabase = createPublicClient();
   let consulta = supabase
     .from("blog_posts")
     .select("id", { count: "exact", head: true })
@@ -111,7 +111,7 @@ export async function obtenerArticuloPublicoPorSlug(
   const limpio = slug.trim().replace(/[,()]/g, " ");
   if (!limpio) return null;
 
-  const supabase = await createServerClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("blog_posts")
     .select(SELECT)
@@ -123,7 +123,7 @@ export async function obtenerArticuloPublicoPorSlug(
 }
 
 export async function listarCategoriasPublicas(): Promise<CategoriaPublica[]> {
-  const supabase = await createServerClient();
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("blog_categories")
     .select("id, name, slug, is_active")

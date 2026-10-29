@@ -17,7 +17,7 @@
 ## Estructura (implementado en FASE 0A)
 - `supabase/migrations/`: SQL numerado (15 ficheros; **001–015 aplicadas** en el proyecto Supabase)
 - `src/app/`: (public), instalacion, acceso-psicologa, panel-psicologa (cada una con su layout)
-- `src/lib/supabase/`: cliente de navegador (browser.ts), de servidor (server.ts) y admin (admin.ts con server-only)
+- `src/lib/supabase/`: cliente de navegador (browser.ts), de servidor (server.ts), público sin sesión (public-server.ts) y admin (admin.ts con server-only)
 - `src/actions/`, `src/services/`, `src/themes/`, `src/components/ui/` (creados)
 - `proxy.ts` (renombrado desde `middleware.ts` en FASE 19) protege `/panel-psicologa/*` y redirige a `/acceso-psicologa` sin sesión
 - `.env.local` y `.env.example` con variables requeridas, `.gitignore` excluye `.env*.local`
