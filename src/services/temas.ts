@@ -19,20 +19,24 @@ export interface ResultadoConfigTema {
 }
 
 export async function obtenerConfigTema(): Promise<ConfigTema> {
-  const supabase = await createServerClient();
-  const { data } = await supabase
-    .from("site_settings")
-    .select("active_theme, layout_mode")
-    .eq("id", true)
-    .maybeSingle();
+  try {
+    const supabase = await createServerClient();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("active_theme, layout_mode")
+      .eq("id", true)
+      .maybeSingle();
 
-  const tema = typeof data?.active_theme === "string" ? data.active_theme : "base";
-  const modo = typeof data?.layout_mode === "string" ? data.layout_mode : "multipage";
+    const tema = typeof data?.active_theme === "string" ? data.active_theme : "base";
+    const modo = typeof data?.layout_mode === "string" ? data.layout_mode : "multipage";
 
-  return {
-    temaActivo: esTemaValido(tema) ? tema : "base",
-    modoLayout: esModoLayoutValido(modo) ? modo : "multipage",
-  };
+    return {
+      temaActivo: esTemaValido(tema) ? tema : "base",
+      modoLayout: esModoLayoutValido(modo) ? modo : "multipage",
+    };
+  } catch {
+    return { temaActivo: "base", modoLayout: "multipage" };
+  }
 }
 
 export async function guardarConfigTema(
