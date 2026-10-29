@@ -209,3 +209,6 @@ Continue if you have next steps, or stop and ask for clarification if you are un
 
 ## Prompt 37 (2026-10-21)
 Lee @AGENTS.md, @plan-implementacion.md y @MAP.md. Ejecuta únicamente la FASE 19 del plan (Seguridad y despliegue). Si la fase anterior no está marcada como completada en @plan-implementacion.md, avísame antes de empezar. [reglas de ejecución, skills, seguridad, Supabase/Next, diseño, SDD y salida esperada del prompt]
+
+## Prompt 38 (2026-10-29)
+error al desplegar en vercel: build falla con 'supabaseUrl is required' al prerenderizar /sitemap.xml

@@ -659,7 +659,7 @@ Cada sección del menú tiene página con `PaginaSeccion` (h1 + EmptyState "Secc
 
 ### SEO (`src/lib/seo.ts`)
 - `urlBase()`/`urlAbsoluta()` con `NEXT_PUBLIC_URL` (fallback localhost); `metadatosPublicos()` (canonical, Open Graph, Twitter) y `jsonLd()` (escapa `<`)
-- `src/app/sitemap.ts`: páginas según secciones activas + artículos publicados; se revalida con la web
+- `src/app/sitemap.ts`: páginas según secciones activas + artículos publicados; se revalida con la web y degrada a las URLs fijas si Supabase no está disponible (no tumba el build en Vercel)
 - `src/app/robots.ts`: permite `/`, deniega `/panel-psicologa`, `/acceso-psicologa`, `/instalacion`, `/preview-tema`, `/api`
 - `revalidarWebPublica()` revalida también `/`, `/blog/[slug]` y `/sitemap.xml`
 

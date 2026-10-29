@@ -7,7 +7,7 @@ import { urlAbsoluta } from "@/lib/seo";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [secciones, articulos] = await Promise.all([
     obtenerSecciones(),
-    listarArticulosPublicos(100),
+    listarArticulosPublicos(100).catch(() => []),
   ]);
 
   const ahora = new Date();
