@@ -1,9 +1,9 @@
 ﻿import { exigirSesion } from "@/lib/auth-guard";
-import { obtenerInformacionPublica } from "@/services/informacion-publica";
+import { obtenerInformacionParaPanel } from "@/services/informacion-publica";
 import InfoPublicaPanel from "./InfoPublicaPanel";
 
 export default async function PaginaInformacionPublica() {
   await exigirSesion();
-  const datos = await obtenerInformacionPublica();
+  const datos = await obtenerInformacionParaPanel();
   return <InfoPublicaPanel inicial={datos} />;
 }

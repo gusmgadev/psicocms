@@ -4,6 +4,7 @@
 
 import "server-only";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { sanitizarHtml } from "@/lib/sanitizar";
 
 export interface PoliticaPrivacidad {
@@ -29,15 +30,20 @@ function aPolitica(f: FilaPolitica): PoliticaPrivacidad {
 }
 
 export async function obtenerPoliticaPrivacidad(): Promise<PoliticaPrivacidad> {
-  const supabase = await createServerClient();
-  const { data } = await supabase
-    .from("privacy_policy")
-    .select("content_html, version, updated_at")
-    .eq("id", true)
-    .maybeSingle();
+  try {
+    // Cliente anon: la política pública se lee igual estés logueada o no.
+    const supabase = createPublicClient();
+    const { data } = await supabase
+      .from("privacy_policy")
+      .select("content_html, version, updated_at")
+      .eq("id", true)
+      .maybeSingle();
 
-  if (!data) return { contentHtml: "", version: "1.0", updatedAt: null };
-  return aPolitica(data as unknown as FilaPolitica);
+    if (!data) return { contentHtml: "", version: "1.0", updatedAt: null };
+    return aPolitica(data as unknown as FilaPolitica);
+  } catch {
+    return { contentHtml: "", version: "1.0", updatedAt: null };
+  }
 }
 
 function siguienteVersion(actual: string): string {

@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { obtenerConfigTema } from "@/services/temas";
 import { obtenerSecciones } from "@/services/secciones";
 import { obtenerInformacionPublica } from "@/services/informacion-publica";
-import { listarItems, listarPlanes } from "@/services/catalogo-web";
+import { listarItemsPublicos, listarPlanesPublicos } from "@/services/catalogo-web";
 import { obtenerImagenHueco } from "@/services/imagenes";
 import { obtenerTextosWeb } from "@/services/textos-web";
 import { seccionActiva } from "@/lib/panel-tema";
@@ -34,9 +34,9 @@ export default async function Inicio() {
       obtenerSecciones(),
       obtenerInformacionPublica(),
       obtenerTextosWeb(),
-      listarItems("servicios"),
-      listarItems("especialidades"),
-      listarPlanes(),
+      listarItemsPublicos("servicios"),
+      listarItemsPublicos("especialidades"),
+      listarPlanesPublicos(),
       obtenerImagenHueco("hero"),
     ]);
 

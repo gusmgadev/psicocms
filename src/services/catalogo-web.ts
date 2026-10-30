@@ -5,6 +5,7 @@
 
 import "server-only";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { revalidarWebPublica } from "@/lib/revalidar-web";
 
 export type TipoCatalogo = "servicios" | "especialidades";
@@ -189,6 +190,23 @@ export async function listarItems(tipo: TipoCatalogo): Promise<ItemCatalogo[]> {
   return ((data ?? []) as unknown as FilaItem[]).map(aItem);
 }
 
+// Lectura de la web pública: cliente anon y solo activos, para que la página
+// se vea igual estés logueada o no.
+export async function listarItemsPublicos(tipo: TipoCatalogo): Promise<ItemCatalogo[]> {
+  try {
+    const supabase = createPublicClient();
+    const { data } = await supabase
+      .from(TABLAS[tipo])
+      .select(SELECT_ITEM)
+      .eq("is_active", true)
+      .order("order_index", { ascending: true })
+      .order("name", { ascending: true });
+    return ((data ?? []) as unknown as FilaItem[]).map(aItem);
+  } catch {
+    return [];
+  }
+}
+
 export async function crearItem(tipo: TipoCatalogo, input: InputItemCatalogo): Promise<ResultadoItem> {
   const errorValidacion = validarItem(tipo, input);
   if (errorValidacion) return { ok: false, error: errorValidacion };
@@ -307,6 +325,23 @@ export async function listarPlanes(): Promise<Plan[]> {
     .order("order_index", { ascending: true })
     .order("name", { ascending: true });
   return ((data ?? []) as unknown as FilaPlan[]).map(aPlan);
+}
+
+// Lectura de la web pública: cliente anon y solo activos, para que la página
+// se vea igual estés logueada o no.
+export async function listarPlanesPublicos(): Promise<Plan[]> {
+  try {
+    const supabase = createPublicClient();
+    const { data } = await supabase
+      .from("plans")
+      .select(SELECT_PLAN)
+      .eq("is_active", true)
+      .order("order_index", { ascending: true })
+      .order("name", { ascending: true });
+    return ((data ?? []) as unknown as FilaPlan[]).map(aPlan);
+  } catch {
+    return [];
+  }
 }
 
 export async function crearPlan(input: InputPlan): Promise<ResultadoPlan> {

@@ -3,6 +3,7 @@
 
 import "server-only";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { textoAMinutos, minutosATexto } from "@/lib/fechas";
 
 export type Modalidad = "online" | "inperson";
@@ -98,10 +99,15 @@ async function leerPerfil(supabase: Awaited<ReturnType<typeof createServerClient
 }
 
 export async function obtenerTimezone(): Promise<string> {
-  const supabase = await createServerClient();
-  const { data } = await supabase.from("site_settings").select("timezone").eq("id", true).maybeSingle();
-  const fila = data as { timezone: string | null } | null;
-  return fila?.timezone || "America/Argentina/Buenos_Aires";
+  try {
+    // Cliente anon: la zona horaria pública se lee igual estés logueada o no.
+    const supabase = createPublicClient();
+    const { data } = await supabase.from("site_settings").select("timezone").eq("id", true).maybeSingle();
+    const fila = data as { timezone: string | null } | null;
+    return fila?.timezone || "America/Argentina/Buenos_Aires";
+  } catch {
+    return "America/Argentina/Buenos_Aires";
+  }
 }
 
 export async function getEstadoDisponibilidad(): Promise<EstadoDisponibilidad> {

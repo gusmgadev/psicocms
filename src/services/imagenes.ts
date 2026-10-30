@@ -4,6 +4,7 @@
 
 import "server-only";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { revalidarWebPublica } from "@/lib/revalidar-web";
 
 export interface HuecoImagen {
@@ -106,14 +107,19 @@ export async function listarImagenesSitio(): Promise<ImagenSitio[]> {
 export async function obtenerImagenHueco(placeholder: string): Promise<string | null> {
   const hueco = HUECOS_IMAGEN.find((h) => h.id === placeholder);
   if (!hueco) return null;
-  const supabase = await createServerClient();
-  const { data } = await supabase
-    .from("site_images")
-    .select("image_path")
-    .eq("placeholder", placeholder)
-    .maybeSingle();
-  const path = (data as unknown as { image_path: string | null } | null)?.image_path;
-  return path ? urlPublica(path) : hueco.stock;
+  try {
+    // Cliente anon: la imagen del hueco se lee igual estés logueada o no.
+    const supabase = createPublicClient();
+    const { data } = await supabase
+      .from("site_images")
+      .select("image_path")
+      .eq("placeholder", placeholder)
+      .maybeSingle();
+    const path = (data as unknown as { image_path: string | null } | null)?.image_path;
+    return path ? urlPublica(path) : hueco.stock;
+  } catch {
+    return hueco.stock;
+  }
 }
 
 const TIPOS_IMAGEN = ["image/jpeg", "image/png", "image/webp"];

@@ -3,6 +3,7 @@
 
 import "server-only";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { revalidarWebPublica } from "@/lib/revalidar-web";
 import { opcionRed, type InputRed, type RedSocial } from "@/lib/redes";
 
@@ -70,13 +71,18 @@ export async function listarRedes(): Promise<RedSocial[]> {
 }
 
 export async function listarRedesActivas(): Promise<RedSocial[]> {
-  const supabase = await createServerClient();
-  const { data } = await supabase
-    .from("social_links")
-    .select(SELECT)
-    .eq("is_active", true)
-    .order("order_index", { ascending: true });
-  return ((data ?? []) as unknown as FilaRed[]).map(aRed);
+  try {
+    // Cliente anon: el footer público se lee igual estés logueada o no.
+    const supabase = createPublicClient();
+    const { data } = await supabase
+      .from("social_links")
+      .select(SELECT)
+      .eq("is_active", true)
+      .order("order_index", { ascending: true });
+    return ((data ?? []) as unknown as FilaRed[]).map(aRed);
+  } catch {
+    return [];
+  }
 }
 
 export async function crearRed(input: InputRed): Promise<ResultadoRed> {

@@ -4,6 +4,7 @@
 
 import "server-only";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { revalidarWebPublica } from "@/lib/revalidar-web";
 import { esModoLayoutValido, esTemaValido, type ModoLayout } from "@/themes";
 
@@ -20,7 +21,8 @@ export interface ResultadoConfigTema {
 
 export async function obtenerConfigTema(): Promise<ConfigTema> {
   try {
-    const supabase = await createServerClient();
+    // Cliente anon: la web pública siempre ve la misma configuración.
+    const supabase = createPublicClient();
     const { data } = await supabase
       .from("site_settings")
       .select("active_theme, layout_mode")

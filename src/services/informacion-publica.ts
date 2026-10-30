@@ -4,6 +4,7 @@
 
 import "server-only";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { sanitizarHtml } from "@/lib/sanitizar";
 import { revalidarWebPublica } from "@/lib/revalidar-web";
 
@@ -104,21 +105,36 @@ function validar(input: InformacionPublica): string | null {
 }
 
 export async function obtenerInformacionPublica(): Promise<InformacionPublica> {
-  const supabase = await createServerClient();
-  const { data } = await supabase.from("professional_profile").select(SELECT).maybeSingle();
-  if (!data) {
-    return {
-      fullName: "",
-      tagline: "",
-      licenseNumber: "",
-      phonePublic: "",
-      emailPublic: "",
-      bioHtml: "",
-      address: "",
-      locationName: "",
-    };
+  // Lectura de la web pública: SIEMPRE con el cliente anon para que la página
+  // se vea igual estés logueada o no (con la sesión de la dueña se vería más).
+  return leerInformacion(createPublicClient());
+}
+
+// Lectura del panel: con sesión, para editar la ficha aunque esté inactiva.
+export async function obtenerInformacionParaPanel(): Promise<InformacionPublica> {
+  return leerInformacion(await createServerClient());
+}
+
+async function leerInformacion(
+  supabase: Awaited<ReturnType<typeof createServerClient>>
+): Promise<InformacionPublica> {
+  const vacia: InformacionPublica = {
+    fullName: "",
+    tagline: "",
+    licenseNumber: "",
+    phonePublic: "",
+    emailPublic: "",
+    bioHtml: "",
+    address: "",
+    locationName: "",
+  };
+  try {
+    const { data } = await supabase.from("professional_profile").select(SELECT).maybeSingle();
+    if (!data) return vacia;
+    return aDatos(data as unknown as FilaPerfil);
+  } catch {
+    return vacia;
   }
-  return aDatos(data as unknown as FilaPerfil);
 }
 
 export async function guardarInformacionPublica(

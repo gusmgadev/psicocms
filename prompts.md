@@ -221,3 +221,12 @@ ingreso con mail y cotraseña y vuelve al login , no hace nada
 
 ## Prompt 41 (2026-10-29)
 ingreso con mail y cotraseña y vuelve a pantalla acceso psicologa
+
+## Prompt 42 (2026-10-30)
+Al loguearme en panel accesp-psicologa, y luego ingreso a la landingpage, es diferente a la langingpage sin loguearme...por que?
+
+## Prompt 43 (2026-10-30)
+la pagina deberia verse igual, con rol anon o rol propietario o no?
+
+## Prompt 44 (2026-10-30)
+ok implementar

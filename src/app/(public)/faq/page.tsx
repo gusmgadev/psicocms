@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { seccionActivaPublica } from "@/services/secciones";
-import { listarFaqs } from "@/services/faqs";
+import { listarFaqsPublicas } from "@/services/faqs";
 import { obtenerTextosWeb } from "@/services/textos-web";
 import { metadatosPublicos } from "@/lib/seo";
 import { Faq, VacioPublico } from "@/components/publico/secciones";
@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function FaqPagina() {
   if (!(await seccionActivaPublica("faq"))) notFound();
 
-  const [faqs, textos] = await Promise.all([listarFaqs(), obtenerTextosWeb()]);
+  const [faqs, textos] = await Promise.all([listarFaqsPublicas(), obtenerTextosWeb()]);
   const visibles = faqs.filter((f) => f.isActive);
 
   if (visibles.length === 0) {

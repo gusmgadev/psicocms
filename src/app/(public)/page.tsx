@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { obtenerConfigTema } from "@/services/temas";
 import { obtenerSecciones } from "@/services/secciones";
 import { obtenerInformacionPublica } from "@/services/informacion-publica";
-import { listarItems, listarPlanes } from "@/services/catalogo-web";
-import { listarFaqs } from "@/services/faqs";
+import { listarItemsPublicos, listarPlanesPublicos } from "@/services/catalogo-web";
+import { listarFaqsPublicas } from "@/services/faqs";
 import { obtenerImagenHueco } from "@/services/imagenes";
 import { obtenerTextosWeb } from "@/services/textos-web";
 import { seccionActiva } from "@/lib/panel-tema";
@@ -27,10 +27,10 @@ export default async function Raiz() {
       obtenerSecciones(),
       obtenerInformacionPublica(),
       obtenerTextosWeb(),
-      listarItems("servicios"),
-      listarItems("especialidades"),
-      listarPlanes(),
-      listarFaqs(),
+      listarItemsPublicos("servicios"),
+      listarItemsPublicos("especialidades"),
+      listarPlanesPublicos(),
+      listarFaqsPublicas(),
       obtenerImagenHueco("hero"),
       obtenerImagenHueco("sobre-mi"),
     ]);

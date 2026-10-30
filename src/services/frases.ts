@@ -3,6 +3,7 @@
 
 import "server-only";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { revalidarWebPublica } from "@/lib/revalidar-web";
 
 export interface Frase {
@@ -41,7 +42,8 @@ interface FilaFrase {
 }
 
 export async function listarFrases(): Promise<Frase[]> {
-  const supabase = await createServerClient();
+  // Cliente anon: las frases públicas se leen igual estés logueada o no.
+  const supabase = createPublicClient();
   const { data } = await supabase
     .from("public_phrases")
     .select("key, value, description")

@@ -5,6 +5,7 @@
 import "server-only";
 import { revalidatePath } from "next/cache";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { sanitizarHtml } from "@/lib/sanitizar";
 
 export interface FaqFila {
@@ -88,6 +89,23 @@ export async function listarFaqs(): Promise<FaqFila[]> {
     .order("order_index", { ascending: true })
     .order("question", { ascending: true });
   return ((data ?? []) as unknown as FilaFaq[]).map(aFaqFila);
+}
+
+// Lectura de la web pública: cliente anon y solo activas, para que la página
+// se vea igual estés logueada o no.
+export async function listarFaqsPublicas(): Promise<FaqFila[]> {
+  try {
+    const supabase = createPublicClient();
+    const { data } = await supabase
+      .from("faqs")
+      .select("id, question, answer_html, category, order_index, is_active, created_at, updated_at")
+      .eq("is_active", true)
+      .order("order_index", { ascending: true })
+      .order("question", { ascending: true });
+    return ((data ?? []) as unknown as FilaFaq[]).map(aFaqFila);
+  } catch {
+    return [];
+  }
 }
 
 export async function crearFaq(input: InputFaq): Promise<ResultadoFaq> {

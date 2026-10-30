@@ -5,7 +5,7 @@
 
 import { exigirSesion } from "@/lib/auth-guard";
 import {
-  obtenerInformacionPublica,
+  obtenerInformacionParaPanel,
   guardarInformacionPublica,
   type InformacionPublica,
   type ResultadoInformacion,
@@ -13,7 +13,7 @@ import {
 
 export async function obtenerInformacionPublicaAction(): Promise<InformacionPublica> {
   await exigirSesion();
-  return obtenerInformacionPublica();
+  return obtenerInformacionParaPanel();
 }
 
 export async function guardarInformacionPublicaAction(

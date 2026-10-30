@@ -4,6 +4,7 @@
 
 import "server-only";
 import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public-server";
 import { revalidarWebPublica } from "@/lib/revalidar-web";
 import { parsearSecciones, seccionActiva, type SeccionesWeb } from "@/lib/panel-tema";
 
@@ -15,7 +16,9 @@ export interface ResultadoSecciones {
 
 export async function obtenerSecciones(): Promise<SeccionesWeb> {
   try {
-    const supabase = await createServerClient();
+    // Cliente anon: la web pública (y el panel al mostrar el estado) ven lo mismo
+    // estés logueada o no.
+    const supabase = createPublicClient();
     const { data } = await supabase
       .from("site_settings")
       .select("sections_enabled")

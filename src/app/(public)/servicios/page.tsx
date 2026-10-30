@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { seccionActivaPublica } from "@/services/secciones";
 import { obtenerSecciones } from "@/services/secciones";
 import { obtenerInformacionPublica } from "@/services/informacion-publica";
-import { listarItems, listarPlanes } from "@/services/catalogo-web";
+import { listarItemsPublicos, listarPlanesPublicos } from "@/services/catalogo-web";
 import { obtenerTextosWeb } from "@/services/textos-web";
 import { seccionActiva } from "@/lib/panel-tema";
 import { metadatosPublicos } from "@/lib/seo";
@@ -26,9 +26,9 @@ export default async function ServiciosPagina() {
     obtenerSecciones(),
     obtenerInformacionPublica(),
     obtenerTextosWeb(),
-    listarItems("servicios"),
-    listarItems("especialidades"),
-    listarPlanes(),
+    listarItemsPublicos("servicios"),
+    listarItemsPublicos("especialidades"),
+    listarPlanesPublicos(),
   ]);
 
   return (

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { exigirSesion } from "@/lib/auth-guard";
 import { obtenerInformacionPublica } from "@/services/informacion-publica";
-import { listarItems } from "@/services/catalogo-web";
+import { listarItemsPublicos } from "@/services/catalogo-web";
 import { esTemaValido, TEMAS } from "@/themes";
 import "@/themes/todos-los-temas.css";
 import styles from "./preview.module.css";
@@ -16,7 +16,7 @@ export default async function PaginaPreviewTema({
   if (!esTemaValido(tema)) notFound();
 
   const info = await obtenerInformacionPublica();
-  const servicios = (await listarItems("servicios")).filter((s) => s.activo).slice(0, 3);
+  const servicios = (await listarItemsPublicos("servicios")).filter((s) => s.activo).slice(0, 3);
   const meta = TEMAS.find((t) => t.id === tema);
 
   return (
