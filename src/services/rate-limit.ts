@@ -28,3 +28,23 @@ export async function checkRateLimit(
 
   return data[0];
 }
+
+// Limpia los intentos acumulados tras un acceso exitoso: solo los intentos
+// fallidos deben consumir cuota, si no un usuario legítimo se bloquea solo.
+export async function limpiarRateLimit(
+  identifiers: string[],
+  eventType: string
+): Promise<void> {
+  if (identifiers.length === 0) return;
+
+  try {
+    const admin = createAdminClient();
+    await admin
+      .from('rate_limit_events')
+      .delete()
+      .eq('event_type', eventType)
+      .in('identifier', identifiers);
+  } catch {
+    // El rate limit nunca debe impedir un acceso ya autenticado
+  }
+}

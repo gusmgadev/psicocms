@@ -30,20 +30,25 @@ export default function AccesoPage() {
     setError(null);
     setLoading(true);
 
-    const formData = new FormData(e.currentTarget);
-    formData.set("remember", String(remember));
+    try {
+      const formData = new FormData(e.currentTarget);
+      formData.set("remember", String(remember));
 
-    const result = await loginAction(formData);
+      const result = await loginAction(formData);
 
-    if (result.ok) {
-      router.push("/panel-psicologa");
-      router.refresh();
-    } else if (result.mfaRequerido) {
-      setCodigo("");
-      setPaso("mfa");
-      setLoading(false);
-    } else {
-      setError(result.error || "Error al iniciar sesión");
+      if (result.ok) {
+        router.push("/panel-psicologa");
+        router.refresh();
+      } else if (result.mfaRequerido) {
+        setCodigo("");
+        setPaso("mfa");
+        setLoading(false);
+      } else {
+        setError(result.error || "Error al iniciar sesión");
+        setLoading(false);
+      }
+    } catch {
+      setError("No se pudo iniciar sesión. Inténtalo de nuevo.");
       setLoading(false);
     }
   };
@@ -53,16 +58,22 @@ export default function AccesoPage() {
     setError(null);
     setLoading(true);
 
-    const result = await verificarCodigoMfaAction(codigo);
+    try {
+      const result = await verificarCodigoMfaAction(codigo);
 
-    if (result.ok) {
-      router.push("/panel-psicologa");
-      router.refresh();
-      return;
+      if (result.ok) {
+        router.push("/panel-psicologa");
+        router.refresh();
+        return;
+      }
+      setError(result.error || "El código no es correcto");
+      setCodigo("");
+      setLoading(false);
+    } catch {
+      setError("No se pudo verificar el código. Inténtalo de nuevo.");
+      setCodigo("");
+      setLoading(false);
     }
-    setError(result.error || "El código no es correcto");
-    setCodigo("");
-    setLoading(false);
   };
 
   const handleRecover = async (e: FormEvent<HTMLFormElement>) => {

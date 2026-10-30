@@ -4,8 +4,8 @@
 'use server';
 
 import type { User } from '@supabase/supabase-js';
-import { createClient as createServerClient, createAuthClient } from '@/lib/supabase/server';
-import { checkRateLimit } from '@/services/rate-limit';
+import { createClient as createServerClient, createAuthClient, limpiarCookiesSesion } from '@/lib/supabase/server';
+import { checkRateLimit, limpiarRateLimit } from '@/services/rate-limit';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
 
@@ -38,10 +38,14 @@ export async function loginAction(formData: FormData): Promise<{ ok: boolean; er
   }
 
   // Rate limiting por email
-  const emailRateLimit = await checkRateLimit(`login:email:${email}`, 'login', 3, 15 * 60 * 1000); // 3 intentos / 15 min
+  const emailRateLimit = await checkRateLimit(`login:email:${email}`, 'login', 5, 15 * 60 * 1000); // 5 intentos / 15 min
   if (!emailRateLimit.allowed) {
     return { ok: false, error: 'Demasiados intentos para este email. Intenta de nuevo más tarde.' };
   }
+
+  // Cookies de sesiones antiguas (formatos viejos o duplicadas) fuera:
+  // si se mezclan con la nueva, la sesión no se reconoce y el login vuelve al inicio.
+  await limpiarCookiesSesion();
 
   const supabase = await createAuthClient();
 
@@ -69,6 +73,9 @@ export async function loginAction(formData: FormData): Promise<{ ok: boolean; er
   // Registrar intento exitoso (limpiar rate limit)
   // No es estrictamente necesario, pero se podría hacer
 
+  // Acceso completo: los intentos correctos no consumen cuota de rate limit
+  await limpiarRateLimit([`login:${ip}`, `login:email:${email}`], 'login');
+
   revalidatePath('/panel-psicologa');
   return { ok: true, redirect: '/panel-psicologa' };
 }
@@ -76,6 +83,7 @@ export async function loginAction(formData: FormData): Promise<{ ok: boolean; er
 export async function logoutAction(): Promise<{ ok: boolean; redirect?: string }> {
   const supabase = await createAuthClient();
   await supabase.auth.signOut();
+  await limpiarCookiesSesion();
   revalidatePath('/acceso-psicologa');
   return { ok: true, redirect: '/acceso-psicologa' };
 }

@@ -7,7 +7,8 @@
 
 import { createAuthClient } from "@/lib/supabase/server";
 import { exigirSesion } from "@/lib/auth-guard";
-import { checkRateLimit } from "@/services/rate-limit";
+import { checkRateLimit, limpiarRateLimit } from "@/services/rate-limit";
+import { headers } from "next/headers";
 
 type ClienteMfa = Awaited<ReturnType<typeof createAuthClient>>;
 
@@ -164,6 +165,19 @@ export async function verificarCodigoMfaAction(
 
   const ok = await verificarCodigo(supabase, verificado.id, codigo);
   if (!ok) return { ok: false, error: CODIGO_INVALIDO };
+
+  // Acceso completo: limpiar la cuota usada en el login y en la verificación
+  const cabeceras = await headers();
+  const ip =
+    cabeceras.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    cabeceras.get("x-real-ip")?.trim() ||
+    "unknown";
+  const email = user.email ?? "";
+  await limpiarRateLimit([`mfa-login:${user.id}`], "mfa_verify");
+  await limpiarRateLimit(
+    [`login:${ip}`, ...(email ? [`login:email:${email}`] : [])],
+    "login"
+  );
 
   return { ok: true };
 }

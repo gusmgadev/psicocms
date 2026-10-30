@@ -1,6 +1,7 @@
 # Fixes
 
 ## Pendientes
+- [] Acceso-psicologa: sigo sin poder ingresar, al hacer login vuelve a la pantalla acceso-psicologa
 
 ## Resueltos
 - [x] **Vercel: la web pública y partes del panel daban error 500** (todo lo que sanea HTML: `/`, `/blog`, `/faq`, `/politica-privacidad`, `/panel-psicologa/historias`, etc.). Causa raíz: el runtime de Node de Vercel arranca con `--no-experimental-require-module` (prohibido el `require()` de ESM) y la cadena `jsdom@27 → cssstyle@5 → @asamuzakjp/css-color@4` (CJS) hace `require("@csstools/css-calc")` que desde la 3.x es solo-ESM → `ERR_REQUIRE_ESM` al cargar `isomorphic-dompurify` (diagnóstico con endpoint temporal protegido por `INSTALL_TOKEN`, ya eliminado, que delató los flags de Node de Vercel). En local no se veía porque Node admite `require(ESM)`; reproducido con `node --no-experimental-require-module`. Corrección: `overrides` en `package.json` fijando `jsdom` a **26.1.0** (usa `cssstyle@4`, cadena CJS completa; DOMPurify solo necesita `new JSDOM()`) + `engines.node: "24.x"` para Vercel. Sin migraciones. Verificado en Vercel: `/`, `/blog`, `/politica-privacidad`, login y `/panel-psicologa/historias` responden 200. Skill aplicada: psicocms-seguridad.

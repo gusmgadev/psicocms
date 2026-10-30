@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { crearLectorCookies } from "./src/lib/supabase/cookies-sesion";
 
 export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
@@ -14,7 +15,9 @@ export async function proxy(request: NextRequest) {
     {
       cookies: {
         get(name: string) {
-          return request.cookies.get(name)?.value;
+          // Ante varias cookies con el mismo nombre gana la sesión válida
+          // (la petición puede mandar primero una sesión caducada de un path antiguo).
+          return crearLectorCookies(request.cookies.getAll())(name) ?? request.cookies.get(name)?.value;
         },
         set(name: string, value: string, options: CookieOptions) {
           request.cookies.set({ name, value, ...options });
