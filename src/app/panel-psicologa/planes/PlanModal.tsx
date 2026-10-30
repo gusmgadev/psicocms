@@ -110,10 +110,11 @@ export default function PlanModal({ abierto, editando, onCerrar, onGuardado }: P
               className="campo-control"
               type="number"
               min="0"
+              max="1000000"
               step="0.01"
               value={precioOnline}
               onChange={(e) => setPrecioOnline(e.target.value)}
-              placeholder="Ej.: 55"
+              placeholder="Ej.: 20000"
             />
           </div>
           <div>
@@ -125,10 +126,11 @@ export default function PlanModal({ abierto, editando, onCerrar, onGuardado }: P
               className="campo-control"
               type="number"
               min="0"
+              max="1000000"
               step="0.01"
               value={precioInperson}
               onChange={(e) => setPrecioInperson(e.target.value)}
-              placeholder="Ej.: 60"
+              placeholder="Ej.: 25000"
             />
           </div>
         </div>

@@ -796,6 +796,8 @@ Cada sección del menú tiene página con `PaginaSeccion` (h1 + EmptyState "Secc
 
 ## Historial de cambios
 
+- 2026-10-30: Fix de validación de precios - Rango permitido **0 – 1.000.000 $** (antes 99.999,99 euros): `MAXIMO_PRECIO` en `catalogo-web.ts`, mensaje de error en pesos con formato es-AR, `max="1000000"` y placeholders en pesos en `PlanModal.tsx`. Sin migraciones. Skill aplicada: psicocms-textos.
+
 - 2026-10-30: Fix de moneda y de género en la interfaz - **Precios en Pesos Argentinos**: `Intl.NumberFormat("es-AR", { currency: "ARS" })` en web y panel, etiquetas "($)". **Término "Psicólogo/a" sin diferenciación de género** en todos los textos visibles (login, panel, instalación, protección de datos, metadatos, alt) con reexpresión neutra donde el artículo lo exigía; nombre placeholder del perfil actualizado a "Psicólogo/a" (pendiente el nombre real desde el panel). Las lecturas públicas pasan a `fetch` sin caché (`no-store`): la web pública se renderiza por petición con datos frescos (el prerender estático congelaba valores entre builds). Sin migraciones. Verificado en `/`, `/servicios`, `/instalacion` y `/acceso-psicologa`. Skills aplicadas: psicocms-textos.
 
 - 2026-10-30: Fix de moneda - **Planes y precios en Pesos Argentinos ($)**: `formatearPrecio` (web) y el formateador del panel usan `Intl.NumberFormat("es-AR", { currency: "ARS" })` y las etiquetas del formulario de planes dicen "($)". Sin migraciones (los precios se guardan como números). Verificado en `/servicios`. Skill aplicada: psicocms-textos.

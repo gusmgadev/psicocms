@@ -73,7 +73,7 @@ const LIMITE_DESCRIPCION = 600;
 const LIMITE_ICONO = 80;
 const LIMITE_CARACTERISTICA = 120;
 const MAXIMO_CARACTERISTICAS = 15;
-const MAXIMO_PRECIO = 99_999.99;
+const MAXIMO_PRECIO = 1_000_000;
 
 interface FilaItem {
   id: string;
@@ -152,7 +152,8 @@ function validarPrecio(valor: number | null | undefined, etiqueta: string): stri
     return `El precio ${etiqueta} no es válido.`;
   }
   if (valor < 0 || valor > MAXIMO_PRECIO) {
-    return `El precio ${etiqueta} debe estar entre 0 y ${MAXIMO_PRECIO} euros.`;
+    const maximo = new Intl.NumberFormat("es-AR").format(MAXIMO_PRECIO);
+    return `El precio ${etiqueta} debe estar entre 0 y ${maximo} $.`;
   }
   return null;
 }

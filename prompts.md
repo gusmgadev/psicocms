@@ -236,3 +236,6 @@ Planes y precios, utilizar monedda Pesos Argentinos $ , en lugar de euro.
 
 ## Prompt 46 (2026-10-30)
 En la pagina y panel , usar palabra Psicologo/a en lugar de Psicologa. Y revisar el lenguaje para que no se utilice la diferenciacion de generos...que sea tanto para hombre y mujer psicologo o psicologa
+
+## Prompt 47 (2026-10-30)
+Planes y precios, usar $ argentinos. Para la validacion usar valores de 0 a 1.000.000
