@@ -61,9 +61,9 @@ export function texto(mapa: TextosWeb, clave: string, fallback: string): string 
 }
 
 export function formatearPrecio(valor: number): string {
-  return new Intl.NumberFormat("es-ES", {
+  return new Intl.NumberFormat("es-AR", {
     style: "currency",
-    currency: "EUR",
+    currency: "ARS",
     maximumFractionDigits: Number.isInteger(valor) ? 0 : 2,
   }).format(valor);
 }

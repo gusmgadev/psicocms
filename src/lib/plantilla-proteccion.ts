@@ -4,7 +4,7 @@
 
 export const PLANTILLA_DEFECTO = `
 <h2>Política de protección de datos</h2>
-<p><strong>Responsable del tratamiento:</strong> [Nombre y apellidos de la psicóloga], con número de colegiado [nº de colegiado] y domicilio en [dirección del despacho].</p>
+<p><strong>Responsable del tratamiento:</strong> [Nombre y apellidos del/de la psicólogo/a], con número de colegiado [nº de colegiado] y domicilio en [dirección del despacho].</p>
 <h3>Finalidad del tratamiento</h3>
 <p>Tratamos sus datos personales (nombre, teléfono, email y los que usted facilite en las sesiones) con la finalidad de gestionar la relación terapéutica, concertar y recordar citas, y gestionar la facturación cuando proceda.</p>
 <h3>Legitimación</h3>

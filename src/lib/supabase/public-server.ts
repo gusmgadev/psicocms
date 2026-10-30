@@ -11,6 +11,11 @@ export function createPublicClient() {
         autoRefreshToken: false,
         detectSessionInUrl: false,
       },
+      global: {
+        // Sin caché de fetch: los prerenders de la web pública no deben
+        // congelar datos antiguos de Supabase entre builds.
+        fetch: (input, init) => fetch(input, { ...init, cache: "no-store" }),
+      },
     }
   );
 }

@@ -69,7 +69,7 @@ export default function PasoFoto({ onComplete, onSkip }: PasoFotoProps) {
 
   return (
     <div>
-      <h2 className={styles.pasoTitulo}>Paso 4: Foto de la psicóloga</h2>
+      <h2 className={styles.pasoTitulo}>Paso 4: Foto del/de la psicólogo/a</h2>
       <p className={styles.pasoDescripcion}>
         Sube una foto tuya, preferiblemente sin fondo (formato PNG con transparencia o WebP).
         Se usará en la web pública. Máximo 5 MB.

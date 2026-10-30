@@ -61,7 +61,7 @@ export function Hero({ info, textos, imagenUrl, esLanding = false, mostrarImagen
         <div className={styles.heroImagenCaja}>
           <Image
             src={imagenUrl}
-            alt={info.fullName ? `Retrato de ${info.fullName}` : "Psicóloga"}
+            alt={info.fullName ? `Retrato de ${info.fullName}` : "Psicólogo/a"}
             width={520}
             height={620}
             priority
@@ -94,7 +94,7 @@ export function SobreMi({ info, textos, imagenUrl, idAncora = false }: SobreMiPr
         <div className={styles.sobreMiImagenCaja}>
           <Image
             src={imagenUrl}
-            alt={info.fullName ? `Sobre ${info.fullName}` : "Sobre la psicóloga"}
+            alt={info.fullName ? `Sobre ${info.fullName}` : "Sobre el/la psicólogo/a"}
             width={480}
             height={560}
             className={styles.sobreMiImagen}

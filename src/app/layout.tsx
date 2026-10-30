@@ -20,11 +20,11 @@ const castoro = localFont({
 
 export const metadata: Metadata = {
   title: "PsicoCMS",
-  description: "CMS para psicólogas: web administrable, blog, reservas de citas y panel de gestión",
+  description: "CMS para psicólogos/as: web administrable, blog, reservas de citas y panel de gestión",
   metadataBase: new URL(process.env.NEXT_PUBLIC_URL || "http://localhost:3000"),
   openGraph: {
     title: "PsicoCMS",
-    description: "CMS para psicólogas: web administrable, blog, reservas de citas y panel de gestión",
+    description: "CMS para psicólogos/as: web administrable, blog, reservas de citas y panel de gestión",
     type: "website",
     locale: "es_ES",
   },

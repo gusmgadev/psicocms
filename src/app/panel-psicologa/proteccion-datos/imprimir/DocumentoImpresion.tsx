@@ -101,7 +101,7 @@ export default function DocumentoImpresion({ plantilla, responsable, paciente, t
             </div>
             <div className={styles.firma}>
               <span className={styles.firmaLinea}></span>
-              <p>Firma de la psicóloga</p>
+              <p>Firma del/de la psicólogo/a</p>
             </div>
           </div>
           <p className={styles.pieFecha}>Fecha: ____ / ____ / ________</p>

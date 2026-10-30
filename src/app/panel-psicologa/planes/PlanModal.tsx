@@ -103,7 +103,7 @@ export default function PlanModal({ abierto, editando, onCerrar, onGuardado }: P
         <div className={styles.precios}>
           <div>
             <label htmlFor="plan-precio-online" className="campo-label">
-              Precio online (€)
+              Precio online ($)
             </label>
             <input
               id="plan-precio-online"
@@ -118,7 +118,7 @@ export default function PlanModal({ abierto, editando, onCerrar, onGuardado }: P
           </div>
           <div>
             <label htmlFor="plan-precio-presencial" className="campo-label">
-              Precio presencial (€)
+              Precio presencial ($)
             </label>
             <input
               id="plan-precio-presencial"

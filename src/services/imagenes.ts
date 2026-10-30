@@ -24,7 +24,7 @@ export const HUECOS_IMAGEN: HuecoImagen[] = [
   {
     id: "sobre-mi",
     nombre: "Sobre mí",
-    descripcion: "Imagen de la sección sobre la psicóloga.",
+    descripcion: "Imagen de la sección sobre el/la psicólogo/a.",
     stock: "/images/stock/why.jpg",
   },
   {

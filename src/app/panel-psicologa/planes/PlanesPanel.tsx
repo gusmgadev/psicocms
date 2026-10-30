@@ -12,9 +12,9 @@ interface Props {
   inicial: Plan[];
 }
 
-const formatearPrecio = new Intl.NumberFormat("es-ES", {
+const formatearPrecio = new Intl.NumberFormat("es-AR", {
   style: "currency",
-  currency: "EUR",
+  currency: "ARS",
 });
 
 export default function PlanesPanel({ inicial }: Props) {

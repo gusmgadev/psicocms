@@ -205,7 +205,7 @@ export function FormularioReserva({
   }
 
   if (exito) {
-    const tituloCal = `Cita de ${etiquetaModalidad} con la psicóloga`;
+    const tituloCal = `Cita de ${etiquetaModalidad} con el/la psicólogo/a`;
     const detalles = `Cita reservada el ${formatearFechaCadena(exito.fecha)} a las ${exito.hora}.`;
     const gcal = enlaceGoogleCalendar({
       titulo: tituloCal,

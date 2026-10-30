@@ -225,7 +225,7 @@ export default function PanelShell({ children, usuario, preferencias }: PanelShe
               )}
             </span>
             <span className={styles.usuarioInfo}>
-              <span className={styles.usuarioNombre}>{usuario.nombre || "Psicóloga"}</span>
+              <span className={styles.usuarioNombre}>{usuario.nombre || "Psicólogo/a"}</span>
               <span className={styles.usuarioEmail}>{usuario.email || "—"}</span>
             </span>
           </Link>
@@ -300,7 +300,7 @@ export default function PanelShell({ children, usuario, preferencias }: PanelShe
               {menuUsuarioAbierto && (
                 <div className={styles.usuarioMenu} role="menu">
                   <div className={styles.usuarioMenuCabecera}>
-                    <p className={styles.usuarioMenuNombre}>{usuario.nombre || "Psicóloga"}</p>
+                    <p className={styles.usuarioMenuNombre}>{usuario.nombre || "Psicólogo/a"}</p>
                     <p className={styles.usuarioMenuEmail}>{usuario.email || "—"}</p>
                   </div>
                   <Link href="/panel-psicologa/perfil" className={styles.usuarioMenuItem} role="menuitem">
