@@ -4,7 +4,7 @@
 'use server';
 
 import type { User } from '@supabase/supabase-js';
-import { createClient as createServerClient } from '@/lib/supabase/server';
+import { createClient as createServerClient, createAuthClient } from '@/lib/supabase/server';
 import { checkRateLimit } from '@/services/rate-limit';
 import { revalidatePath } from 'next/cache';
 import { headers } from 'next/headers';
@@ -17,13 +17,12 @@ function urlSitio(): string {
 
 export async function loginAction(formData: FormData): Promise<{ ok: boolean; error?: string; redirect?: string; mfaRequerido?: boolean }> {
   const email = formData.get('email') as string;
-  const phone = formData.get('phone') as string;
   const password = formData.get('password') as string;
   const remember = formData.get('remember') === 'true';
 
   // Validaciones básicas
-  if (!email || !phone || !password) {
-    return { ok: false, error: 'Email, teléfono y contraseña son obligatorios' };
+  if (!email || !password) {
+    return { ok: false, error: 'Email y contraseña son obligatorios' };
   }
 
   // Rate limiting por IP (x-forwarded-for en Vercel/proxies)
@@ -44,7 +43,7 @@ export async function loginAction(formData: FormData): Promise<{ ok: boolean; er
     return { ok: false, error: 'Demasiados intentos para este email. Intenta de nuevo más tarde.' };
   }
 
-  const supabase = await createServerClient();
+  const supabase = await createAuthClient();
 
   // 1. Autenticar con email + contraseña
   const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
@@ -57,19 +56,7 @@ export async function loginAction(formData: FormData): Promise<{ ok: boolean; er
     return { ok: false, error: 'Los datos no son correctos' };
   }
 
-  // 2. Verificar teléfono con RPC verify_login_phone
-  const cleanPhone = phone.replace(/\D/g, '');
-  const { data: phoneOk, error: phoneError } = await supabase.rpc('verify_login_phone', {
-    p_phone: cleanPhone,
-  });
-
-  if (phoneError || !phoneOk) {
-    // Cerrar sesión y mostrar mensaje genérico
-    await supabase.auth.signOut();
-    return { ok: false, error: 'Los datos no son correctos' };
-  }
-
-  // 2b. Si la verificación en dos pasos está activada, pedir el código TOTP
+  // 2. Si la verificación en dos pasos está activada, pedir el código TOTP
   const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
   if (aal?.currentLevel === 'aal1' && aal?.nextLevel === 'aal2') {
     return { ok: false, mfaRequerido: true };
@@ -87,7 +74,7 @@ export async function loginAction(formData: FormData): Promise<{ ok: boolean; er
 }
 
 export async function logoutAction(): Promise<{ ok: boolean; redirect?: string }> {
-  const supabase = await createServerClient();
+  const supabase = await createAuthClient();
   await supabase.auth.signOut();
   revalidatePath('/acceso-psicologa');
   return { ok: true, redirect: '/acceso-psicologa' };
@@ -141,7 +128,7 @@ export async function updatePasswordAction(formData: FormData): Promise<{ ok: bo
     return { ok: false, error: 'Las contraseñas no coinciden' };
   }
 
-  const supabase = await createServerClient();
+  const supabase = await createAuthClient();
 
   // Verificar sesión actual
   const { data: { user } } = await supabase.auth.getUser();

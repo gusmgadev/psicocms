@@ -132,8 +132,8 @@ export default function PaginaAyuda() {
           titulo="Tu cuenta y seguridad"
           texto="Acceso privado y apariencia del panel."
           pasos={[
-            "Entra en el panel por /acceso-psicologa con tu email, tu teléfono privado y tu contraseña.",
-            "En «Perfil privado» cambias tu nombre, tu teléfono de acceso, tu foto, tu email y tu contraseña.",
+            "Entra en el panel por /acceso-psicologa con tu email y tu contraseña.",
+            "En «Perfil privado» cambias tu nombre, tu teléfono, tu foto, tu email y tu contraseña.",
             "Activa la «Verificación en dos pasos» para que además de la contraseña te pidan un código de una app de autenticación.",
             "Con el botón de tu nombre, arriba a la derecha, eliges tema claro u oscuro y el color principal del panel: se queda guardado.",
             "Si olvidas la contraseña, usa el enlace «He olvidado mi contraseña» del acceso.",

@@ -175,21 +175,6 @@ export default function AccesoPage() {
           </div>
 
           <div>
-            <label htmlFor="phone" className="campo-label">
-              Teléfono <span style={{ color: "var(--color-peligro)" }}>*</span>
-            </label>
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              required
-              autoComplete="tel"
-              placeholder="600000000"
-              className="campo-control"
-            />
-          </div>
-
-          <div>
             <label htmlFor="password" className="campo-label">
               Contraseña <span style={{ color: "var(--color-peligro)" }}>*</span>
             </label>

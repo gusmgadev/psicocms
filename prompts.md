@@ -212,3 +212,9 @@ Lee @AGENTS.md, @plan-implementacion.md y @MAP.md. Ejecuta Ãºnicamente la FASE 1
 
 ## Prompt 38 (2026-10-29)
 error al desplegar en vercel: build falla con 'supabaseUrl is required' al prerenderizar /sitemap.xml
+
+## Prompt 39 (2026-10-29)
+Lee @fixes.md y corrige unicamente los pendientes. No toques nada fuera de estos fixes. Si un fix requiere cambios en la base de datos, crea una migracion nueva y dime como aplicarla. Si un fix toca datos, permisos, archivos o autenticacion, aplica la skill psicocms-seguridad. Actualiza @MAP.md y marca cada fix como resuelto en @fixes.md. No me expliques nada, avisame cuando hayas terminado.
+
+## Prompt 40 (2026-10-29)
+ingreso con mail y cotraseña y vuelve al login , no hace nada

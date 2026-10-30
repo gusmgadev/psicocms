@@ -5,11 +5,11 @@
 
 "use server";
 
-import { createClient as createServerClient } from "@/lib/supabase/server";
+import { createAuthClient } from "@/lib/supabase/server";
 import { exigirSesion } from "@/lib/auth-guard";
 import { checkRateLimit } from "@/services/rate-limit";
 
-type ClienteMfa = Awaited<ReturnType<typeof createServerClient>>;
+type ClienteMfa = Awaited<ReturnType<typeof createAuthClient>>;
 
 const CODIGO_INVALIDO = "El código no es correcto. Compruébalo e inténtalo de nuevo.";
 
@@ -57,7 +57,7 @@ export async function iniciarMfaAction(): Promise<{
     return { ok: false, error: "Demasiados intentos. Espera unos minutos y vuelve a probar." };
   }
 
-  const supabase = await createServerClient();
+  const supabase = await createAuthClient();
   const listado = await supabase.auth.mfa.listFactors();
   if (listado.error || !listado.data) {
     return { ok: false, error: "No se pudo preparar la verificación en dos pasos." };
@@ -103,7 +103,7 @@ export async function activarMfaAction(
     return { ok: false, error: "Demasiados intentos. Espera unos minutos y vuelve a probar." };
   }
 
-  const supabase = await createServerClient();
+  const supabase = await createAuthClient();
   const pendiente = await factorTotp(supabase, "unverified");
   if (!pendiente || pendiente.id !== factorId) {
     return { ok: false, error: "La verificación ha caducado. Empieza de nuevo." };
@@ -118,7 +118,7 @@ export async function activarMfaAction(
 export async function desactivarMfaAction(): Promise<{ ok: boolean; error?: string }> {
   await exigirSesion();
 
-  const supabase = await createServerClient();
+  const supabase = await createAuthClient();
   const activo = await factorTotp(supabase, "verified");
   if (!activo) {
     return { ok: false, error: "No tienes la verificación en dos pasos activada." };
@@ -139,7 +139,7 @@ export async function verificarCodigoMfaAction(
     return { ok: false, error: CODIGO_INVALIDO };
   }
 
-  const supabase = await createServerClient();
+  const supabase = await createAuthClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();

@@ -17,7 +17,7 @@
 ## Estructura (implementado en FASE 0A)
 - `supabase/migrations/`: SQL numerado (15 ficheros; **001–015 aplicadas** en el proyecto Supabase)
 - `src/app/`: (public), instalacion, acceso-psicologa, panel-psicologa (cada una con su layout)
-- `src/lib/supabase/`: cliente de navegador (browser.ts), de servidor (server.ts), público sin sesión (public-server.ts) y admin (admin.ts con server-only)
+- `src/lib/supabase/`: cliente de navegador (browser.ts), de servidor (server.ts: `createClient()` cae a cliente público si la cookie de sesión está caducada o ausente —anti-429— y `createAuthClient()` siempre con cookies para los flujos que mutan la sesión: login, logout, MFA y cambio de contraseña), público sin sesión (public-server.ts) y admin (admin.ts con server-only)
 - `src/actions/`, `src/services/`, `src/themes/`, `src/components/ui/` (creados)
 - `proxy.ts` (renombrado desde `middleware.ts` en FASE 19) protege `/panel-psicologa/*` y redirige a `/acceso-psicologa` sin sesión
 - `.env.local` y `.env.example` con variables requeridas, `.gitignore` excluye `.env*.local`
@@ -33,7 +33,7 @@
 - `get_available_slots(modality, date_from, date_to)` — authenticated, service_role
 - `create_public_booking(...)` — **solo service_role**
 - `is_setup_completed()` — anon, authenticated, service_role
-- `verify_login_phone(phone)` — authenticated (requiere is_owner()), service_role
+- `verify_login_phone(phone)` — authenticated (requiere is_owner()), service_role. Sin uso desde el fix de acceso 2026-10-29 (el login ya no valida teléfono); se conserva en la BD con sus grants
 - `check_rate_limit(identifier, event_type, max_attempts, window)` — **solo service_role**
 
 **Migración 008 (FASE 4, aplicada):**
@@ -232,7 +232,7 @@
 - `GET /api/auth/session` — Obtiene usuario actual para header del panel
 
 ## Server Actions de autenticación (FASE 2)
-- `loginAction` — Login con email+password, verifica teléfono via RPC `verify_login_phone`, rate limiting por IP/email, cookies persistentes opcionales. Desde la FASE 15 devuelve `mfaRequerido: true` si hay verificación en dos pasos activada (sin cerrar la sesión de primer factor)
+- `loginAction` — Login con email+password (sin teléfono desde 2026-10-29: se retiró la llamada a `verify_login_phone`), rate limiting por IP/email, cookies persistentes opcionales. Desde la FASE 15 devuelve `mfaRequerido: true` si hay verificación en dos pasos activada (sin cerrar la sesión de primer factor)
 - `logoutAction` — Cierre de sesión
 - `recoverPasswordAction` — Recuperación de contraseña
 - `updatePasswordAction` — Cambio de contraseña con verificación de contraseña actual
@@ -589,7 +589,7 @@ Cada sección del menú tiene página con `PaginaSeccion` (h1 + EmptyState "Secc
 ### Perfil privado
 - Servicio `src/services/perfil-privado.ts` (`obtenerPerfilPrivado`, `obtenerCabeceraUsuario`, `obtenerEstadoMfa`, `guardarPerfilPrivado` con validación de nombre 2–150 y teléfono 5–30 con símbolos, `subirAvatar`/`quitarAvatar` en bucket `avatars` ≤2 MB jpg/png/webp con nombre UUID, `cambiarEmailAcceso` que verifica la contraseña con `signInWithPassword` y luego `admin.updateUserById({ email, email_confirm: true })`) + 4 Server Actions en `src/actions/perfil.ts`
 - Página `/panel-psicologa/perfil` con 4 tarjetas: Tus datos (nombre + `phone_private`), Foto de perfil (cambiar/quitar con ConfirmarModal), Email y contraseña de acceso (cambios sensibles con contraseña actual) y Verificación en dos pasos
-- **Decisión:** `professional_profile` NO tiene `email_private`: el email de acceso es el email de Supabase Auth (fuente única de verdad). El login usa `phone_private` si existe, si no `phone_public` (migración 014)
+- **Decisión:** `professional_profile` NO tiene `email_private`: el email de acceso es el email de Supabase Auth (fuente única de verdad). `phone_private` (migración 014) se usa como dato privado del perfil; el login ya no valida teléfono (fix 2026-10-29)
 
 ### Verificación en dos pasos (TOTP con Supabase MFA)
 - Server Actions en `src/actions/mfa.ts`: `iniciarMfaAction` (enroll TOTP, devuelve `qr_code` como data-URI — sin librería QR — y secreto para entrada manual; limpia factores pendientes previos), `activarMfaAction` (challenge + verify), `desactivarMfaAction` (unenroll) y `verificarCodigoMfaAction` (durante el login). Rate limits con `checkRateLimit`: `mfa-enroll:`/`mfa:`/`mfa-login:` 5 intentos / 15 min
@@ -786,7 +786,7 @@ Cada sección del menú tiene página con `PaginaSeccion` (h1 + EmptyState "Secc
    - Variables de entorno en Vercel (Production + Preview): `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `INSTALL_TOKEN` (≥32 caracteres), `NEXT_PUBLIC_URL=https://tudominio.com`
    - **Nunca** poner `SUPABASE_SERVICE_ROLE_KEY` con prefijo `NEXT_PUBLIC_`
 6. **Dominio y URLs en Supabase Auth**: en Authentication → URL Configuration, añadir `https://tudominio.com` y `https://tudominio.com/acceso-psicologa` a Site URL y Redirect URLs (recuperación de contraseña)
-7. **Prueba final del flujo**: instalación (si no está hecha) → login con los 3 datos → reserva pública → email de aviso → nota de sesión en la historia → comprobar cabeceras de seguridad en el navegador (DevTools → Network)
+7. **Prueba final del flujo**: instalación (si no está hecha) → login con email y contraseña → reserva pública → email de aviso → nota de sesión en la historia → comprobar cabeceras de seguridad en el navegador (DevTools → Network)
 
 ### Reglas de seguridad aplicadas (FASE 19)
 - Cabeceras de seguridad en todas las respuestas (CSP, frame-ancestors, HSTS en prod)
@@ -796,6 +796,8 @@ Cada sección del menú tiene página con `PaginaSeccion` (h1 + EmptyState "Secc
 
 ## Historial de cambios
 
+- 2026-10-29: Fix de login - **La sesión no se guardaba y el login volvía al login**: el fallback anti-429 de `server.ts` devolvía el cliente público (sin cookies) al no detectar sesión, así que `signInWithPassword` no persistía cookies y `sesionCaducada` parseaba mal la cookie (`@supabase/ssr` guarda `base64-` + base64url del JSON de sesión con `expires_at`, troceado en `nombre.0`, `nombre.1`…; no un JWT). Corrección: `sesionCaducada` reconstruye los trozos y lee `expires_at` (fallback al `exp` del `access_token`) y nuevo `createAuthClient()` siempre con cookies para login, logout, `updatePasswordAction`, las 4 actions MFA y `/api/auth/logout`. Sin migraciones. Skill aplicada: psicocms-seguridad.
+- 2026-10-29: Fix de acceso (fixes.md) - **Login sin teléfono**: se elimina el campo "Teléfono" del formulario de `/acceso-psicologa` y la verificación por RPC `verify_login_phone` de `loginAction` (la RPC se conserva en la BD con sus grants, sin migraciones). Se mantiene la protección: contraseña mínima de 12 caracteres, rate limit por IP y email, mensajes genéricos y MFA TOTP. Textos de la ayuda del panel ajustados. Skill aplicada: psicocms-seguridad.
 - 2026-10-21: FASE 19 completada (implementación; pasos manuales abajo) - Seguridad y despliegue: (1) **Cabeceras de seguridad** en `next.config.ts` (`headers()`): CSP (default/script/style/img/connect/frame-src/worker-src adaptadas a Supabase y Google Maps), `frame-ancestors 'none'` + `X-Frame-Options: DENY`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy` y HSTS solo en producción. (2) **`middleware.ts` → `proxy.ts`** con `export async function proxy` (Next 16). (3) **Rate limit de login por IP real**: `loginAction` lee `x-forwarded-for`/`x-real-ip` (antes usaba `'unknown'` fijo). (4) **URL del sitio unificada**: `NEXT_PUBLIC_SITE_URL` → `NEXT_PUBLIC_URL` en recuperación de contraseña. (5) **Auditoría de seguridad** (RLS, RPC, storage, Server Actions, claves): todas las políticas `authenticated` usan `is_owner()`; anon solo lee contenido público; `create_public_booking` y `check_rate_limit` solo `service_role`; contraseña SMTP ilegible desde cliente (grants por columnas 014); admin client con `server-only`; `exigirSesion()` en todas las acciones del panel. (6) `npm audit`: 5 vulnerabilidades high en `braces` vía `eslint-config-next` (solo dependencias de desarrollo/eslint, **no** en el runtime de producción; corregir requeriría degradar eslint-config-next a 14.x). Sin migraciones nuevas. `npm run build` exitoso (49 páginas). Skills usadas: psicocms-seguridad.
 - 2026-10-21: FASE 18 completada - Blog público y redes en el footer: `/blog` con paginación (`?page=`, 9/página), filtro por categorías (`?categoria=slug`, chips con "Todas"), empty state específico por categoría y `h1` según categoría activa; servicio `blog-publico.ts` con `listarArticulosPublicos` (offset + filtro embed) y `contarArticulosPublicos`; footer del layout público con redes activas (`listarRedesActivas` filtra `is_active` también en servidor, iconos FA, abren en pestaña nueva con `rel="noopener noreferrer"`); textos configurables (`blog.all_categories`, `blog.no_posts_category`, `blog.prev/next/page_of`); estilos de chips y paginación en `blog.module.css` y de redes en `publico.module.css`. Sin migraciones nuevas (tablas y RLS ya existían). `npm run build` exitoso (49 páginas). Skills usadas: psicocms-textos.
 - 2026-10-20: FASE 17 completada - Reservas públicas en `/pide-cita`: selector online/presencial, calendario mensual propio con huecos reales (`get_available_slots` vía service_role), formulario (nombre, teléfono solo números, email y motivo opcionales), honeypot, rate limits IP (5/h) y teléfono (3/h), máximo de citas futuras en el RPC, casilla de política de privacidad con `consent_at`/`consent_version`, creación con `create_public_booking` (solo service_role), confirmación con enlace a Google Calendar (sin APIs) y email de aviso a la psicóloga (solo nombre/fecha/hora/modalidad; el fallo del email no rompe la reserva). Módulos: `src/services/reservas.ts`, `src/actions/reservas.ts`, `src/lib/google-calendar.ts`, `src/components/publico/formulario-reserva.tsx` + CSS. Sin migraciones nuevas. `npm run build` exitoso (49 páginas). Skills usadas: psicocms-citas, psicocms-seguridad, local-dates, psicocms-textos.
