@@ -218,3 +218,6 @@ Lee @fixes.md y corrige unicamente los pendientes. No toques nada fuera de estos
 
 ## Prompt 40 (2026-10-29)
 ingreso con mail y cotraseña y vuelve al login , no hace nada
+
+## Prompt 41 (2026-10-29)
+ingreso con mail y cotraseña y vuelve a pantalla acceso psicologa
